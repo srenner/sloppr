@@ -1,0 +1,6 @@
+@sloppr_HostAddress = http://localhost:5220
+
+GET {{sloppr_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
