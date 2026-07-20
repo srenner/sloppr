@@ -72,8 +72,6 @@ namespace sloppr.Controllers
         public async Task<ActionResult<KeyIngredient>> PostKeyIngredient(KeyIngredient keyIngredient)
         {
             await svc.AddAsync(keyIngredient);
-            // _context.KeyIngredients.Add(keyIngredient);
-            // await _context.SaveChangesAsync();
             return CreatedAtAction("GetKeyIngredient", new { id = keyIngredient.Id }, keyIngredient);
         }
 
