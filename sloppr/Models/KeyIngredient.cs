@@ -7,7 +7,7 @@ namespace sloppr.Models;
 /// </summary>
 public class KeyIngredient : BaseModel
 {
-    public string Name { get; set; }
+    public required string Name { get; set; }
     public int NumQueried { get; set; }
     public int NumUsed { get; set; }
     public DateTime? LastUsed { get; set; }
