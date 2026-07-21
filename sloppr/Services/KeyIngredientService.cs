@@ -1,5 +1,3 @@
-using System;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using sloppr.DataAccess;
 using sloppr.Models;
 
