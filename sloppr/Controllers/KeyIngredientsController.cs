@@ -40,12 +40,10 @@ namespace sloppr.Controllers
             {
                 return BadRequest();
             }
-            await svc.Update(keyIngredient);
+            await svc.UpdateAsync(keyIngredient);
             return NoContent();
         }
 
-        // POST: api/KeyIngredients
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<KeyIngredient>> PostKeyIngredient(KeyIngredient keyIngredient)
         {
@@ -56,16 +54,14 @@ namespace sloppr.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteKeyIngredient(int id)
         {
-            throw new NotImplementedException();
-            // var keyIngredient = await _context.KeyIngredients.FindAsync(id);
-            // if (keyIngredient == null)
-            // {
-            //     return NotFound();
-            // }
-            // _context.KeyIngredients.Remove(keyIngredient);
-            // await _context.SaveChangesAsync();
-
-            // return NoContent();
+            var keyIngredient = await svc.GetByIdAsync(id);
+            if (keyIngredient == null)
+            {
+                return NotFound();
+            }
+            keyIngredient.IsDeleted = true;
+            await svc.UpdateAsync(keyIngredient);
+            return NoContent();
         }
 
         private bool KeyIngredientExists(int id)

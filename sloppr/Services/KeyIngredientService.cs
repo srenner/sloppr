@@ -26,7 +26,7 @@ public class KeyIngredientService : IKeyIngredientService
         return await _uow.Repository<KeyIngredient>().GetByIdAsync(id);
     }
 
-    public async Task<KeyIngredient> Update(KeyIngredient ingredient)
+    public async Task<KeyIngredient> UpdateAsync(KeyIngredient ingredient)
     {
         _uow.Repository<KeyIngredient>().Update(ingredient);
         await _uow.CompleteAsync();
