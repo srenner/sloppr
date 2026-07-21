@@ -6,4 +6,5 @@ namespace sloppr.Services;
 public interface IKeyIngredientService
 {
     public Task AddAsync(KeyIngredient ingredient);
+    public Task<KeyIngredient?> GetByIdAsync(int id);
 }

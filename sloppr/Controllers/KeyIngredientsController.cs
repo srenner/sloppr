@@ -26,13 +26,12 @@ namespace sloppr.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<KeyIngredient>> GetKeyIngredient(int id)
         {
-            throw new NotImplementedException();
-            // var keyIngredient = await _uow.Repository<KeyIngredient>().GetByIdAsync(id);
-            // if (keyIngredient == null)
-            // {
-            //     return NotFound();
-            // }
-            // return keyIngredient;
+            KeyIngredient? keyIngredient = await svc.GetByIdAsync(id);
+            if (keyIngredient == null)
+            {
+                return NotFound();
+            }
+            return keyIngredient;
         }
 
         // PUT: api/KeyIngredients/5
