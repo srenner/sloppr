@@ -16,6 +16,11 @@ public class KeyIngredientService : IKeyIngredientService
         await _uow.CompleteAsync();
     }
 
+    public async Task<IEnumerable<KeyIngredient>> GetAllAsync()
+    {
+        return await _uow.Repository<KeyIngredient>().GetAllAsync();
+    }
+
     public async Task<KeyIngredient?> GetByIdAsync(int id)
     {
         return await _uow.Repository<KeyIngredient>().GetByIdAsync(id);

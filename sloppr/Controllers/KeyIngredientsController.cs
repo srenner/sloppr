@@ -18,9 +18,8 @@ namespace sloppr.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<KeyIngredient>>> GetKeyIngredients()
         {
-            throw new NotImplementedException();
-            // var ingredients = await uow.Repository<KeyIngredient>().GetAllAsync();
-            // return Ok(ingredients);
+            var ingredients = await svc.GetAllAsync();
+            return Ok(ingredients);
         }
 
         [HttpGet("{id}")]
@@ -39,6 +38,9 @@ namespace sloppr.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutKeyIngredient(int id, KeyIngredient keyIngredient)
         {
+
+
+
             throw new NotImplementedException();
             // if (id != keyIngredient.Id)
             // {
