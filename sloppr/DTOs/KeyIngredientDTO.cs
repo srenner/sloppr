@@ -1,5 +1,3 @@
-using System;
-
 namespace sloppr.DTOs
 {
     public class KeyIngredientDTO
