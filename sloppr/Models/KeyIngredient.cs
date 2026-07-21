@@ -1,5 +1,3 @@
-using System;
-
 namespace sloppr.Models;
 
 /// <summary>
@@ -12,4 +10,3 @@ public class KeyIngredient : BaseModel
     public int NumUsed { get; set; }
     public DateTime? LastUsed { get; set; }
 }
-
