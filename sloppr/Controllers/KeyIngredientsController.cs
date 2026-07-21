@@ -33,38 +33,15 @@ namespace sloppr.Controllers
             return keyIngredient;
         }
 
-        // PUT: api/KeyIngredients/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutKeyIngredient(int id, KeyIngredient keyIngredient)
+        public async Task<ActionResult> PutKeyIngredient(int id, KeyIngredient keyIngredient)
         {
-
-
-
-            throw new NotImplementedException();
-            // if (id != keyIngredient.Id)
-            // {
-            //     return BadRequest();
-            // }
-
-            // _context.Entry(keyIngredient).State = EntityState.Modified;
-
-            // try
-            // {
-            //     await _context.SaveChangesAsync();
-            // }
-            // catch (DbUpdateConcurrencyException)
-            // {
-            //     if (!KeyIngredientExists(id))
-            //     {
-            //         return NotFound();
-            //     }
-            //     else
-            //     {
-            //         throw;
-            //     }
-            // }
-            //return NoContent();
+            if (id != keyIngredient.Id)
+            {
+                return BadRequest();
+            }
+            await svc.Update(keyIngredient);
+            return NoContent();
         }
 
         // POST: api/KeyIngredients
