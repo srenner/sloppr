@@ -63,11 +63,5 @@ namespace sloppr.Controllers
             await svc.UpdateAsync(keyIngredient);
             return NoContent();
         }
-
-        private bool KeyIngredientExists(int id)
-        {
-            throw new NotImplementedException();
-            //return _context.KeyIngredients.Any(e => e.Id == id);
-        }
     }
 }
