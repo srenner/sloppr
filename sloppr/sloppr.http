@@ -1,6 +1,40 @@
 @sloppr_HostAddress = http://localhost:5220
 
-GET {{sloppr_HostAddress}}/weatherforecast/
+// KeyIngredients endpoints
+GET {{sloppr_HostAddress}}/api/KeyIngredients/
 Accept: application/json
 
 ###
+
+GET {{sloppr_HostAddress}}/api/KeyIngredients/{id}
+Accept: application/json
+
+###
+
+PUT {{sloppr_HostAddress}}/api/KeyIngredients/{id}
+Content-Type: application/json
+
+{
+  "id": 0,
+  "name": "string",
+  "description": "string",
+  "isDeleted": true
+}
+
+###
+
+POST {{sloppr_HostAddress}}/api/KeyIngredients/
+Content-Type: application/json
+
+{
+  "name": "string",
+  "description": "string",
+  "isDeleted": true
+}
+
+###
+
+DELETE {{sloppr_HostAddress}}/api/KeyIngredients/{id}
+
+###
+
