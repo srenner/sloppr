@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using sloppr.DTOs;
 using sloppr.Models;
 using sloppr.Services;
 
@@ -6,7 +7,8 @@ namespace sloppr.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class KeyIngredientsController(IKeyIngredientService svc) : ControllerBase
+    public class KeyIngredientsController(IKeyIngredientService svc,
+                                            KeyIngredientMapper mapper) : ControllerBase
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<KeyIngredient>>> GetKeyIngredients()
@@ -16,14 +18,14 @@ namespace sloppr.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<KeyIngredient>> GetKeyIngredient(int id)
+        public async Task<ActionResult<KeyIngredientDTO>> GetKeyIngredient(int id)
         {
             KeyIngredient? keyIngredient = await svc.GetByIdAsync(id);
             if (keyIngredient == null)
             {
                 return NotFound();
             }
-            return keyIngredient;
+            return mapper.ToDto(keyIngredient);
         }
 
         [HttpPut("{id}")]
