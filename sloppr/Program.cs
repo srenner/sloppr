@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddScoped<IKeyIngredientService, KeyIngredientService>();
 builder.Services.AddScoped<KeyIngredientMapper>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Register IUnitOfWork
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
