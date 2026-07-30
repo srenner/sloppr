@@ -1,7 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using sloppr.AI.Extraction;
 using sloppr.DataAccess;
 using sloppr.Services;
+
+var client = new OllamaModelClient("granite4.1:3b");
+var evaluator = new ExtractionEvaluator(client);
+await evaluator.RunAsync();
+
 
 var builder = WebApplication.CreateBuilder(args);
 
