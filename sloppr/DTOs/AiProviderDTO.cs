@@ -1,0 +1,17 @@
+using sloppr.Enums;
+
+namespace sloppr.DTOs;
+
+public class AiProviderDTO
+{
+    public int Id { get; set; }
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+    public DateTime DateUpdated { get; set; } = DateTime.UtcNow;
+    public bool IsActive { get; set; } = true;
+    public string CreatedBy { get; set; } = "system";
+    public string UpdatedBy { get; set; } = "system";
+
+    public required string Name { get; set; }
+    public AiProviderType ProviderType { get; set; }
+    public string? BaseUrl { get; set; }
+}

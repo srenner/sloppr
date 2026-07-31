@@ -1,0 +1,11 @@
+using sloppr.Models;
+
+namespace sloppr.Services;
+
+public interface IAiModelService
+{
+    public Task AddAsync(AiModel model);
+    public Task<AiModel?> GetByIdAsync(int id);
+    public Task<IEnumerable<AiModel>> GetAllAsync();
+    public Task<AiModel> UpdateAsync(AiModel model);
+}
