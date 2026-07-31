@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using sloppr.AI.Extraction;
 using sloppr.DataAccess;
+using sloppr.Mappers;
 using sloppr.Services;
 
 var client = new OllamaModelClient("granite4.1:3b");
@@ -12,8 +13,16 @@ await evaluator.RunAsync();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
 builder.Services.AddScoped<IKeyIngredientService, KeyIngredientService>();
 builder.Services.AddScoped<KeyIngredientMapper>();
+
+builder.Services.AddScoped<IAiProviderService, AiProviderService>();
+builder.Services.AddScoped<AiProviderMapper>();
+
+builder.Services.AddScoped<IAiModelService, AiModelService>();
+builder.Services.AddScoped<AiModelMapper>();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
