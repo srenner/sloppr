@@ -12,6 +12,11 @@ await evaluator.RunAsync();
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<sloppr.ProviderTypeSettings>(
+    builder.Configuration.GetSection("ProviderTypeSettings"));
+
+builder.Services.AddScoped<ChatService>();
+
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IKeyIngredientService, KeyIngredientService>();
