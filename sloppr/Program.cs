@@ -3,6 +3,7 @@ using Scalar.AspNetCore;
 using sloppr.AI.Extraction;
 using sloppr.DataAccess;
 using sloppr.Mappers;
+using sloppr.Settings;
 using sloppr.Services;
 
 var client = new OllamaModelClient("granite4.1:3b");
@@ -12,8 +13,11 @@ await evaluator.RunAsync();
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<sloppr.ProviderTypeSettings>(
+builder.Services.Configure<ProviderTypeSettings>(
     builder.Configuration.GetSection("ProviderTypeSettings"));
+
+builder.Services.Configure<AISettings>(
+    builder.Configuration.GetSection("AI"));
 
 builder.Services.AddScoped<ChatService>();
 

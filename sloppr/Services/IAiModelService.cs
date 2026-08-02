@@ -10,3 +10,4 @@ public interface IAiModelService
     public Task<IEnumerable<AiModel>> GetAllAsync();
     public Task<AiModel> UpdateAsync(AiModel model);
 }
+

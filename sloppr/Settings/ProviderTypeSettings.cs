@@ -1,6 +1,6 @@
 using sloppr.Enums;
 
-namespace sloppr;
+namespace sloppr.Settings;
 
 public class ProviderTypeSettings
 {
