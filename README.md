@@ -8,7 +8,7 @@
 
 ### Q: Why do I need to install it?
 
-**A:** sloppr is a project for users who want to control their own data. Once you have it installed, the data is yours. If you plug in locally hosted Ollama LLMs (recommended), it can run completely offline. You can make code changes yourself to make sloppr fit your needs better.
+**A:** sloppr is a project for users who want to control their own data. Once you have it installed, the data is yours. If you plug in locally hosted Ollama LLMs (recommended), it can run completely offline. You can make code changes yourself to make sloppr fit your needs.
 
 ### Q: What tech does it use?
 
