@@ -24,6 +24,11 @@ public class AiModelService(IUnitOfWork uow) : IAiModelService
         return await _uow.Repository<AiModel>().GetByIdAsync(id);
     }
 
+    public async Task<AiModel?> GetByIdWithProviderAsync(int id)
+    {
+        return await _uow.Repository<AiModel>().GetByIdAsync(id, x => x.AiProvider);
+    }
+
     public async Task<AiModel> UpdateAsync(AiModel model)
     {
         _uow.Repository<AiModel>().Update(model);
