@@ -1,10 +1,12 @@
 using System.Text.Json.Serialization;
+using Scalar.AspNetCore.Attributes;
 
-namespace sloppr.DTOs;
+namespace sloppr.AI.DTOs;
 
 /// <summary>
 /// API Response from Ollama chat
 /// </summary>
+[Deprecated]
 public class OllamaResponse
 {
     [JsonPropertyName("model")]

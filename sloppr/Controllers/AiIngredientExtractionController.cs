@@ -5,6 +5,9 @@ using sloppr.Services;
 using sloppr.Settings;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
+using sloppr.AI.DTOs;
+using sloppr.AI;
+using OpenAI.Assistants;
 
 namespace sloppr.Controllers
 {
@@ -12,7 +15,8 @@ namespace sloppr.Controllers
     [ApiController]
     public class AiIngredientExtractionController(IAiModelService modelService,
         IOptions<ProviderTypeSettings> providerTypeOptions,
-        IOptions<AISettings> aiSettings)
+        IOptions<AISettings> aiSettings,
+        IChatClientFactory factory)
         : ControllerBase
     {
         [HttpGet("challenge")]
@@ -29,33 +33,25 @@ namespace sloppr.Controllers
             var systemPrompt = aiSettings.Value.DefaultIngredientExtractionPrompt;
             var challenges = aiSettings.Value.ExtractionChallenges;
 
+            var config = new ChatClientConfig
+            {
+                ProviderType = model.AiProvider.ProviderType,
+                ModelName = model.Identifier,
+                Endpoint = model.AiProvider.BaseUrl,
+                ApiKey = null // todo
+            };
+
+            IChatClient client = factory.Create(config);
+
             foreach (var challenge in challenges)
             {
-                var requestBody = new
+
+                List<ChatMessage> messages = new()
                 {
-                    model = model.Identifier,
-                    stream = false,
-                    messages = new List<object>
-                    {
-                        new { role = "system", content = systemPrompt },
-                        new { role = "user", content = challenge.Prompt }
-                    }
+                    new ChatMessage(ChatRole.System, systemPrompt),
+                    new ChatMessage(ChatRole.User, challenge.Prompt),
                 };
-
-                using var httpClient = new HttpClient();
-
-                var response = await httpClient.PostAsJsonAsync(endpoint, requestBody);
-                var result = await response.Content.ReadFromJsonAsync<OllamaResponse>();
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception($"Ollama error {response.StatusCode}: {result}");
-                }
-
-                //IChatClient chatClient = new OllamaSharp.OllamaApiClient()
-                IChatClient client = new OllamaApiClient(new Uri(baseUrl!), model.Identifier);
-                Console.WriteLine(await client.GetResponseAsync("What is AI?"));
-                var x = await client.GetResponseAsync<OllamaResponse>(challenge.Prompt);
-
+                var response = await client.GetResponseAsync(messages);
 
                 // TODO: Persist or process the result as needed
             }

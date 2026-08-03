@@ -1,4 +1,4 @@
-namespace sloppr.DTOs;
+namespace sloppr.AI.DTOs;
 
 public class ChatResult
 {

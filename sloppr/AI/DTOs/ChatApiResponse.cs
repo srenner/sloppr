@@ -1,7 +1,6 @@
-using System;
 using sloppr.Enums;
 
-namespace sloppr.DTOs;
+namespace sloppr.AI.DTOs;
 
 public class ChatApiResponse
 {

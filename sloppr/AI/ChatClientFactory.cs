@@ -1,50 +1,39 @@
 using Microsoft.Extensions.AI;
 using OllamaSharp;
 using OpenAI.Chat;
+using sloppr.AI.DTOs;
 using sloppr.Enums;
 
 namespace sloppr.AI;
 
 public class ChatClientFactory : IChatClientFactory
 {
-    private readonly IConfiguration _config;
-    private readonly Dictionary<AiProviderType, Func<string, IChatClient>> _providers;
-
-    public ChatClientFactory(IConfiguration config)
+    public IChatClient Create(ChatClientConfig config)
     {
-        _config = config;
+        if (string.IsNullOrWhiteSpace(config.ModelName))
+            throw new ArgumentException("ModelName must be specified.", nameof(config));
 
-        _providers = new()
+        return config.ProviderType switch
         {
-            [AiProviderType.OpenAI] = CreateOpenAiClient,
-            [AiProviderType.Ollama] = CreateOllamaClient
+            AiProviderType.OpenAI => CreateOpenAiClient(config),
+            AiProviderType.Ollama => CreateOllamaClient(config),
+            _ => throw new NotSupportedException($"Unknown provider type: '{config.ProviderType}'.")
         };
     }
 
-    public IChatClient Create(AiProviderType provider, string model)
+    private static IChatClient CreateOpenAiClient(ChatClientConfig config)
     {
-        if (string.IsNullOrWhiteSpace(model))
-            throw new ArgumentException("Model must be specified.", nameof(model));
+        if (string.IsNullOrWhiteSpace(config.ApiKey))
+            throw new InvalidOperationException("OpenAI config is missing an API key.");
 
-        if (!_providers.TryGetValue(provider, out var factory))
-            throw new NotSupportedException($"Unknown provider: '{provider}'.");
-
-        return factory(model);
+        return new ChatClient(config.ModelName, config.ApiKey).AsIChatClient();
     }
 
-    private IChatClient CreateOpenAiClient(string model)
+    private static IChatClient CreateOllamaClient(ChatClientConfig config)
     {
-        var apiKey = _config["OpenAI:ApiKey"]
-            ?? throw new InvalidOperationException("OpenAI:ApiKey is not configured.");
+        if (string.IsNullOrWhiteSpace(config.Endpoint))
+            throw new InvalidOperationException("Ollama config is missing an endpoint.");
 
-        return new ChatClient(model, apiKey).AsIChatClient();
-    }
-
-    private IChatClient CreateOllamaClient(string model)
-    {
-        var endpoint = _config["Ollama:Endpoint"]
-            ?? throw new InvalidOperationException("Ollama:Endpoint is not configured.");
-
-        return new OllamaApiClient(new Uri(endpoint), model);
+        return new OllamaApiClient(new Uri(config.Endpoint), config.ModelName);
     }
 }

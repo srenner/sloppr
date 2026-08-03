@@ -1,10 +1,9 @@
-using System;
 using Microsoft.Extensions.AI;
-using sloppr.Enums;
+using sloppr.AI.DTOs;
 
 namespace sloppr.AI;
 
 public interface IChatClientFactory
 {
-    IChatClient Create(AiProviderType provider, string model);
+    IChatClient Create(ChatClientConfig config);
 }
