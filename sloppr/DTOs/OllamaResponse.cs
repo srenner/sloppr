@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace sloppr.DTOs;
 
+/// <summary>
+/// API Response from Ollama chat
+/// </summary>
 public class OllamaResponse
 {
     [JsonPropertyName("model")]

@@ -3,7 +3,8 @@ using Microsoft.Extensions.Options;
 using sloppr.DTOs;
 using sloppr.Services;
 using sloppr.Settings;
-using System.Collections.Generic; // New using directive
+using Microsoft.Extensions.AI;
+using OllamaSharp;
 
 namespace sloppr.Controllers
 {
@@ -49,6 +50,11 @@ namespace sloppr.Controllers
                 {
                     throw new Exception($"Ollama error {response.StatusCode}: {result}");
                 }
+
+                //IChatClient chatClient = new OllamaSharp.OllamaApiClient()
+                IChatClient client = new OllamaApiClient(new Uri(baseUrl!), model.Identifier);
+                Console.WriteLine(await client.GetResponseAsync("What is AI?"));
+                var x = await client.GetResponseAsync<OllamaResponse>(challenge.Prompt);
 
 
                 // TODO: Persist or process the result as needed
