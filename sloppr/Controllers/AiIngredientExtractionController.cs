@@ -1,13 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using sloppr.DTOs;
 using sloppr.Services;
 using sloppr.Settings;
 using Microsoft.Extensions.AI;
-using OllamaSharp;
 using sloppr.AI.DTOs;
 using sloppr.AI;
-using OpenAI.Assistants;
 
 namespace sloppr.Controllers
 {
@@ -26,10 +23,6 @@ namespace sloppr.Controllers
 
             if (model == null) return NotFound();
 
-            var baseUrl = model.AiProvider.BaseUrl;
-            var chatUrl = providerTypeOptions.Value.Types[model.AiProvider.ProviderType].ChatEndpointPath;
-            var endpoint = baseUrl + chatUrl;
-
             var systemPrompt = aiSettings.Value.DefaultIngredientExtractionPrompt;
             var challenges = aiSettings.Value.ExtractionChallenges;
 
@@ -45,7 +38,6 @@ namespace sloppr.Controllers
 
             foreach (var challenge in challenges)
             {
-
                 List<ChatMessage> messages = new()
                 {
                     new ChatMessage(ChatRole.System, systemPrompt),
@@ -59,4 +51,3 @@ namespace sloppr.Controllers
         }
     }
 }
-

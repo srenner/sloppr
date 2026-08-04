@@ -1,4 +1,3 @@
-using System;
 using sloppr.DataAccess;
 using sloppr.Models;
 
