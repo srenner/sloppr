@@ -1,7 +1,8 @@
-using System;
+using Scalar.AspNetCore.Attributes;
 
 namespace sloppr.AI.Extraction;
 
+[Deprecated]
 public class ExtractionEvaluator(IModelClient client)
 {
     private readonly IModelClient _client = client;

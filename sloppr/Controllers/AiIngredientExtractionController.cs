@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using sloppr.DTOs;
 using sloppr.Services;
 using sloppr.Settings;
-using System.Collections.Generic; // New using directive
+using Microsoft.Extensions.AI;
+using sloppr.AI.DTOs;
+using sloppr.AI;
 
 namespace sloppr.Controllers
 {
@@ -11,7 +12,8 @@ namespace sloppr.Controllers
     [ApiController]
     public class AiIngredientExtractionController(IAiModelService modelService,
         IOptions<ProviderTypeSettings> providerTypeOptions,
-        IOptions<AISettings> aiSettings)
+        IOptions<AISettings> aiSettings,
+        IChatClientFactory factory)
         : ControllerBase
     {
         [HttpGet("challenge")]
@@ -21,35 +23,27 @@ namespace sloppr.Controllers
 
             if (model == null) return NotFound();
 
-            var baseUrl = model.AiProvider.BaseUrl;
-            var chatUrl = providerTypeOptions.Value.Types[model.AiProvider.ProviderType].ChatEndpointPath;
-            var endpoint = baseUrl + chatUrl;
-
             var systemPrompt = aiSettings.Value.DefaultIngredientExtractionPrompt;
             var challenges = aiSettings.Value.ExtractionChallenges;
 
+            var config = new ChatClientConfig
+            {
+                ProviderType = model.AiProvider.ProviderType,
+                ModelName = model.Identifier,
+                Endpoint = model.AiProvider.BaseUrl,
+                ApiKey = null // todo
+            };
+
+            IChatClient client = factory.Create(config);
+
             foreach (var challenge in challenges)
             {
-                var requestBody = new
+                List<ChatMessage> messages = new()
                 {
-                    model = model.Identifier,
-                    stream = false,
-                    messages = new List<object>
-                    {
-                        new { role = "system", content = systemPrompt },
-                        new { role = "user", content = challenge.Prompt }
-                    }
+                    new ChatMessage(ChatRole.System, systemPrompt),
+                    new ChatMessage(ChatRole.User, challenge.Prompt),
                 };
-
-                using var httpClient = new HttpClient();
-
-                var response = await httpClient.PostAsJsonAsync(endpoint, requestBody);
-                var result = await response.Content.ReadFromJsonAsync<OllamaResponse>();
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception($"Ollama error {response.StatusCode}: {result}");
-                }
-
+                var response = await client.GetResponseAsync(messages);
 
                 // TODO: Persist or process the result as needed
             }
@@ -57,4 +51,3 @@ namespace sloppr.Controllers
         }
     }
 }
-

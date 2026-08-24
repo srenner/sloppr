@@ -1,7 +1,9 @@
 using System.Text.Json;
+using Scalar.AspNetCore.Attributes;
 
 namespace sloppr.AI.Extraction;
 
+[Deprecated]
 public class OllamaModelClient(string model) : IModelClient
 {
     private readonly HttpClient _http = new();
