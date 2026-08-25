@@ -4,7 +4,7 @@ namespace sloppr.Services;
 
 public interface IAiProviderService
 {
-    public Task AddAsync(AiProvider provider);
+    public Task AddAsync(AiProvider provider, bool allowUnhealthy = false);
     public Task<AiProvider?> GetByIdAsync(int id);
     Task<AiProvider?> CheckHealthAsync(int id);
     public Task<IEnumerable<AiProvider>> GetAllAsync();

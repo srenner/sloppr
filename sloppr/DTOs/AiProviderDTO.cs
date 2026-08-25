@@ -16,6 +16,7 @@ public class AiProviderDTO
     public string? BaseUrl { get; set; }
 
     public bool? IsHealthy { get; set; }
+    public int? LastHealthStatusCode { get; set; }
     public string? LastHealthResponse { get; set; }
     public DateTime? DateHealthChecked { get; set; }
 }

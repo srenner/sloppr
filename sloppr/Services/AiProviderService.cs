@@ -10,10 +10,14 @@ public class AiProviderService(IUnitOfWork uow, IHttpClientFactory httpClientFac
     private readonly IUnitOfWork _uow = uow;
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
-    public async Task AddAsync(AiProvider provider)
+    public async Task AddAsync(AiProvider provider, bool allowUnhealthy = false)
     {
-        await _uow.Repository<AiProvider>().AddAsync(provider);
-        await _uow.CompleteAsync();
+        await CheckHealthAsync(provider);
+        if (provider.IsHealthy == true || allowUnhealthy)
+        {
+            await _uow.Repository<AiProvider>().AddAsync(provider);
+            await _uow.CompleteAsync();
+        }
     }
 
     public async Task<IEnumerable<AiProvider>> GetAllAsync()
@@ -48,15 +52,24 @@ public class AiProviderService(IUnitOfWork uow, IHttpClientFactory httpClientFac
 
             provider.DateHealthChecked = DateTime.UtcNow;
             provider.IsHealthy = response.IsSuccessStatusCode;
+            provider.LastHealthStatusCode = (int?)response.StatusCode;
             provider.LastHealthResponse = responseBody[..Math.Min(200, responseBody.Length)];
         }
         catch (Exception ex)
         {
             provider.DateHealthChecked = DateTime.UtcNow;
             provider.IsHealthy = false;
+            provider.LastHealthStatusCode = 0;
             provider.LastHealthResponse = $"Error: {ex.Message}";
         }
-        return await this.UpdateAsync(provider);
+        if (provider.Id > 0)
+        {
+            return await UpdateAsync(provider);
+        }
+        else
+        {
+            return provider;
+        }
     }
 
     public async Task<AiProvider> UpdateAsync(AiProvider provider)

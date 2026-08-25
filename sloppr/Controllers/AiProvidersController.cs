@@ -55,7 +55,22 @@ namespace sloppr.Controllers
         public async Task<ActionResult<AiProvider>> PostAiProvider(AiProvider aiProvider)
         {
             await svc.AddAsync(aiProvider);
-            return CreatedAtAction("GetAiProvider", new { id = aiProvider.Id }, aiProvider);
+            if (aiProvider.IsHealthy == true)
+            {
+                return CreatedAtAction(nameof(GetAiProvider), new { id = aiProvider.Id }, aiProvider);
+            }
+            else
+            {
+                var status = aiProvider.LastHealthStatusCode;
+                if (status >= 400 && status < 500)
+                {
+                    return UnprocessableEntity(aiProvider);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status502BadGateway, aiProvider);
+                }
+            }
         }
 
         [HttpDelete("{id}")]
