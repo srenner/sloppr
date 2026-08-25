@@ -14,4 +14,9 @@ public class AiProviderDTO
     public required string Name { get; set; }
     public AiProviderType ProviderType { get; set; }
     public string? BaseUrl { get; set; }
+
+    public bool? IsHealthy { get; set; }
+    public string? LastHealthResponse { get; set; }
+    public DateTime? DateHealthChecked { get; set; }
 }
+
