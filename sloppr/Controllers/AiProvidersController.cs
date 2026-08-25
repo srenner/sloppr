@@ -29,6 +29,17 @@ namespace sloppr.Controllers
             return mapper.ToDto(aiProvider);
         }
 
+        [HttpPost("{id}/health")]
+        public async Task<ActionResult<AiProviderHealthDTO>> GetAiProviderHealthCheck(int id)
+        {
+            AiProvider? aiProvider = await svc.CheckHealthAsync(id);
+            if (aiProvider == null)
+            {
+                return NotFound();
+            }
+            return mapper.ToHealthDto(aiProvider);
+        }
+
         [HttpPut("{id}")]
         public async Task<ActionResult> PutAiProvider(int id, AiProvider aiProvider)
         {

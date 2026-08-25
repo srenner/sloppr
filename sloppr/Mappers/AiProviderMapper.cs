@@ -8,4 +8,5 @@ namespace sloppr.Mappers;
 public partial class AiProviderMapper
 {
     public partial AiProviderDTO ToDto(AiProvider provider);
+    public partial AiProviderHealthDTO ToHealthDto(AiProvider provider);
 }

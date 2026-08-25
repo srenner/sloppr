@@ -21,6 +21,12 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("health", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
+
 builder.Services.Configure<ProviderTypeSettings>(
     builder.Configuration.GetSection("ProviderTypeSettings"));
 
