@@ -18,12 +18,6 @@ namespace sloppr.Controllers
             return Ok(providers);
         }
 
-        [HttpGet("health")]
-        public async Task<ActionResult<AiProviderHealthDTO>> PrecheckProviderHealth([FromQuery] AiProviderDTO providerDto)
-        {
-            var provider = await svc.CheckHealthAsync(mapper.FromDto(providerDto));
-            return mapper.ToHealthDto(provider);
-        }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<AiProviderDTO>> GetAiProvider(int id)
@@ -41,6 +35,20 @@ namespace sloppr.Controllers
         {
             //var provider = svc.
             throw new NotImplementedException();
+        }
+
+        [HttpGet("health")]
+        public async Task<ActionResult<AiProviderHealthDTO>> PrecheckProviderHealth([FromQuery] AiProviderHealthRequest healthRequest)
+        {
+            if (healthRequest != null)
+            {
+                var provider = await svc.CheckHealthAsync(mapper.FromHealthRequest(healthRequest));
+                return mapper.ToHealthDto(provider!);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost("{id}/health")]

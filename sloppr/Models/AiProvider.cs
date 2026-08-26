@@ -4,7 +4,7 @@ namespace sloppr.Models;
 
 public class AiProvider : BaseModel
 {
-    public required string Name { get; set; }
+    public string Name { get; set; } = String.Empty;
 
     public AiProviderType ProviderType { get; set; }
 
