@@ -9,7 +9,8 @@ namespace sloppr.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class AiProvidersController(IAiProviderService svc,
-                                       AiProviderMapper mapper) : ControllerBase
+                                       AiProviderMapper providerMapper,
+                                       AiModelMapper modelMapper) : ControllerBase
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AiProvider>>> GetAiProviders()
@@ -27,17 +28,14 @@ namespace sloppr.Controllers
             {
                 return NotFound();
             }
-            return mapper.ToDto(aiProvider);
+            return providerMapper.ToDto(aiProvider);
         }
 
         [HttpGet("{id}/discover-models")]
-        public async Task<ActionResult> DiscoverModels(int id)
+        public async Task<ActionResult<List<AiModelDTO>>> DiscoverModels(int id)
         {
-            //var provider = await svc.GetByIdWithModelsAsync(id);
-
             var models = await svc.DiscoverModels(id);
-
-            throw new NotImplementedException();
+            return modelMapper.ToDto(models).ToList();
         }
 
         [HttpGet("health")]
@@ -45,8 +43,8 @@ namespace sloppr.Controllers
         {
             if (healthRequest != null)
             {
-                var provider = await svc.CheckHealthAsync(mapper.FromHealthRequest(healthRequest));
-                return mapper.ToHealthDto(provider!);
+                var provider = await svc.CheckHealthAsync(providerMapper.FromHealthRequest(healthRequest));
+                return providerMapper.ToHealthDto(provider!);
             }
             else
             {
@@ -62,7 +60,7 @@ namespace sloppr.Controllers
             {
                 return NotFound();
             }
-            return mapper.ToHealthDto(aiProvider);
+            return providerMapper.ToHealthDto(aiProvider);
         }
 
         [HttpPut("{id}")]

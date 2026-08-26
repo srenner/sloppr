@@ -8,6 +8,9 @@ namespace sloppr.Mappers;
 public partial class AiProviderMapper
 {
     public partial AiProviderDTO ToDto(AiProvider provider);
+
+    public partial ICollection<AiProviderDTO> ToDto(ICollection<AiProvider> providers);
+
     public partial AiProviderHealthDTO ToHealthDto(AiProvider provider);
 
 #pragma warning disable RMG012 // Source member was not found for target member

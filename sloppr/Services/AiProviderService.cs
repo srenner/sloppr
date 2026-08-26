@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Options;
+using sloppr.AI;
+using sloppr.AI.ModelDiscoveryResponse;
 using sloppr.DataAccess;
 using sloppr.Models;
 using sloppr.Settings;
@@ -7,11 +9,15 @@ using System.Text;
 
 namespace sloppr.Services;
 
-public class AiProviderService(IUnitOfWork uow, IHttpClientFactory httpClientFactory, IOptions<ProviderTypeSettings> options) : IAiProviderService
+public class AiProviderService(IUnitOfWork uow,
+                                IHttpClientFactory httpClientFactory,
+                                IOptions<ProviderTypeSettings> options,
+                                IModelDiscoveryService modelDiscoveryService) : IAiProviderService
 {
     private readonly IUnitOfWork _uow = uow;
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly ProviderTypeSettings _providerTypeSettings = options.Value;
+    private readonly IModelDiscoveryService _modelDiscoveryService = modelDiscoveryService;
 
     public async Task AddAsync(AiProvider provider, bool allowUnhealthy = false)
     {
@@ -49,8 +55,8 @@ public class AiProviderService(IUnitOfWork uow, IHttpClientFactory httpClientFac
                 var httpClient = _httpClientFactory.CreateClient();
                 var response = await httpClient.GetAsync(discoverUrl);
                 var responseBody = await response.Content.ReadAsStringAsync();
-
-
+                var models = _modelDiscoveryService.Parse(provider, responseBody);
+                return models;
             }
             catch (Exception ex)
             {
@@ -61,9 +67,7 @@ public class AiProviderService(IUnitOfWork uow, IHttpClientFactory httpClientFac
         {
             // no provider, nothing to do
         }
-
-
-        throw new NotImplementedException();
+        return new();
     }
 
     public async Task<AiProvider?> CheckHealthAsync(int id)

@@ -8,4 +8,5 @@ namespace sloppr.Mappers;
 public partial class AiModelMapper
 {
     public partial AiModelDTO ToDto(AiModel model);
+    public partial ICollection<AiModelDTO> ToDto(ICollection<AiModel> models);
 }

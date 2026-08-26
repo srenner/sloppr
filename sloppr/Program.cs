@@ -39,6 +39,8 @@ builder.Services.AddScoped<ChatService>();
 
 builder.Services.AddSingleton<IChatClientFactory, ChatClientFactory>();
 
+builder.Services.AddScoped<IModelDiscoveryService, ModelDiscoveryService>();
+
 builder.Services.AddScoped<IKeyIngredientService, KeyIngredientService>();
 builder.Services.AddScoped<KeyIngredientMapper>();
 
