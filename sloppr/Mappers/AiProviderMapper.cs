@@ -9,4 +9,8 @@ public partial class AiProviderMapper
 {
     public partial AiProviderDTO ToDto(AiProvider provider);
     public partial AiProviderHealthDTO ToHealthDto(AiProvider provider);
+
+#pragma warning disable RMG012 // Source member was not found for target member
+    public partial AiProvider FromDto(AiProviderDTO dto);
+#pragma warning restore RMG012 // Source member was not found for target member
 }

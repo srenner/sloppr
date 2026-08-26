@@ -40,7 +40,7 @@ public class AiProviderService(IUnitOfWork uow, IHttpClientFactory httpClientFac
         else return null;
     }
 
-    private async Task<AiProvider?> CheckHealthAsync(AiProvider provider)
+    public async Task<AiProvider?> CheckHealthAsync(AiProvider provider)
     {
         var healthUrl = provider.BaseUrl + provider.HealthCheckPath;
 

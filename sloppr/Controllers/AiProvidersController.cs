@@ -18,6 +18,16 @@ namespace sloppr.Controllers
             return Ok(providers);
         }
 
+        [HttpGet("health")]
+        public async Task<ActionResult<AiProviderHealthDTO>> PrecheckProviderHealth([FromQuery] AiProviderDTO providerDto)
+        {
+
+            var provider = await svc.CheckHealthAsync(mapper.FromDto(providerDto));
+
+            return mapper.ToHealthDto(provider);
+
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<AiProviderDTO>> GetAiProvider(int id)
         {
@@ -27,6 +37,13 @@ namespace sloppr.Controllers
                 return NotFound();
             }
             return mapper.ToDto(aiProvider);
+        }
+
+        [HttpGet("{id}/discover-models")]
+        public async Task<ActionResult> DiscoverModels(int id)
+        {
+            //var provider = svc.
+            throw new NotImplementedException();
         }
 
         [HttpPost("{id}/health")]

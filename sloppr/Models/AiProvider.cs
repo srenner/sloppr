@@ -11,6 +11,7 @@ public class AiProvider : BaseModel
     public string? BaseUrl { get; set; }
 
     public string? HealthCheckPath { get; set; }
+    public string? ModelDiscoveryPath { get; set; }
 
     public bool? IsHealthy { get; set; }
 

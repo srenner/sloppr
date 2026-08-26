@@ -9,5 +9,7 @@ public class ProviderTypeSettings
 
 public class ProviderTypeConfig
 {
-    public string ChatEndpointPath { get; set; } = string.Empty;
+    public string HealthPath { get; set; } = string.Empty;
+    public string ModelDiscoveryPath { get; set; } = string.Empty;
+    public string ChatPath { get; set; } = string.Empty;
 }

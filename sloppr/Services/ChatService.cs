@@ -15,6 +15,6 @@ public class ChatService
 
     public string GetChatPath(AiProviderType type)
     {
-        return _providerTypeSettings.Types[type].ChatEndpointPath;
+        return _providerTypeSettings.Types[type].ChatPath;
     }
 }
