@@ -33,7 +33,10 @@ namespace sloppr.Controllers
         [HttpGet("{id}/discover-models")]
         public async Task<ActionResult> DiscoverModels(int id)
         {
-            //var provider = svc.
+            //var provider = await svc.GetByIdWithModelsAsync(id);
+
+            var models = await svc.DiscoverModels(id);
+
             throw new NotImplementedException();
         }
 

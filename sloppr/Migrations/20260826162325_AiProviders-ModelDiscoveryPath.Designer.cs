@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sloppr.DataAccess;
 
@@ -10,9 +11,11 @@ using sloppr.DataAccess;
 namespace sloppr.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260826162325_AiProviders-ModelDiscoveryPath")]
+    partial class AiProvidersModelDiscoveryPath
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
@@ -89,6 +92,9 @@ namespace sloppr.Migrations
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("HealthCheckPath")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
@@ -103,6 +109,9 @@ namespace sloppr.Migrations
 
                     b.Property<int?>("LastHealthStatusCode")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ModelDiscoveryPath")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()

@@ -10,9 +10,6 @@ public class AiProvider : BaseModel
 
     public string? BaseUrl { get; set; }
 
-    public string? HealthCheckPath { get; set; }
-    public string? ModelDiscoveryPath { get; set; }
-
     public bool? IsHealthy { get; set; }
 
     public int? LastHealthStatusCode { get; set; }
@@ -20,5 +17,5 @@ public class AiProvider : BaseModel
 
     public DateTime? DateHealthChecked { get; set; }
 
-    public IEnumerable<AiModel>? ProviderModels { get; set; }
+    public ICollection<AiModel> ProviderModels { get; set; } = new List<AiModel>();
 }

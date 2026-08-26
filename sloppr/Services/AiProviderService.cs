@@ -1,14 +1,17 @@
+using Microsoft.Extensions.Options;
 using sloppr.DataAccess;
 using sloppr.Models;
+using sloppr.Settings;
 using System.Net.Http;
 using System.Text;
 
 namespace sloppr.Services;
 
-public class AiProviderService(IUnitOfWork uow, IHttpClientFactory httpClientFactory) : IAiProviderService
+public class AiProviderService(IUnitOfWork uow, IHttpClientFactory httpClientFactory, IOptions<ProviderTypeSettings> options) : IAiProviderService
 {
     private readonly IUnitOfWork _uow = uow;
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+    private readonly ProviderTypeSettings _providerTypeSettings = options.Value;
 
     public async Task AddAsync(AiProvider provider, bool allowUnhealthy = false)
     {
@@ -30,6 +33,39 @@ public class AiProviderService(IUnitOfWork uow, IHttpClientFactory httpClientFac
         return await _uow.Repository<AiProvider>().GetByIdAsync(id);
     }
 
+    public async Task<AiProvider?> GetByIdWithModelsAsync(int id)
+    {
+        return await _uow.Repository<AiProvider>().GetByIdAsync(id, x => x.ProviderModels);
+    }
+
+    public async Task<List<AiModel>> DiscoverModels(int providerId)
+    {
+        var provider = await GetByIdWithModelsAsync(providerId);
+        if (provider != null)
+        {
+            var discoverUrl = provider.BaseUrl + _providerTypeSettings.Types[provider.ProviderType].ModelDiscoveryPath;
+            try
+            {
+                var httpClient = _httpClientFactory.CreateClient();
+                var response = await httpClient.GetAsync(discoverUrl);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+
+            }
+            catch (Exception ex)
+            {
+                //
+            }
+        }
+        else
+        {
+            // no provider, nothing to do
+        }
+
+
+        throw new NotImplementedException();
+    }
+
     public async Task<AiProvider?> CheckHealthAsync(int id)
     {
         var provider = await GetByIdAsync(id);
@@ -42,7 +78,7 @@ public class AiProviderService(IUnitOfWork uow, IHttpClientFactory httpClientFac
 
     public async Task<AiProvider?> CheckHealthAsync(AiProvider provider)
     {
-        var healthUrl = provider.BaseUrl + provider.HealthCheckPath;
+        var healthUrl = provider.BaseUrl + _providerTypeSettings.Types[provider.ProviderType].HealthPath;
 
         try
         {
