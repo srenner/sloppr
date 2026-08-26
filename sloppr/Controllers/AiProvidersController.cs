@@ -21,11 +21,8 @@ namespace sloppr.Controllers
         [HttpGet("health")]
         public async Task<ActionResult<AiProviderHealthDTO>> PrecheckProviderHealth([FromQuery] AiProviderDTO providerDto)
         {
-
             var provider = await svc.CheckHealthAsync(mapper.FromDto(providerDto));
-
             return mapper.ToHealthDto(provider);
-
         }
 
         [HttpGet("{id}")]
