@@ -11,7 +11,7 @@ public class AiProviderDTO
     public string CreatedBy { get; set; } = "system";
     public string UpdatedBy { get; set; } = "system";
 
-    public required string Name { get; set; }
+    public required string Name { get; set; } = String.Empty;
     public AiProviderType ProviderType { get; set; }
     public string? BaseUrl { get; set; }
     public string? HealthCheckPath { get; set; }
