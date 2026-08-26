@@ -1,7 +1,9 @@
+using Scalar.AspNetCore.Attributes;
 using sloppr.Enums;
 
 namespace sloppr.AI.DTOs;
 
+[Deprecated]
 public class ChatApiResponse
 {
     public ChatResult Result { get; set; } = new();
