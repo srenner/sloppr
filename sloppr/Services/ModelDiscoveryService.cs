@@ -14,8 +14,8 @@ public class ModelDiscoveryService : IModelDiscoveryService
         var discoveredModels =
         provider.ProviderType switch
         {
-            AiProviderType.Ollama => ParseOllama(response),
-            AiProviderType.OpenAI => ParseOpenAI(response),
+            AiProviderType.Ollama => ParseOllama(provider.Id, response),
+            AiProviderType.OpenAI => ParseOpenAI(provider.Id, response),
             _ => throw new NotSupportedException($"Unknown provider type: '{provider.ProviderType}'.")
         };
 
@@ -23,7 +23,7 @@ public class ModelDiscoveryService : IModelDiscoveryService
         return discoveredModels.Where(model => !existingModelIdentifiers.Contains(model.Identifier)).ToList();
     }
 
-    private static List<AiModel> ParseOllama(string response)
+    private static List<AiModel> ParseOllama(int providerId, string response)
     {
         var models = new List<AiModel>();
         var ollamaResponse = JsonSerializer.Deserialize<OllamaModelDiscoveryResponse>(response);
@@ -36,14 +36,15 @@ public class ModelDiscoveryService : IModelDiscoveryService
                 {
                     Identifier = model.Id,
                     Name = model.Id,
-                    AiProvider = new()
+                    AiProvider = new(),
+                    AiProviderId = providerId
                 });
             }
         }
         return models;
     }
 
-    private static List<AiModel> ParseOpenAI(string response)
+    private static List<AiModel> ParseOpenAI(int providerId, string response)
     {
         throw new NotImplementedException();
     }

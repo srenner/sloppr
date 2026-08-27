@@ -32,10 +32,10 @@ namespace sloppr.Controllers
         }
 
         [HttpGet("{id}/discover-models")]
-        public async Task<ActionResult<List<AiModelDTO>>> DiscoverModels(int id)
+        public async Task<ActionResult<List<AiModelMinimalDTO>>> DiscoverModels(int id)
         {
             var models = await svc.DiscoverModels(id);
-            return modelMapper.ToDto(models).ToList();
+            return modelMapper.ToMinimalDto(models).ToList();
         }
 
         [HttpGet("health")]
