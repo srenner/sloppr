@@ -19,16 +19,6 @@ public class AiModelService(IUnitOfWork uow) : IAiModelService
         return await _uow.CompleteAsync();
     }
 
-    public async Task<IEnumerable<AiModel>> GetFilteredAsync()
-    {
-        return await _uow.Repository<AiModel>().GetFilteredAsync();
-    }
-
-    public async Task<IEnumerable<AiModel>> GetAllAsync()
-    {
-        return await _uow.Repository<AiModel>().GetAllAsync();
-    }
-
     public async Task<AiModel?> GetByIdAsync(int id)
     {
         return await _uow.Repository<AiModel>().GetByIdAsync(id);
@@ -37,6 +27,16 @@ public class AiModelService(IUnitOfWork uow) : IAiModelService
     public async Task<AiModel?> GetByIdWithProviderAsync(int id)
     {
         return await _uow.Repository<AiModel>().GetByIdAsync(id, x => x.AiProvider);
+    }
+
+    public async Task<IEnumerable<AiModel>> GetFilteredAsync()
+    {
+        return await _uow.Repository<AiModel>().GetFilteredAsync();
+    }
+
+    public async Task<IEnumerable<AiModel>> GetAllAsync()
+    {
+        return await _uow.Repository<AiModel>().GetAllAsync();
     }
 
     public async Task<AiModel> UpdateAsync(AiModel model)
