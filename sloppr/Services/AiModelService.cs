@@ -19,6 +19,11 @@ public class AiModelService(IUnitOfWork uow) : IAiModelService
         return await _uow.CompleteAsync();
     }
 
+    public async Task<IEnumerable<AiModel>> GetFilteredAsync()
+    {
+        return await _uow.Repository<AiModel>().GetFilteredAsync();
+    }
+
     public async Task<IEnumerable<AiModel>> GetAllAsync()
     {
         return await _uow.Repository<AiModel>().GetAllAsync();

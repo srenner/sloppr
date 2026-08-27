@@ -10,6 +10,7 @@ public interface IAiProviderService
     public Task<List<AiModel>> DiscoverModels(int providerId);
     Task<AiProvider?> CheckHealthAsync(int id);
     Task<AiProvider?> CheckHealthAsync(AiProvider provider);
+    Task<IEnumerable<AiProvider>> GetFilteredAsync();
     public Task<IEnumerable<AiProvider>> GetAllAsync();
     public Task<AiProvider> UpdateAsync(AiProvider provider);
 }

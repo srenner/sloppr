@@ -29,6 +29,12 @@ public class AiProviderService(IUnitOfWork uow,
         }
     }
 
+
+    public async Task<IEnumerable<AiProvider>> GetFilteredAsync()
+    {
+        return await _uow.Repository<AiProvider>().GetFilteredAsync();
+    }
+
     public async Task<IEnumerable<AiProvider>> GetAllAsync()
     {
         return await _uow.Repository<AiProvider>().GetAllAsync();

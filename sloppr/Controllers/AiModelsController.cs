@@ -12,10 +12,17 @@ namespace sloppr.Controllers
                                     AiModelMapper mapper) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AiModel>>> GetAiModels()
+        public async Task<ActionResult<IEnumerable<AiModel>>> GetActiveAiModelsAsync()
+        {
+            var models = await svc.GetFilteredAsync();
+            return Ok(models);
+        }
+
+        [HttpGet("inactive")]
+        public async Task<ActionResult<IEnumerable<AiModel>>> GetInactiveAiModelsAsync()
         {
             var models = await svc.GetAllAsync();
-            return Ok(models);
+            return Ok(models.Where(w => w.IsActive == false));
         }
 
         [HttpGet("{id}")]
