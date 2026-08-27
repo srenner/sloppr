@@ -37,7 +37,8 @@ public class ModelDiscoveryService : IModelDiscoveryService
                     Identifier = model.Id,
                     Name = model.Id,
                     AiProvider = new(),
-                    AiProviderId = providerId
+                    AiProviderId = providerId,
+                    IsActive = false
                 });
             }
         }

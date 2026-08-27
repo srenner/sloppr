@@ -13,6 +13,12 @@ public class AiModelService(IUnitOfWork uow) : IAiModelService
         await _uow.CompleteAsync();
     }
 
+    public async Task<int> AddRangeAsync(IEnumerable<AiModel> models)
+    {
+        await _uow.Repository<AiModel>().AddRangeAsync(models);
+        return await _uow.CompleteAsync();
+    }
+
     public async Task<IEnumerable<AiModel>> GetAllAsync()
     {
         return await _uow.Repository<AiModel>().GetAllAsync();

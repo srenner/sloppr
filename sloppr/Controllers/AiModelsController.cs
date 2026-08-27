@@ -47,6 +47,13 @@ namespace sloppr.Controllers
             return CreatedAtAction("GetAiModel", new { id = aiModel.Id }, aiModel);
         }
 
+        [HttpPost("batch")]
+        public async Task<ActionResult<int>> PostAiModelBatch(ICollection<AiModelMinimalDTO> models)
+        {
+            var numInserted = await svc.AddRangeAsync(mapper.FromMinimalDto(models));
+            return Ok(numInserted);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAiModel(int id)
         {

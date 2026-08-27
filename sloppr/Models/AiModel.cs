@@ -13,7 +13,7 @@ public class AiModel : BaseModel
 
     public int AiProviderId { get; set; }
 
-    public required AiProvider AiProvider { get; set; }
+    public AiProvider AiProvider { get; set; }
 
     public int? ContextWindow { get; set; }
 
