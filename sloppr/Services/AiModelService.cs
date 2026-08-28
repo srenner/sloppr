@@ -1,4 +1,6 @@
+using Microsoft.Extensions.AI;
 using sloppr.DataAccess;
+using sloppr.DTOs;
 using sloppr.Models;
 
 namespace sloppr.Services;
@@ -6,6 +8,9 @@ namespace sloppr.Services;
 public class AiModelService(IUnitOfWork uow) : IAiModelService
 {
     private readonly IUnitOfWork _uow = uow;
+
+
+    #region CRUD operations
 
     public async Task AddAsync(AiModel model)
     {
@@ -45,4 +50,15 @@ public class AiModelService(IUnitOfWork uow) : IAiModelService
         await _uow.CompleteAsync();
         return model;
     }
+
+    #endregion
+
+    public ICollection<IngredientExtractionResponse> CalculateIngredientExtractionScore(ICollection<ChatResponse> responses)
+    {
+
+
+
+        throw new NotImplementedException();
+    }
+
 }
