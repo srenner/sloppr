@@ -5,9 +5,29 @@ namespace sloppr.Models;
 /// </summary>
 public class Recipe : BaseModel
 {
-    public required string FullText { get; set; }
-    public string TextFormat { get; set; } = "md";
-    public int PrepTime { get; set; } = 0;
-    public int CookTime { get; set; } = 0;
+
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public int ServingCount { get; set; }
+    public int PrepTimeMinutes { get; set; }
+    public int CookTimeMinutes { get; set; }
+    public int Difficulty { get; set; }
+
+    public List<RecipeIngredient> Ingredients { get; set; }
+
+    public List<RecipeStep> Steps { get; set; }
 
 }
+
+public class RecipeIngredient
+{
+    public double Quantity { get; set; }
+    public string UnitOfMeasure { get; set; }
+    public string Name { get; set; }
+}
+
+public class RecipeStep
+{
+
+}
+
