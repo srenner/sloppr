@@ -17,7 +17,7 @@ namespace sloppr.Controllers
         : ControllerBase
     {
         [HttpGet("challenge")]
-        public async Task<IActionResult> ExecuteIngredientExtractionAsync(int modelId)
+        public async Task<ActionResult> ExecuteIngredientExtractionAsync(int modelId)
         {
             var model = await modelService.GetByIdWithProviderAsync(modelId);
 
@@ -35,7 +35,7 @@ namespace sloppr.Controllers
             };
 
             IChatClient client = factory.Create(config);
-
+            var responses = new List<ChatResponse>();
             foreach (var challenge in challenges)
             {
                 List<ChatMessage> messages = new()
@@ -44,10 +44,9 @@ namespace sloppr.Controllers
                     new ChatMessage(ChatRole.User, challenge.Prompt),
                 };
                 var response = await client.GetResponseAsync(messages);
-
-                // TODO: Persist or process the result as needed
+                responses.Add(response);
             }
-            return Ok();
+            return Ok(responses);
         }
     }
 }
