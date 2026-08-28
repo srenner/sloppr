@@ -16,4 +16,4 @@
 
 ### Q: How do I install it?
 
-**A:** sloppr isn't ready for a beta release yet, but when it is, it will likely be a single Docker container.
+**A:** sloppr will eventually be released as a Docker container.
