@@ -1,5 +1,3 @@
-using System;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Options;
 using sloppr.Models;
 using sloppr.Settings;
