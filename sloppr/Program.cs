@@ -78,8 +78,10 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseCors("AllowDevFrontend");
 }
-
-app.UseHttpsRedirection();
+else
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthorization();
 
