@@ -47,7 +47,7 @@ namespace sloppr.Controllers
                     new ChatMessage(ChatRole.User, challenge.Prompt),
                 };
                 ChatResponse? response = await client.GetResponseAsync(messages);
-                dto.Challenges.Add(new Challenge(challenge.Prompt, challenge.ExpectedResponse,
+                dto.Challenges.Add(new IngredientChallenge(challenge.Prompt, challenge.ExpectedResponse,
                                         response.Text, response.Usage.InputTokenCount, response.Usage.OutputTokenCount));
             }
             return Ok(dto);

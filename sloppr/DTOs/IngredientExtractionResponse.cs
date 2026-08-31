@@ -24,18 +24,18 @@ public class IngredientExtractionResponse
     public int? AiModelId { get; set; }
     public AiModel? AiModel { get; set; }
 
-    public List<Challenge> Challenges { get; set; } = new();
+    public List<IngredientChallenge> Challenges { get; set; } = new();
 }
 
-public class Challenge
+public class IngredientChallenge
 {
 
-    public Challenge(string prompt, List<string> expectedResponse, string actualResponse, long? inputTokenCount, long? outputTokenCount)
+    public IngredientChallenge(string prompt, List<string> expectedResponse, string actualResponse, long? inputTokenCount, long? outputTokenCount)
     {
         actualResponse = actualResponse.Replace("\n", "")
                                         .Replace("`", "")
                                         .Replace("json", "");
-        this.ActualResponse = JsonSerializer.Deserialize<List<string>>(actualResponse);
+        this.ActualResponse = actualResponse == null ? [] : JsonSerializer.Deserialize<List<string>>(actualResponse);
         this.ExpectedResponse = expectedResponse;
         this.Prompt = prompt;
         this.InputTokenCount = inputTokenCount;
