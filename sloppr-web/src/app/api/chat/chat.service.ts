@@ -5,7 +5,14 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
-  HttpClient
+  HttpClient,
+  HttpHeaders,
+  HttpResponse as AngularHttpResponse
+} from '@angular/common/http';
+import type {
+  HttpContext,
+  HttpEvent,
+  HttpParams
 } from '@angular/common/http';
 
 import {
@@ -13,15 +20,117 @@ import {
   inject
 } from '@angular/core';
 
+import {
+  Observable
+} from 'rxjs';
+
 import type {
   PostApiChatChat2Params,
   PostApiChatChatParams
 } from '../model';
 
-import { customInstance } from '.././custom-instance';
 
 
+interface HttpClientOptions {
+  readonly headers?: HttpHeaders | Record<string, string | string[]>;
+  readonly context?: HttpContext;
+  readonly params?:
+        | HttpParams
+      | Record<string, string | number | boolean | Array<string | number | boolean>>;
+  readonly reportProgress?: boolean;
+  readonly withCredentials?: boolean;
+  readonly credentials?: RequestCredentials;
+  readonly keepalive?: boolean;
+  readonly priority?: RequestPriority;
+  readonly cache?: RequestCache;
+  readonly mode?: RequestMode;
+  readonly redirect?: RequestRedirect;
+  readonly referrer?: string;
+  readonly integrity?: string;
+  readonly referrerPolicy?: ReferrerPolicy;
+  readonly transferCache?: {includeHeaders?: string[]} | boolean;
+  readonly timeout?: number;
+}
 
+type HttpClientBodyOptions = HttpClientOptions & {
+  readonly observe?: 'body';
+};
+
+type HttpClientEventOptions = HttpClientOptions & {
+  readonly observe: 'events';
+};
+
+type HttpClientResponseOptions = HttpClientOptions & {
+  readonly observe: 'response';
+};
+
+type HttpClientObserveOptions = HttpClientOptions & {
+  readonly observe?: 'body' | 'events' | 'response';
+};
+
+type AngularHttpParamValue = string | number | boolean | Array<string | number | boolean>;
+type AngularHttpParamValueWithNullable = AngularHttpParamValue | null;
+
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys?: ReadonlySet<string>,
+  preserveRequiredNullables?: false,
+  passthroughKeys?: undefined,
+): Record<string, AngularHttpParamValue>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> | undefined,
+  preserveRequiredNullables: true,
+  passthroughKeys?: undefined,
+): Record<string, AngularHttpParamValueWithNullable>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> | undefined,
+  preserveRequiredNullables: boolean | undefined,
+  passthroughKeys: ReadonlySet<string>,
+): Record<string, unknown>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> = new Set(),
+  preserveRequiredNullables = false,
+  passthroughKeys: ReadonlySet<string> = new Set(),
+): Record<string, unknown> {
+  const filteredParams: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (passthroughKeys.has(key)) {
+      if (value !== undefined) {
+        filteredParams[key] = value;
+      }
+      continue;
+    }
+    if (Array.isArray(value)) {
+      const filtered = value.filter(
+        (item) =>
+          item != null &&
+          (typeof item === 'string' ||
+            typeof item === 'number' ||
+            typeof item === 'boolean'),
+      ) as Array<string | number | boolean>;
+      if (filtered.length) {
+        filteredParams[key] = filtered;
+      }
+    } else if (value === null && requiredNullableKeys.has(key)) {
+      // With a paramsSerializer (preserveRequiredNullables) the literal null
+      // is passed through for it to consume; without one, emit an empty
+      // string so the required key still reaches the wire as `?key=`
+      // instead of being silently dropped. See #3712.
+      filteredParams[key] = preserveRequiredNullables ? null : '';
+    } else if (
+      value != null &&
+      (typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean')
+    ) {
+      filteredParams[key] = value;
+    }
+  }
+  return filteredParams;
+}
 
 
 
@@ -30,78 +139,79 @@ import { customInstance } from '.././custom-instance';
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   private readonly http = inject(HttpClient);
- postApiChatChat<TData = void>(
-    params?: PostApiChatChatParams,
- ) {
-      return customInstance<TData>(
-      {url: `/api/Chat/chat`, method: 'POST',
-        params: (() => {
+ postApiChatChat<TData = void>(params?: PostApiChatChatParams, options?: HttpClientBodyOptions): Observable<TData>;
+ postApiChatChat<TData = void>(params?: PostApiChatChatParams, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ postApiChatChat<TData = void>(params?: PostApiChatChatParams, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  postApiChatChat<TData = void>(
+    params?: PostApiChatChatParams, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
 
-  const filteredParams: Record<string, string | number | boolean | Array<string | number | boolean>> = {};
-  for (const [key, value] of Object.entries(params ?? {})) {
-    if (Array.isArray(value)) {
-      const filtered = value.filter(
-        (item) =>
-          item != null &&
-          (typeof item === 'string' ||
-            typeof item === 'number' ||
-            typeof item === 'boolean'),
-      ) as Array<string | number | boolean>;
-      if (filtered.length) {
-        filteredParams[key] = filtered;
-      }
-    } else if (
-      value != null &&
-      (typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean')
-    ) {
-      filteredParams[key] = value;
+    if (options?.observe === 'events') {
+      return this.http.post<TData>(
+      `/api/Chat/chat`,
+      undefined,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+        params: filteredParams,}
+    );
     }
+
+    if (options?.observe === 'response') {
+      return this.http.post<TData>(
+      `/api/Chat/chat`,
+      undefined,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+        params: filteredParams,}
+    );
+    }
+
+    return this.http.post<TData>(
+      `/api/Chat/chat`,
+      undefined,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+        params: filteredParams,}
+    );
   }
-  return filteredParams;
-})()
-    },
-      this.http,
-      );
-    }
-   postApiChatChat2<TData = void>(
+ postApiChatChat2<TData = void>(postApiChatChat2Body: string,
+    params?: PostApiChatChat2Params, options?: HttpClientBodyOptions): Observable<TData>;
+ postApiChatChat2<TData = void>(postApiChatChat2Body: string,
+    params?: PostApiChatChat2Params, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ postApiChatChat2<TData = void>(postApiChatChat2Body: string,
+    params?: PostApiChatChat2Params, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  postApiChatChat2<TData = void>(
     postApiChatChat2Body: string,
-    params?: PostApiChatChat2Params,
- ) {
-      return customInstance<TData>(
-      {url: `/api/Chat/chat2`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: postApiChatChat2Body,
-        params: (() => {
+    params?: PostApiChatChat2Params, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
 
-  const filteredParams: Record<string, string | number | boolean | Array<string | number | boolean>> = {};
-  for (const [key, value] of Object.entries(params ?? {})) {
-    if (Array.isArray(value)) {
-      const filtered = value.filter(
-        (item) =>
-          item != null &&
-          (typeof item === 'string' ||
-            typeof item === 'number' ||
-            typeof item === 'boolean'),
-      ) as Array<string | number | boolean>;
-      if (filtered.length) {
-        filteredParams[key] = filtered;
-      }
-    } else if (
-      value != null &&
-      (typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean')
-    ) {
-      filteredParams[key] = value;
+    if (options?.observe === 'events') {
+      return this.http.post<TData>(
+      `/api/Chat/chat2`,
+      postApiChatChat2Body,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+        params: filteredParams,}
+    );
     }
+
+    if (options?.observe === 'response') {
+      return this.http.post<TData>(
+      `/api/Chat/chat2`,
+      postApiChatChat2Body,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+        params: filteredParams,}
+    );
+    }
+
+    return this.http.post<TData>(
+      `/api/Chat/chat2`,
+      postApiChatChat2Body,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+        params: filteredParams,}
+    );
   }
-  return filteredParams;
-})()
-    },
-      this.http,
-      );
-    }
-  };
+};
 

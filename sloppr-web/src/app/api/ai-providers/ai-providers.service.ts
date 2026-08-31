@@ -5,13 +5,24 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
-  HttpClient
+  HttpClient,
+  HttpHeaders,
+  HttpResponse as AngularHttpResponse
+} from '@angular/common/http';
+import type {
+  HttpContext,
+  HttpEvent,
+  HttpParams
 } from '@angular/common/http';
 
 import {
   Injectable,
   inject
 } from '@angular/core';
+
+import {
+  Observable
+} from 'rxjs';
 
 import type {
   AiModelMinimalDTO,
@@ -21,10 +32,108 @@ import type {
   GetApiAiProvidersHealthParams
 } from '../model';
 
-import { customInstance } from '.././custom-instance';
 
 
+interface HttpClientOptions {
+  readonly headers?: HttpHeaders | Record<string, string | string[]>;
+  readonly context?: HttpContext;
+  readonly params?:
+        | HttpParams
+      | Record<string, string | number | boolean | Array<string | number | boolean>>;
+  readonly reportProgress?: boolean;
+  readonly withCredentials?: boolean;
+  readonly credentials?: RequestCredentials;
+  readonly keepalive?: boolean;
+  readonly priority?: RequestPriority;
+  readonly cache?: RequestCache;
+  readonly mode?: RequestMode;
+  readonly redirect?: RequestRedirect;
+  readonly referrer?: string;
+  readonly integrity?: string;
+  readonly referrerPolicy?: ReferrerPolicy;
+  readonly transferCache?: {includeHeaders?: string[]} | boolean;
+  readonly timeout?: number;
+}
 
+type HttpClientBodyOptions = HttpClientOptions & {
+  readonly observe?: 'body';
+};
+
+type HttpClientEventOptions = HttpClientOptions & {
+  readonly observe: 'events';
+};
+
+type HttpClientResponseOptions = HttpClientOptions & {
+  readonly observe: 'response';
+};
+
+type HttpClientObserveOptions = HttpClientOptions & {
+  readonly observe?: 'body' | 'events' | 'response';
+};
+
+type AngularHttpParamValue = string | number | boolean | Array<string | number | boolean>;
+type AngularHttpParamValueWithNullable = AngularHttpParamValue | null;
+
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys?: ReadonlySet<string>,
+  preserveRequiredNullables?: false,
+  passthroughKeys?: undefined,
+): Record<string, AngularHttpParamValue>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> | undefined,
+  preserveRequiredNullables: true,
+  passthroughKeys?: undefined,
+): Record<string, AngularHttpParamValueWithNullable>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> | undefined,
+  preserveRequiredNullables: boolean | undefined,
+  passthroughKeys: ReadonlySet<string>,
+): Record<string, unknown>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> = new Set(),
+  preserveRequiredNullables = false,
+  passthroughKeys: ReadonlySet<string> = new Set(),
+): Record<string, unknown> {
+  const filteredParams: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (passthroughKeys.has(key)) {
+      if (value !== undefined) {
+        filteredParams[key] = value;
+      }
+      continue;
+    }
+    if (Array.isArray(value)) {
+      const filtered = value.filter(
+        (item) =>
+          item != null &&
+          (typeof item === 'string' ||
+            typeof item === 'number' ||
+            typeof item === 'boolean'),
+      ) as Array<string | number | boolean>;
+      if (filtered.length) {
+        filteredParams[key] = filtered;
+      }
+    } else if (value === null && requiredNullableKeys.has(key)) {
+      // With a paramsSerializer (preserveRequiredNullables) the literal null
+      // is passed through for it to consume; without one, emit an empty
+      // string so the required key still reaches the wire as `?key=`
+      // instead of being silently dropped. See #3712.
+      filteredParams[key] = preserveRequiredNullables ? null : '';
+    } else if (
+      value != null &&
+      (typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean')
+    ) {
+      filteredParams[key] = value;
+    }
+  }
+  return filteredParams;
+}
 
 
 
@@ -87,117 +196,365 @@ export const PostApiAiProvidersIdHealthAccept = {
 @Injectable({ providedIn: 'root' })
 export class AiProvidersService {
   private readonly http = inject(HttpClient);
- getApiAiProviders<TData = AiProvider[]>(
+ getApiAiProviders(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiAiProviders(accept: 'application/json', options?: HttpClientOptions): Observable<AiProvider[]>;
+  getApiAiProviders(accept: 'text/json', options?: HttpClientOptions): Observable<AiProvider[]>;
+  getApiAiProviders(accept?: GetApiAiProvidersAccept, options?: HttpClientOptions): Observable<AiProvider[] | string>;
+  getApiAiProviders(
+    accept: GetApiAiProvidersAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<AiProvider[] | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiProviders`, method: 'GET'
-    },
-      this.http,
-      );
-    }
-   postApiAiProviders<TData = AiProvider>(
-    aiProvider: AiProvider,
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiProviders`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: aiProvider
-    },
-      this.http,
-      );
-    }
-   getApiAiProvidersInactive<TData = AiProvider[]>(
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.get<AiProvider[]>(`/api/AiProviders`, {
+        ...options,
+        responseType: 'json',
+        headers,
 
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiProviders/inactive`, method: 'GET'
-    },
-      this.http,
-      );
-    }
-   getApiAiProvidersId<TData = AiProviderDTO>(
-    id: number | string,
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiProviders/${id}`, method: 'GET'
-    },
-      this.http,
-      );
-    }
-   putApiAiProvidersId<TData = void>(
-    id: number | string,
-    aiProvider: AiProvider,
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiProviders/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: aiProvider
-    },
-      this.http,
-      );
-    }
-   deleteApiAiProvidersId<TData = void>(
-    id: number | string,
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiProviders/${id}`, method: 'DELETE'
-    },
-      this.http,
-      );
-    }
-   getApiAiProvidersIdDiscoverModels<TData = AiModelMinimalDTO[]>(
-    id: number | string,
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiProviders/${id}/discover-models`, method: 'GET'
-    },
-      this.http,
-      );
-    }
-   getApiAiProvidersHealth<TData = AiProviderHealthDTO>(
-    params?: GetApiAiProvidersHealthParams,
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiProviders/health`, method: 'GET',
-        params: (() => {
 
-  const filteredParams: Record<string, string | number | boolean | Array<string | number | boolean>> = {};
-  for (const [key, value] of Object.entries(params ?? {})) {
-    if (Array.isArray(value)) {
-      const filtered = value.filter(
-        (item) =>
-          item != null &&
-          (typeof item === 'string' ||
-            typeof item === 'number' ||
-            typeof item === 'boolean'),
-      ) as Array<string | number | boolean>;
-      if (filtered.length) {
-        filteredParams[key] = filtered;
-      }
-    } else if (
-      value != null &&
-      (typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean')
-    ) {
-      filteredParams[key] = value;
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.get(`/api/AiProviders`, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
     }
+
+    return this.http.get<AiProvider[]>(`/api/AiProviders`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
   }
-  return filteredParams;
-})()
-    },
-      this.http,
-      );
+ postApiAiProviders(aiProvider: AiProvider,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  postApiAiProviders(aiProvider: AiProvider,
+    accept: 'application/json', options?: HttpClientOptions): Observable<AiProvider>;
+  postApiAiProviders(aiProvider: AiProvider,
+    accept: 'text/json', options?: HttpClientOptions): Observable<AiProvider>;
+  postApiAiProviders(aiProvider: AiProvider,
+    accept?: PostApiAiProvidersAccept, options?: HttpClientOptions): Observable<AiProvider | string>;
+  postApiAiProviders(
+    aiProvider: AiProvider,
+    accept: PostApiAiProvidersAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<AiProvider | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.post<AiProvider>(`/api/AiProviders`, aiProvider, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.post(`/api/AiProviders`, aiProvider, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
     }
-   postApiAiProvidersIdHealth<TData = AiProviderHealthDTO>(
+
+    return this.http.post<AiProvider>(`/api/AiProviders`, aiProvider, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+  }
+ getApiAiProvidersInactive(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiAiProvidersInactive(accept: 'application/json', options?: HttpClientOptions): Observable<AiProvider[]>;
+  getApiAiProvidersInactive(accept: 'text/json', options?: HttpClientOptions): Observable<AiProvider[]>;
+  getApiAiProvidersInactive(accept?: GetApiAiProvidersInactiveAccept, options?: HttpClientOptions): Observable<AiProvider[] | string>;
+  getApiAiProvidersInactive(
+    accept: GetApiAiProvidersInactiveAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<AiProvider[] | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.get<AiProvider[]>(`/api/AiProviders/inactive`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.get(`/api/AiProviders/inactive`, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
+    }
+
+    return this.http.get<AiProvider[]>(`/api/AiProviders/inactive`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+  }
+ getApiAiProvidersId(id: number | string,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiAiProvidersId(id: number | string,
+    accept: 'application/json', options?: HttpClientOptions): Observable<AiProviderDTO>;
+  getApiAiProvidersId(id: number | string,
+    accept: 'text/json', options?: HttpClientOptions): Observable<AiProviderDTO>;
+  getApiAiProvidersId(id: number | string,
+    accept?: GetApiAiProvidersIdAccept, options?: HttpClientOptions): Observable<AiProviderDTO | string>;
+  getApiAiProvidersId(
     id: number | string,
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiProviders/${id}/health`, method: 'POST'
-    },
-      this.http,
-      );
+    accept: GetApiAiProvidersIdAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<AiProviderDTO | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.get<AiProviderDTO>(`/api/AiProviders/${id}`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.get(`/api/AiProviders/${id}`, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
     }
-  };
+
+    return this.http.get<AiProviderDTO>(`/api/AiProviders/${id}`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+  }
+ putApiAiProvidersId<TData = void>(id: number | string,
+    aiProvider: AiProvider, options?: HttpClientBodyOptions): Observable<TData>;
+ putApiAiProvidersId<TData = void>(id: number | string,
+    aiProvider: AiProvider, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ putApiAiProvidersId<TData = void>(id: number | string,
+    aiProvider: AiProvider, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  putApiAiProvidersId<TData = void>(
+    id: number | string,
+    aiProvider: AiProvider, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.put<TData>(
+      `/api/AiProviders/${id}`,
+      aiProvider,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.put<TData>(
+      `/api/AiProviders/${id}`,
+      aiProvider,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.put<TData>(
+      `/api/AiProviders/${id}`,
+      aiProvider,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+ deleteApiAiProvidersId<TData = void>(id: number | string, options?: HttpClientBodyOptions): Observable<TData>;
+ deleteApiAiProvidersId<TData = void>(id: number | string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ deleteApiAiProvidersId<TData = void>(id: number | string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  deleteApiAiProvidersId<TData = void>(
+    id: number | string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.delete<TData>(
+      `/api/AiProviders/${id}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.delete<TData>(
+      `/api/AiProviders/${id}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.delete<TData>(
+      `/api/AiProviders/${id}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+ getApiAiProvidersIdDiscoverModels(id: number | string,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiAiProvidersIdDiscoverModels(id: number | string,
+    accept: 'application/json', options?: HttpClientOptions): Observable<AiModelMinimalDTO[]>;
+  getApiAiProvidersIdDiscoverModels(id: number | string,
+    accept: 'text/json', options?: HttpClientOptions): Observable<AiModelMinimalDTO[]>;
+  getApiAiProvidersIdDiscoverModels(id: number | string,
+    accept?: GetApiAiProvidersIdDiscoverModelsAccept, options?: HttpClientOptions): Observable<AiModelMinimalDTO[] | string>;
+  getApiAiProvidersIdDiscoverModels(
+    id: number | string,
+    accept: GetApiAiProvidersIdDiscoverModelsAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<AiModelMinimalDTO[] | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.get<AiModelMinimalDTO[]>(`/api/AiProviders/${id}/discover-models`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.get(`/api/AiProviders/${id}/discover-models`, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
+    }
+
+    return this.http.get<AiModelMinimalDTO[]>(`/api/AiProviders/${id}/discover-models`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+  }
+ getApiAiProvidersHealth(accept: 'text/plain',
+    params?: GetApiAiProvidersHealthParams, options?: HttpClientOptions): Observable<string>;
+  getApiAiProvidersHealth(accept: 'application/json',
+    params?: GetApiAiProvidersHealthParams, options?: HttpClientOptions): Observable<AiProviderHealthDTO>;
+  getApiAiProvidersHealth(accept: 'text/json',
+    params?: GetApiAiProvidersHealthParams, options?: HttpClientOptions): Observable<AiProviderHealthDTO>;
+  getApiAiProvidersHealth(accept?: GetApiAiProvidersHealthAccept,
+    params?: GetApiAiProvidersHealthParams, options?: HttpClientOptions): Observable<AiProviderHealthDTO | string>;
+  getApiAiProvidersHealth(
+    accept: GetApiAiProvidersHealthAccept = 'application/json',
+    params?: GetApiAiProvidersHealthParams,
+    options?: HttpClientOptions
+  ): Observable<AiProviderHealthDTO | string> {
+    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
+
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.get<AiProviderHealthDTO>(`/api/AiProviders/health`, {
+        ...options,
+        responseType: 'json',
+        headers,
+        params: filteredParams,
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.get(`/api/AiProviders/health`, {
+        ...options,
+        responseType: 'text',
+        headers,
+        params: filteredParams,
+
+      }) as Observable<string>;
+    }
+
+    return this.http.get<AiProviderHealthDTO>(`/api/AiProviders/health`, {
+        ...options,
+        responseType: 'json',
+        headers,
+        params: filteredParams,
+
+      });
+  }
+ postApiAiProvidersIdHealth(id: number | string,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  postApiAiProvidersIdHealth(id: number | string,
+    accept: 'application/json', options?: HttpClientOptions): Observable<AiProviderHealthDTO>;
+  postApiAiProvidersIdHealth(id: number | string,
+    accept: 'text/json', options?: HttpClientOptions): Observable<AiProviderHealthDTO>;
+  postApiAiProvidersIdHealth(id: number | string,
+    accept?: PostApiAiProvidersIdHealthAccept, options?: HttpClientOptions): Observable<AiProviderHealthDTO | string>;
+  postApiAiProvidersIdHealth(
+    id: number | string,
+    accept: PostApiAiProvidersIdHealthAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<AiProviderHealthDTO | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.post<AiProviderHealthDTO>(`/api/AiProviders/${id}/health`, undefined, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.post(`/api/AiProviders/${id}/health`, undefined, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
+    }
+
+    return this.http.post<AiProviderHealthDTO>(`/api/AiProviders/${id}/health`, undefined, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+  }
+};
 

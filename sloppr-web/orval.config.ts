@@ -11,11 +11,7 @@ export default defineConfig({
       override: {
         angular: {
           provideIn: 'root',
-        },
-        mutator: {
-          path: './src/app/api/custom-instance.ts',
-          name: 'customInstance',
-        },
+        }
       },
     },
   },

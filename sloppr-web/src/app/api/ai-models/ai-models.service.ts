@@ -5,7 +5,14 @@
  * OpenAPI spec version: 1.0.0
  */
 import {
-  HttpClient
+  HttpClient,
+  HttpHeaders,
+  HttpResponse as AngularHttpResponse
+} from '@angular/common/http';
+import type {
+  HttpContext,
+  HttpEvent,
+  HttpParams
 } from '@angular/common/http';
 
 import {
@@ -13,14 +20,54 @@ import {
   inject
 } from '@angular/core';
 
+import {
+  Observable
+} from 'rxjs';
+
 import type {
   AiModel,
   AiModelDTO,
   AiModelMinimalDTO
 } from '../model';
 
-import { customInstance } from '.././custom-instance';
 
+
+interface HttpClientOptions {
+  readonly headers?: HttpHeaders | Record<string, string | string[]>;
+  readonly context?: HttpContext;
+  readonly params?:
+        | HttpParams
+      | Record<string, string | number | boolean | Array<string | number | boolean>>;
+  readonly reportProgress?: boolean;
+  readonly withCredentials?: boolean;
+  readonly credentials?: RequestCredentials;
+  readonly keepalive?: boolean;
+  readonly priority?: RequestPriority;
+  readonly cache?: RequestCache;
+  readonly mode?: RequestMode;
+  readonly redirect?: RequestRedirect;
+  readonly referrer?: string;
+  readonly integrity?: string;
+  readonly referrerPolicy?: ReferrerPolicy;
+  readonly transferCache?: {includeHeaders?: string[]} | boolean;
+  readonly timeout?: number;
+}
+
+type HttpClientBodyOptions = HttpClientOptions & {
+  readonly observe?: 'body';
+};
+
+type HttpClientEventOptions = HttpClientOptions & {
+  readonly observe: 'events';
+};
+
+type HttpClientResponseOptions = HttpClientOptions & {
+  readonly observe: 'response';
+};
+
+type HttpClientObserveOptions = HttpClientOptions & {
+  readonly observe?: 'body' | 'events' | 'response';
+};
 
 
 
@@ -69,75 +116,277 @@ export const PostApiAiModelsBatchAccept = {
 @Injectable({ providedIn: 'root' })
 export class AiModelsService {
   private readonly http = inject(HttpClient);
- getApiAiModels<TData = AiModel[]>(
+ getApiAiModels(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiAiModels(accept: 'application/json', options?: HttpClientOptions): Observable<AiModel[]>;
+  getApiAiModels(accept: 'text/json', options?: HttpClientOptions): Observable<AiModel[]>;
+  getApiAiModels(accept?: GetApiAiModelsAccept, options?: HttpClientOptions): Observable<AiModel[] | string>;
+  getApiAiModels(
+    accept: GetApiAiModelsAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<AiModel[] | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiModels`, method: 'GET'
-    },
-      this.http,
-      );
-    }
-   postApiAiModels<TData = AiModel>(
-    aiModel: AiModel,
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiModels`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: aiModel
-    },
-      this.http,
-      );
-    }
-   getApiAiModelsInactive<TData = AiModel[]>(
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.get<AiModel[]>(`/api/AiModels`, {
+        ...options,
+        responseType: 'json',
+        headers,
 
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiModels/inactive`, method: 'GET'
-    },
-      this.http,
-      );
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.get(`/api/AiModels`, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
     }
-   getApiAiModelsId<TData = AiModelDTO>(
-    id: number | string,
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiModels/${id}`, method: 'GET'
-    },
-      this.http,
-      );
-    }
-   putApiAiModelsId<TData = void>(
-    id: number | string,
+
+    return this.http.get<AiModel[]>(`/api/AiModels`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+  }
+ postApiAiModels(aiModel: AiModel,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  postApiAiModels(aiModel: AiModel,
+    accept: 'application/json', options?: HttpClientOptions): Observable<AiModel>;
+  postApiAiModels(aiModel: AiModel,
+    accept: 'text/json', options?: HttpClientOptions): Observable<AiModel>;
+  postApiAiModels(aiModel: AiModel,
+    accept?: PostApiAiModelsAccept, options?: HttpClientOptions): Observable<AiModel | string>;
+  postApiAiModels(
     aiModel: AiModel,
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiModels/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: aiModel
-    },
-      this.http,
-      );
+    accept: PostApiAiModelsAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<AiModel | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.post<AiModel>(`/api/AiModels`, aiModel, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.post(`/api/AiModels`, aiModel, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
     }
-   deleteApiAiModelsId<TData = void>(
+
+    return this.http.post<AiModel>(`/api/AiModels`, aiModel, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+  }
+ getApiAiModelsInactive(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiAiModelsInactive(accept: 'application/json', options?: HttpClientOptions): Observable<AiModel[]>;
+  getApiAiModelsInactive(accept: 'text/json', options?: HttpClientOptions): Observable<AiModel[]>;
+  getApiAiModelsInactive(accept?: GetApiAiModelsInactiveAccept, options?: HttpClientOptions): Observable<AiModel[] | string>;
+  getApiAiModelsInactive(
+    accept: GetApiAiModelsInactiveAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<AiModel[] | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.get<AiModel[]>(`/api/AiModels/inactive`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.get(`/api/AiModels/inactive`, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
+    }
+
+    return this.http.get<AiModel[]>(`/api/AiModels/inactive`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+  }
+ getApiAiModelsId(id: number | string,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiAiModelsId(id: number | string,
+    accept: 'application/json', options?: HttpClientOptions): Observable<AiModelDTO>;
+  getApiAiModelsId(id: number | string,
+    accept: 'text/json', options?: HttpClientOptions): Observable<AiModelDTO>;
+  getApiAiModelsId(id: number | string,
+    accept?: GetApiAiModelsIdAccept, options?: HttpClientOptions): Observable<AiModelDTO | string>;
+  getApiAiModelsId(
     id: number | string,
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiModels/${id}`, method: 'DELETE'
-    },
-      this.http,
-      );
+    accept: GetApiAiModelsIdAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<AiModelDTO | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.get<AiModelDTO>(`/api/AiModels/${id}`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.get(`/api/AiModels/${id}`, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
     }
-   postApiAiModelsBatch<TData = number | string>(
+
+    return this.http.get<AiModelDTO>(`/api/AiModels/${id}`, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+  }
+ putApiAiModelsId<TData = void>(id: number | string,
+    aiModel: AiModel, options?: HttpClientBodyOptions): Observable<TData>;
+ putApiAiModelsId<TData = void>(id: number | string,
+    aiModel: AiModel, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ putApiAiModelsId<TData = void>(id: number | string,
+    aiModel: AiModel, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  putApiAiModelsId<TData = void>(
+    id: number | string,
+    aiModel: AiModel, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.put<TData>(
+      `/api/AiModels/${id}`,
+      aiModel,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.put<TData>(
+      `/api/AiModels/${id}`,
+      aiModel,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.put<TData>(
+      `/api/AiModels/${id}`,
+      aiModel,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+ deleteApiAiModelsId<TData = void>(id: number | string, options?: HttpClientBodyOptions): Observable<TData>;
+ deleteApiAiModelsId<TData = void>(id: number | string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ deleteApiAiModelsId<TData = void>(id: number | string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  deleteApiAiModelsId<TData = void>(
+    id: number | string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.delete<TData>(
+      `/api/AiModels/${id}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.delete<TData>(
+      `/api/AiModels/${id}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.delete<TData>(
+      `/api/AiModels/${id}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+ postApiAiModelsBatch(aiModelMinimalDTO: AiModelMinimalDTO[],
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  postApiAiModelsBatch(aiModelMinimalDTO: AiModelMinimalDTO[],
+    accept: 'application/json', options?: HttpClientOptions): Observable<number | string>;
+  postApiAiModelsBatch(aiModelMinimalDTO: AiModelMinimalDTO[],
+    accept: 'text/json', options?: HttpClientOptions): Observable<number | string>;
+  postApiAiModelsBatch(aiModelMinimalDTO: AiModelMinimalDTO[],
+    accept?: PostApiAiModelsBatchAccept, options?: HttpClientOptions): Observable<number | string | string>;
+  postApiAiModelsBatch(
     aiModelMinimalDTO: AiModelMinimalDTO[],
- ) {
-      return customInstance<TData>(
-      {url: `/api/AiModels/batch`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: aiModelMinimalDTO
-    },
-      this.http,
-      );
+    accept: PostApiAiModelsBatchAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<number | string | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.post<number | string>(`/api/AiModels/batch`, aiModelMinimalDTO, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.post(`/api/AiModels/batch`, aiModelMinimalDTO, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
     }
-  };
+
+    return this.http.post<number | string>(`/api/AiModels/batch`, aiModelMinimalDTO, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+  }
+};
 
