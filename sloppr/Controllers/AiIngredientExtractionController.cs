@@ -5,6 +5,7 @@ using sloppr.Settings;
 using Microsoft.Extensions.AI;
 using sloppr.AI.DTOs;
 using sloppr.AI;
+using sloppr.DTOs;
 
 namespace sloppr.Controllers
 {
@@ -35,7 +36,9 @@ namespace sloppr.Controllers
             };
 
             IChatClient client = factory.Create(config);
-            var responses = new List<ChatResponse>();
+
+            var dto = new IngredientExtractionResponse(model, systemPrompt);
+
             foreach (var challenge in challenges)
             {
                 List<ChatMessage> messages = new()
@@ -43,10 +46,11 @@ namespace sloppr.Controllers
                     new ChatMessage(ChatRole.System, systemPrompt),
                     new ChatMessage(ChatRole.User, challenge.Prompt),
                 };
-                var response = await client.GetResponseAsync(messages);
-                responses.Add(response);
+                ChatResponse? response = await client.GetResponseAsync(messages);
+                dto.Challenges.Add(new Challenge(challenge.Prompt, challenge.ExpectedResponse,
+                                        response.Text, response.Usage.InputTokenCount, response.Usage.OutputTokenCount));
             }
-            return Ok(responses);
+            return Ok(dto);
         }
     }
 }

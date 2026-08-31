@@ -13,10 +13,8 @@ public class Recipe : BaseModel
     public int CookTimeMinutes { get; set; }
     public int Difficulty { get; set; }
 
-    public List<RecipeIngredient> Ingredients { get; set; }
-
-    public List<RecipeStep> Steps { get; set; }
-
+    //public List<RecipeIngredient> Ingredients { get; set; }
+    //public List<RecipeStep> Steps { get; set; }
 }
 
 public class RecipeIngredient
