@@ -1,0 +1,23 @@
+<h2>Active AI Models</h2>
+<table *ngIf="models.length > 0; else noModels">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Identifier</th>
+      <th>Provider</th>
+      <th>Context Window</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let model of models">
+      <td>{{ model.name }}</td>
+      <td>{{ model.identifier }}</td>
+      <td>{{ model.aiProvider?.name || 'N/A' }}</td>
+      <td>{{ model.contextWindow || 'N/A' }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #noModels>
+  <p>No active AI models found.</p>
+</ng-template>
