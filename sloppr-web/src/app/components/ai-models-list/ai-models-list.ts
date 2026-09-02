@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { AiModelsService } from '../../api/ai-models/ai-models.service';
 import { AiModel } from '../../api/model';
 import { CommonModule } from '@angular/common';
@@ -10,15 +11,11 @@ import { CommonModule } from '@angular/common';
   templateUrl: './ai-models-list.html',
   styleUrls: ['./ai-models-list.css']
 })
-export class AiModelsListComponent implements OnInit {
+export class AiModelsListComponent {
   private readonly aiModelsService = inject(AiModelsService);
-  models: AiModel[] = [];
 
-  ngOnInit() {
-    this.aiModelsService.getApiAiModels('application/json').subscribe((data) => {
-      if (Array.isArray(data)) {
-        this.models = data;
-      }
-    });
-  }
+  models = toSignal(
+    this.aiModelsService.getApiAiModels('application/json'),
+    { initialValue: [] as AiModel[] }
+  );
 }
