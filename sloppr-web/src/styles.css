@@ -1,3 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+
+@layer base {
+  table {
+    @apply w-full border-collapse text-sm;
+  }
+
+  th {
+    @apply text-left font-semibold px-4 py-2 border-b border-gray-200 bg-gray-50;
+  }
+
+  td {
+    @apply px-4 py-2 border-b border-gray-100;
+  }
+
+  tbody tr:hover {
+    @apply bg-gray-50;
+  }
+}
