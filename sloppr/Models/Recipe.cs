@@ -15,6 +15,9 @@ public class Recipe : BaseModel
 
     //public List<RecipeIngredient> Ingredients { get; set; }
     //public List<RecipeStep> Steps { get; set; }
+
+    public int? MealIdeaId { get; set; }
+    public MealIdea? MealIdea { get; set; }
 }
 
 public class RecipeIngredient
