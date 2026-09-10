@@ -17,3 +17,10 @@
 ### Q: How do I install it?
 
 **A:** sloppr will eventually be released as a Docker container.
+
+## Developer Notes
+
+- VSCode is the preferred IDE
+- database migration command: `dotnet ef migrations add <MigrationName>`
+
+

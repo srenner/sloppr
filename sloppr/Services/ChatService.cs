@@ -15,13 +15,19 @@ public class ChatService
     private readonly AISettings _aiSettings;
     private readonly IAiModelService _modelService;
     private readonly IChatClientFactory _factory;
+    private readonly ApplicationSettingService _appSettingService;
 
-    public ChatService(IOptions<ProviderTypeSettings> options, IOptions<AISettings> aiSettings, IAiModelService modelService, IChatClientFactory factory)
+    public ChatService(IOptions<ProviderTypeSettings> options,
+                        IOptions<AISettings> aiSettings,
+                        IAiModelService modelService,
+                        IChatClientFactory factory,
+                        ApplicationSettingService appSettingService)
     {
         _providerTypeSettings = options.Value; // unwrap the actual settings object
         _aiSettings = aiSettings.Value;
         _modelService = modelService;
         _factory = factory;
+        _appSettingService = appSettingService;
     }
 
     public string GetChatPath(AiProviderType type)
@@ -80,7 +86,7 @@ public class ChatService
 
     public async Task<string[]> ExtractIngredients(string prompt)
     {
-        var model = await _modelService.GetByIdWithProviderAsync(20);
+        var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.ExtractionModelId.Value);
         if (model != null)
         {
             var ingredientPrompt = _aiSettings.DefaultIngredientExtractionPrompt;
@@ -110,13 +116,12 @@ public class ChatService
         }
     }
 
-    public async Task<string[]> GenerateIdeas(string prompt, string[] keyIngredients)
+    public async Task<string[]> GenerateIdeas(string userPrompt, string[] keyIngredients)
     {
-        var model = await _modelService.GetByIdWithProviderAsync(20);
+        var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.IdeaModelId.Value);
         if (model != null)
         {
-            var ingredientPrompt = _aiSettings.IdeaGenerationPrompt
-                .Replace("{keyIngredients}", string.Join(", ", keyIngredients));
+            var ideaPrompt = _aiSettings.IdeaGenerationPrompt;
 
             var config = new ChatClientConfig
             {
@@ -130,8 +135,8 @@ public class ChatService
 
             List<ChatMessage> messages = new()
                 {
-                    new ChatMessage(ChatRole.System, ingredientPrompt),
-                    new ChatMessage(ChatRole.User, prompt),
+                    new ChatMessage(ChatRole.System, ideaPrompt),
+                    new ChatMessage(ChatRole.User, string.Join(", ", keyIngredients)),
                 };
             ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
             return JsonSerializer.Deserialize<string[]>(response.Text);

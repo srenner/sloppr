@@ -37,6 +37,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<ChatService>();
 
+builder.Services.AddSingleton<ApplicationSettingService>();
 builder.Services.AddSingleton<IChatClientFactory, ChatClientFactory>();
 
 builder.Services.AddScoped<IModelDiscoveryService, ModelDiscoveryService>();
@@ -50,7 +51,11 @@ builder.Services.AddScoped<AiProviderMapper>();
 builder.Services.AddScoped<IAiModelService, AiModelService>();
 builder.Services.AddScoped<AiModelMapper>();
 
+builder.Services.AddScoped<MealIdeaMapper>();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -70,6 +75,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var settingsService = scope.ServiceProvider
+        .GetRequiredService<ApplicationSettingService>();
+    await settingsService.Load();
+}
 
 if (app.Environment.IsDevelopment())
 {
