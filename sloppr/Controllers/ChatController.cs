@@ -9,7 +9,10 @@ namespace sloppr.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ChatController(ChatService chatService, IAiModelService modelService, IChatClientFactory factory) : ControllerBase
+    public class ChatController(ChatService chatService,
+                                IAiModelService modelService,
+                                IChatClientFactory factory,
+                                IKeyIngredientService keyIngredientService) : ControllerBase
     {
         /// <remarks>
         /// TEMPORARY — for local testing only. Not part of core functionality. Safe to delete.
@@ -22,10 +25,13 @@ namespace sloppr.Controllers
             return Ok();
         }
 
-        [HttpGet("idea")]
+        [HttpPost("idea")]
         public async Task<ActionResult> GetIdeas(string prompt)
         {
             var ingredients = await chatService.ExtractIngredients(prompt);
+
+            var ingredientDTOs = await keyIngredientService.Upsert(ingredients);
+
             var ideas = await chatService.GenerateIdeas(prompt, ingredients);
             return Ok(ideas);
         }

@@ -90,8 +90,6 @@ public class ChatService
         if (model != null)
         {
             var ingredientPrompt = _aiSettings.DefaultIngredientExtractionPrompt;
-            var ideaPrompt = _aiSettings.IdeaGenerationPrompt;
-
             var config = new ChatClientConfig
             {
                 ProviderType = model.AiProvider.ProviderType,
@@ -99,9 +97,7 @@ public class ChatService
                 Endpoint = model.AiProvider.BaseUrl,
                 ApiKey = null // todo,
             };
-
             IChatClient client = _factory.Create(config);
-
             List<ChatMessage> messages = new()
                 {
                     new ChatMessage(ChatRole.System, ingredientPrompt),
@@ -121,8 +117,6 @@ public class ChatService
         var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.IdeaModelId.Value);
         if (model != null)
         {
-            var ideaPrompt = _aiSettings.IdeaGenerationPrompt;
-
             var config = new ChatClientConfig
             {
                 ProviderType = model.AiProvider.ProviderType,
@@ -135,7 +129,7 @@ public class ChatService
 
             List<ChatMessage> messages = new()
                 {
-                    new ChatMessage(ChatRole.System, ideaPrompt),
+                    new ChatMessage(ChatRole.System, _aiSettings.IdeaGenerationPrompt),
                     new ChatMessage(ChatRole.User, string.Join(", ", keyIngredients)),
                 };
             ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });

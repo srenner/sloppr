@@ -1,3 +1,4 @@
+using sloppr.DTOs;
 using sloppr.Models;
 
 namespace sloppr.Services;
@@ -8,4 +9,5 @@ public interface IKeyIngredientService
     public Task<KeyIngredient?> GetByIdAsync(int id);
     public Task<IEnumerable<KeyIngredient>> GetAllAsync();
     public Task<KeyIngredient> UpdateAsync(KeyIngredient ingredient);
+    public Task<ICollection<KeyIngredientDTO>> Upsert(string[] names);
 }
