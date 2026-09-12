@@ -91,22 +91,8 @@ public class ChatService
         var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.ExtractionModelId.Value);
         if (model != null)
         {
-            var ingredientPrompt = _aiSettings.DefaultIngredientExtractionPrompt;
-            var config = new ChatClientConfig
-            {
-                ProviderType = model.AiProvider.ProviderType,
-                ModelName = model.Identifier,
-                Endpoint = model.AiProvider.BaseUrl,
-                ApiKey = null // todo,
-            };
-            IChatClient client = _factory.Create(config);
-            List<ChatMessage> messages = new()
-                {
-                    new ChatMessage(ChatRole.System, ingredientPrompt),
-                    new ChatMessage(ChatRole.User, prompt),
-                };
-            ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
-            return JsonSerializer.Deserialize<string[]>(response.Text);
+            var systemPrompt = _aiSettings.DefaultIngredientExtractionPrompt;
+            return await ExtractArray(systemPrompt, prompt, model);
         }
         else
         {
