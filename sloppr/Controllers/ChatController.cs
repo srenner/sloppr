@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.AI;
 using sloppr.AI;
 using sloppr.AI.DTOs;
+using sloppr.DTOs;
 using sloppr.Enums;
 using sloppr.Services;
 
@@ -29,10 +30,13 @@ namespace sloppr.Controllers
         public async Task<ActionResult> GetIdeas(string prompt)
         {
             var ingredients = await chatService.ExtractIngredients(prompt);
+            await keyIngredientService.Upsert(ingredients);
 
-            var ingredientDTOs = await keyIngredientService.Upsert(ingredients);
+            var cuisines = await chatService.ExtractCuisines(prompt);
 
             var ideas = await chatService.GenerateIdeas(prompt, ingredients);
+            var dtos = new List<MealIdeaDTO>();
+
             return Ok(ideas);
         }
     }

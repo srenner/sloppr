@@ -4,7 +4,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using sloppr.AI;
 using sloppr.AI.DTOs;
+using sloppr.DTOs;
 using sloppr.Enums;
+using sloppr.Models;
 using sloppr.Settings;
 
 namespace sloppr.Services;
@@ -110,6 +112,41 @@ public class ChatService
         {
             return [];
         }
+    }
+
+    public async Task<string[]> ExtractCuisines(string prompt)
+    {
+        var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.ExtractionModelId.Value);
+        if (model != null)
+        {
+            var systemPrompt = _aiSettings.DefaultCuisineExtractionPrompt;
+            return await ExtractArray(systemPrompt, prompt, model);
+        }
+        else
+        {
+            return [];
+        }
+    }
+
+    private async Task<string[]> ExtractArray(string systemPrompt, string userPrompt, AiModel model)
+    {
+        var config = new ChatClientConfig
+        {
+            ProviderType = model.AiProvider.ProviderType,
+            ModelName = model.Identifier,
+            Endpoint = model.AiProvider.BaseUrl,
+            ApiKey = null // todo,
+        };
+
+        IChatClient client = _factory.Create(config);
+        List<ChatMessage> messages = new()
+        {
+            new ChatMessage(ChatRole.System, systemPrompt),
+                new ChatMessage(ChatRole.User, userPrompt),
+        };
+
+        ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
+        return JsonSerializer.Deserialize<string[]>(response.Text);
     }
 
     public async Task<string[]> GenerateIdeas(string userPrompt, string[] keyIngredients)
