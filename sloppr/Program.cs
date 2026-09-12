@@ -45,6 +45,9 @@ builder.Services.AddScoped<IModelDiscoveryService, ModelDiscoveryService>();
 builder.Services.AddScoped<IKeyIngredientService, KeyIngredientService>();
 builder.Services.AddScoped<KeyIngredientMapper>();
 
+builder.Services.AddScoped<ICuisineService, CuisineService>();
+builder.Services.AddScoped<CuisineMapper>();
+
 builder.Services.AddScoped<IAiProviderService, AiProviderService>();
 builder.Services.AddScoped<AiProviderMapper>();
 

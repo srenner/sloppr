@@ -7,6 +7,7 @@ public class ApplicationDbContext : DbContext
 {
     public DbSet<ApplicationSetting> ApplicationSettings { get; set; }
     public DbSet<KeyIngredient> KeyIngredients { get; set; }
+    public DbSet<Cuisine> Cuisines { get; set; }
     public DbSet<Recipe> Recipes { get; set; }
     public DbSet<AiProvider> AiProviders { get; set; }
     public DbSet<AiModel> AiModels { get; set; }
@@ -20,6 +21,10 @@ public class ApplicationDbContext : DbContext
         #region Indexes
 
         modelBuilder.Entity<KeyIngredient>()
+            .HasIndex(x => x.Name)
+            .IsUnique();
+
+        modelBuilder.Entity<Cuisine>()
             .HasIndex(x => x.Name)
             .IsUnique();
 

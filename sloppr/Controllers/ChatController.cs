@@ -13,7 +13,8 @@ namespace sloppr.Controllers
     public class ChatController(ChatService chatService,
                                 IAiModelService modelService,
                                 IChatClientFactory factory,
-                                IKeyIngredientService keyIngredientService) : ControllerBase
+                                IKeyIngredientService keyIngredientService,
+                                ICuisineService cuisineService) : ControllerBase
     {
         /// <remarks>
         /// TEMPORARY — for local testing only. Not part of core functionality. Safe to delete.
@@ -33,6 +34,7 @@ namespace sloppr.Controllers
             await keyIngredientService.Upsert(ingredients);
 
             var cuisines = await chatService.ExtractCuisines(prompt);
+            await cuisineService.Upsert(cuisines);
 
             var ideas = await chatService.GenerateIdeas(prompt, ingredients);
             var dtos = new List<MealIdeaDTO>();
