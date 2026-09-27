@@ -9,9 +9,9 @@ using sloppr.AI;
 using Microsoft.AspNetCore.Http.Json;
 using System.Text.Json.Serialization;
 
-var client = new OllamaModelClient("granite4.1:3b");
-var evaluator = new ExtractionEvaluator(client);
-await evaluator.RunAsync();
+// var client = new OllamaModelClient("granite4.2:3b");
+// var evaluator = new ExtractionEvaluator(client);
+// await evaluator.RunAsync();
 
 
 var builder = WebApplication.CreateBuilder(args);
