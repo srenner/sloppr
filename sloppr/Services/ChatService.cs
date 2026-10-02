@@ -135,7 +135,7 @@ public class ChatService
         return JsonSerializer.Deserialize<string[]>(response.Text);
     }
 
-    public async Task<string[]> GenerateIdeas(string userPrompt, string[] keyIngredients)
+    public async Task<string[]> GenerateIdeas(string userPrompt, string[] keyIngredients, string[] cuisines)
     {
         var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.IdeaModelId.Value);
         if (model != null)
@@ -150,10 +150,19 @@ public class ChatService
 
             IChatClient client = _factory.Create(config);
 
+            string refinedPrompt = "Plan a meal based on the following ingredients: " + String.Join(", ", keyIngredients) + ".";
+            if (cuisines.Length > 0)
+            {
+                refinedPrompt += " User has cuisine preference: " + string.Join(", ", cuisines) + ".";
+            }
+
+            refinedPrompt += " Target difficulty of 1/3.";
+
+
             List<ChatMessage> messages = new()
                 {
                     new ChatMessage(ChatRole.System, _aiSettings.IdeaGenerationPrompt),
-                    new ChatMessage(ChatRole.User, string.Join(", ", keyIngredients)),
+                    new ChatMessage(ChatRole.User, refinedPrompt),
                 };
             ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
             return JsonSerializer.Deserialize<string[]>(response.Text);

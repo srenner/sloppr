@@ -36,7 +36,7 @@ namespace sloppr.Controllers
             var cuisines = await chatService.ExtractCuisines(prompt);
             await cuisineService.Upsert(cuisines);
 
-            var ideas = await chatService.GenerateIdeas(prompt, ingredients);
+            var ideas = await chatService.GenerateIdeas(prompt, ingredients, cuisines);
             var dtos = new List<MealIdeaDTO>();
 
             return Ok(ideas);
