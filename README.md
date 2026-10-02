@@ -16,7 +16,7 @@
 
 ### Q: How do I install it?
 
-**A:** sloppr will eventually be released as a Docker container.
+**A:** sloppr will eventually be released as a Docker image.
 
 ## Developer Notes
 
