@@ -8,19 +8,8 @@
 
 ### Q: Why do I need to install it?
 
-**A:** sloppr is a project for users who want to control their own data. Once you have it installed, the data is yours. If you plug in locally hosted Ollama LLMs (recommended), it can run completely offline. You can make code changes yourself to make sloppr fit your needs.
+**A:** sloppr is a project for users who want to control their own data, and limit their dependence on big tech companies. When it's ready, it will be released as a Docker image.
 
 ### Q: What tech does it use?
 
-**A:** sloppr is built as a modern .NET backend and modern Angular frontend. The backing database is SQLite.
-
-### Q: How do I install it?
-
-**A:** sloppr will eventually be released as a Docker image.
-
-## Developer Notes
-
-- VSCode is the preferred IDE
-- database migration command: `dotnet ef migrations add <MigrationName>`
-
-
+**A:** .NET, Angular, SQLite.
