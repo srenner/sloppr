@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.AI;
 using sloppr.AI;
-using sloppr.AI.DTOs;
 using sloppr.DTOs;
-using sloppr.Enums;
 using sloppr.Services;
 
 namespace sloppr.Controllers
