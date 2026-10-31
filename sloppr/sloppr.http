@@ -38,3 +38,17 @@ DELETE {{sloppr_HostAddress}}/api/KeyIngredients/{id}
 
 ###
 
+// AiInference endpoints
+POST {{sloppr_HostAddress}}/api/AiInference/meal-ideas
+Content-Type: application/json
+
+{
+  "prompt": "string"
+}
+
+###
+
+POST {{sloppr_HostAddress}}/api/AiInference/ingredient-extraction-challenges/{modelId}
+
+###
+

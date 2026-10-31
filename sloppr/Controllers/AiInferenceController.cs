@@ -1,24 +1,39 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
+using sloppr.AI;
+using sloppr.AI.DTOs;
+using sloppr.DTOs;
 using sloppr.Services;
 using sloppr.Settings;
-using Microsoft.Extensions.AI;
-using sloppr.AI.DTOs;
-using sloppr.AI;
-using sloppr.DTOs;
 
 namespace sloppr.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AiIngredientExtractionController(IAiModelService modelService,
-        IOptions<ProviderTypeSettings> providerTypeOptions,
-        IOptions<AISettings> aiSettings,
-        IChatClientFactory factory)
-        : ControllerBase
+    public class AiInferenceController(ChatService chatService,
+                                       IAiModelService modelService,
+                                       IChatClientFactory factory,
+                                       IKeyIngredientService keyIngredientService,
+                                       ICuisineService cuisineService,
+                                       IOptions<AISettings> aiSettings) : ControllerBase
     {
-        [HttpGet("challenge")]
-        public async Task<ActionResult> ExecuteIngredientExtractionAsync(int modelId)
+        [HttpPost("meal-ideas")]
+        public async Task<ActionResult> GenerateMealIdeasAsync([FromBody] MealIdeasRequest request)
+        {
+            var ingredients = await chatService.ExtractIngredients(request.Prompt);
+            await keyIngredientService.Upsert(ingredients);
+
+            var cuisines = await chatService.ExtractCuisines(request.Prompt);
+            await cuisineService.Upsert(cuisines);
+
+            var ideas = await chatService.GenerateIdeas(request.Prompt, ingredients, cuisines);
+
+            return Ok(ideas);
+        }
+
+        [HttpPost("ingredient-extraction-challenges/{modelId}")]
+        public async Task<ActionResult> ExecuteIngredientExtractionChallengesAsync(int modelId)
         {
             var model = await modelService.GetByIdWithProviderAsync(modelId);
 
