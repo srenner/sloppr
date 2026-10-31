@@ -38,6 +38,45 @@ DELETE {{sloppr_HostAddress}}/api/KeyIngredients/{id}
 
 ###
 
+// MealIdeas endpoints
+GET {{sloppr_HostAddress}}/api/MealIdeas/
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/MealIdeas/inactive
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/MealIdeas/{id}
+Accept: application/json
+
+###
+
+PUT {{sloppr_HostAddress}}/api/MealIdeas/{id}
+Content-Type: application/json
+
+{
+  "id": 0,
+  "name": "string"
+}
+
+###
+
+PUT {{sloppr_HostAddress}}/api/MealIdeas/{id}/approval
+Content-Type: application/json
+
+{
+  "isUserApproved": true
+}
+
+###
+
+DELETE {{sloppr_HostAddress}}/api/MealIdeas/{id}
+
+###
+
 // AiInference endpoints
 POST {{sloppr_HostAddress}}/api/AiInference/meal-ideas
 Content-Type: application/json

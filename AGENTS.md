@@ -14,6 +14,21 @@ The AI's role is narrow: **write code and suggest next steps.** Do not act beyon
 - **Ask first:** any command (build, test, format, run, lint, package managers, git, Docker, scripts); creating/renaming/moving files; config/tooling edits (`*.csproj`, `appsettings*.json`, `angular.json`, `tsconfig*.json`, `proxy.conf.json`, lockfiles, CI, `.vscode/`); dependency changes; refactors or scope creep; test changes.
 - **Never:** git writes/history rewrites; migrations; codegen or editing `sloppr-web/src/app/api/`; secrets, DB files, `sloppr/_docs/private/`; deleting files or touching paths outside the repo; weakening/skipping/deleting tests.
 - Never claim a command passed unless you ran it; say "not verified" and give the command. Stop and ask if ambiguous.
+- Always follow code standards observed within the project. Call out pattern inconsistencies early so they can be corrected.
+
+### Response style
+
+- Lead with the result or direct answer. No preamble and no restating the request.
+- Default to the shortest answer that fully resolves the ask; expand only when the user
+  says "explain", "why", or "walk me through".
+- For code changes, report only: files changed, one-line reason, verification command, and
+  next step. Do not paste full diffs or file contents unless asked.
+- Do not repeat settled decisions or plan content; point to the plan file instead.
+- Stop at the requested chunk or step. Do not preview the next one unless asked.
+- Ask at most one question per response, and only when the answer changes the
+  implementation. Bundle related choices into that question.
+- For reviews, start with the verdict ("Yes", "Mostly", "No"), then list only deviations.
+- Prefer bullets over paragraphs; use a table only when comparing options.
 
 ## Backend (`sloppr/`)
 
