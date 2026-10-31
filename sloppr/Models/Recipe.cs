@@ -1,3 +1,5 @@
+using sloppr.Recipes;
+
 namespace sloppr.Models;
 
 /// <summary>
@@ -5,30 +7,20 @@ namespace sloppr.Models;
 /// </summary>
 public class Recipe : BaseModel
 {
-
-    public string Name { get; set; }
-    public string Description { get; set; }
+    public required string Name { get; set; }
+    public required string Description { get; set; }
     public int ServingCount { get; set; }
     public int PrepTimeMinutes { get; set; }
     public int CookTimeMinutes { get; set; }
-    public int Difficulty { get; set; }
+    public int Difficulty { get; set; } = 1;
+    public string? Notes { get; set; }
 
-    //public List<RecipeIngredient> Ingredients { get; set; }
-    //public List<RecipeStep> Steps { get; set; }
+    public string FormatKey { get; set; } = RecipeFormat.Key;
+    public int FormatVersion { get; set; } = RecipeFormat.Version;
+
+    public ICollection<RecipeIngredient> Ingredients { get; set; } = [];
+    public ICollection<RecipeStep> Steps { get; set; } = [];
 
     public int? MealIdeaId { get; set; }
     public MealIdea? MealIdea { get; set; }
 }
-
-public class RecipeIngredient
-{
-    public double Quantity { get; set; }
-    public string UnitOfMeasure { get; set; }
-    public string Name { get; set; }
-}
-
-public class RecipeStep
-{
-
-}
-

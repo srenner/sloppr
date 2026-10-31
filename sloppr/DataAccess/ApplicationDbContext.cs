@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using sloppr.Models;
+using sloppr.Recipes;
 
 namespace sloppr.DataAccess;
 
@@ -10,6 +11,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<Cuisine> Cuisines { get; set; }
     public DbSet<MealIdea> MealIdeas { get; set; }
     public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
+    public DbSet<RecipeStep> RecipeSteps { get; set; }
+    public DbSet<RecipeFormatVersion> RecipeFormats { get; set; }
     public DbSet<AiProvider> AiProviders { get; set; }
     public DbSet<AiModel> AiModels { get; set; }
 
@@ -76,6 +80,33 @@ public class ApplicationDbContext : DbContext
                     j.HasKey(ji => new { ji.MealIdeaId, ji.KeyIngredientId });
                 });
 
+        modelBuilder.Entity<Recipe>()
+            .HasMany(r => r.Ingredients)
+            .WithOne()
+            .HasForeignKey(i => i.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Recipe>()
+            .HasMany(r => r.Steps)
+            .WithOne()
+            .HasForeignKey(s => s.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Recipe>()
+            .HasOne<RecipeFormatVersion>()
+            .WithMany()
+            .HasForeignKey(r => new { r.FormatKey, r.FormatVersion })
+            .HasPrincipalKey(f => new { f.Key, f.Version })
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Recipe>()
+            .Property(r => r.FormatKey)
+            .HasDefaultValue(RecipeFormat.Key);
+
+        modelBuilder.Entity<Recipe>()
+            .Property(r => r.FormatVersion)
+            .HasDefaultValue(RecipeFormat.Version);
+
         #endregion
 
         #region Query filters
@@ -83,10 +114,27 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<AiProvider>().HasQueryFilter(f => f.IsActive && !f.IsDeleted);
         modelBuilder.Entity<AiModel>().HasQueryFilter(f => f.IsActive && !f.IsDeleted);
         modelBuilder.Entity<MealIdea>().HasQueryFilter(f => f.IsActive && !f.IsDeleted);
+        modelBuilder.Entity<Recipe>().HasQueryFilter(f => f.IsActive && !f.IsDeleted);
 
         #endregion
 
         #region Check constraints
+
+        modelBuilder.Entity<RecipeFormatVersion>(entity =>
+        {
+            entity.ToTable("RecipeFormats");
+            entity.HasAlternateKey(f => new { f.Key, f.Version });
+            entity.HasData(new RecipeFormatVersion
+            {
+                Id = 1,
+                Key = RecipeFormat.Key,
+                Version = RecipeFormat.Version,
+                Rules = RecipeFormat.StandardV1RulesJson,
+                IsCurrent = true,
+                DateCreated = RecipeFormat.SeedDate,
+                CreatedBy = "system"
+            });
+        });
 
         modelBuilder.Entity<ApplicationSetting>(entity =>
         {

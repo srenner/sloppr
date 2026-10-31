@@ -1,3 +1,5 @@
+using sloppr.Recipes;
+
 namespace sloppr.DTOs;
 
 public class RecipeDTO
@@ -7,11 +9,21 @@ public class RecipeDTO
     public DateTime DateUpdated { get; set; }
     public bool IsActive { get; set; }
     public bool IsDeleted { get; set; }
-    public string CreatedBy { get; set; }
-    public string UpdatedBy { get; set; }
+    public string CreatedBy { get; set; } = "system";
+    public string UpdatedBy { get; set; } = "system";
 
-    public required string FullText { get; set; }
-    public string TextFormat { get; set; } = "md";
-    public int PrepTime { get; set; } = 0;
-    public int CookTime { get; set; } = 0;
+    public required string Name { get; set; }
+    public required string Description { get; set; }
+    public int ServingCount { get; set; }
+    public int PrepTimeMinutes { get; set; }
+    public int CookTimeMinutes { get; set; }
+    public int Difficulty { get; set; }
+    public string? Notes { get; set; }
+
+    public string FormatKey { get; set; } = RecipeFormat.Key;
+    public int FormatVersion { get; set; } = RecipeFormat.Version;
+
+    public int? MealIdeaId { get; set; }
+    public ICollection<RecipeIngredientDTO> Ingredients { get; set; } = [];
+    public ICollection<RecipeStepDTO> Steps { get; set; } = [];
 }
