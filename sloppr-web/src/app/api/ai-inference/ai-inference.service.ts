@@ -25,6 +25,7 @@ import {
 } from 'rxjs';
 
 import type {
+  MealIdeaDTO,
   MealIdeasRequest
 } from '../model';
 
@@ -71,43 +72,59 @@ type HttpClientObserveOptions = HttpClientOptions & {
 
 
 
+export type PostApiAiInferenceMealIdeasAccept = typeof PostApiAiInferenceMealIdeasAccept[keyof typeof PostApiAiInferenceMealIdeasAccept];
 
+export const PostApiAiInferenceMealIdeasAccept = {
+  text_plain: 'text/plain',
+  application_json: 'application/json',
+  text_json: 'text/json',
+} as const;
 
 @Injectable({ providedIn: 'root' })
 export class AiInferenceService {
   private readonly http = inject(HttpClient);
- postApiAiInferenceMealIdeas<TData = void>(mealIdeasRequest: MealIdeasRequest, options?: HttpClientBodyOptions): Observable<TData>;
- postApiAiInferenceMealIdeas<TData = void>(mealIdeasRequest: MealIdeasRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
- postApiAiInferenceMealIdeas<TData = void>(mealIdeasRequest: MealIdeasRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
-  postApiAiInferenceMealIdeas<TData = void>(
-    mealIdeasRequest: MealIdeasRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
-    if (options?.observe === 'events') {
-      return this.http.post<TData>(
-      `/api/AiInference/meal-ideas`,
-      mealIdeasRequest,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'events',
-      }
-    );
+ postApiAiInferenceMealIdeas(mealIdeasRequest: MealIdeasRequest,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  postApiAiInferenceMealIdeas(mealIdeasRequest: MealIdeasRequest,
+    accept: 'application/json', options?: HttpClientOptions): Observable<MealIdeaDTO[]>;
+  postApiAiInferenceMealIdeas(mealIdeasRequest: MealIdeasRequest,
+    accept: 'text/json', options?: HttpClientOptions): Observable<MealIdeaDTO[]>;
+  postApiAiInferenceMealIdeas(mealIdeasRequest: MealIdeasRequest,
+    accept?: PostApiAiInferenceMealIdeasAccept, options?: HttpClientOptions): Observable<MealIdeaDTO[] | string>;
+  postApiAiInferenceMealIdeas(
+    mealIdeasRequest: MealIdeasRequest,
+    accept: PostApiAiInferenceMealIdeasAccept = 'application/json',
+    options?: HttpClientOptions
+  ): Observable<MealIdeaDTO[] | string> {
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.post<MealIdeaDTO[]>(`/api/AiInference/meal-ideas`, mealIdeasRequest, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.post(`/api/AiInference/meal-ideas`, mealIdeasRequest, {
+        ...options,
+        responseType: 'text',
+        headers,
+
+
+      }) as Observable<string>;
     }
 
-    if (options?.observe === 'response') {
-      return this.http.post<TData>(
-      `/api/AiInference/meal-ideas`,
-      mealIdeasRequest,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'response',
-      }
-    );
-    }
+    return this.http.post<MealIdeaDTO[]>(`/api/AiInference/meal-ideas`, mealIdeasRequest, {
+        ...options,
+        responseType: 'json',
+        headers,
 
-    return this.http.post<TData>(
-      `/api/AiInference/meal-ideas`,
-      mealIdeasRequest,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'body',
-      }
-    );
+
+      });
   }
  postApiAiInferenceIngredientExtractionChallengesModelId<TData = void>(modelId: number | string, options?: HttpClientBodyOptions): Observable<TData>;
  postApiAiInferenceIngredientExtractionChallengesModelId<TData = void>(modelId: number | string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
@@ -144,5 +161,5 @@ export class AiInferenceService {
   }
 };
 
-export type PostApiAiInferenceMealIdeasClientResult = NonNullable<void>
+export type PostApiAiInferenceMealIdeasClientResult = NonNullable<string | MealIdeaDTO[]>
 export type PostApiAiInferenceIngredientExtractionChallengesModelIdClientResult = NonNullable<void>
