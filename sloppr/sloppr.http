@@ -91,3 +91,84 @@ POST {{sloppr_HostAddress}}/api/AiInference/ingredient-extraction-challenges/{mo
 
 ###
 
+// Recipes endpoints
+GET {{sloppr_HostAddress}}/api/Recipes/
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/Recipes/{id}
+Accept: application/json
+
+###
+
+POST {{sloppr_HostAddress}}/api/Recipes/
+Content-Type: application/json
+
+{
+  "name": "string",
+  "description": "string",
+  "servingCount": 4,
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 20,
+  "difficulty": 2,
+  "notes": "string",
+  "mealIdeaId": null,
+  "ingredients": [
+    {
+      "order": 1,
+      "quantity": 1,
+      "unit": "cup",
+      "name": "rice",
+      "group": "Main",
+      "note": "string"
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "instruction": "Cook the rice.",
+      "group": "Main"
+    }
+  ]
+}
+
+###
+
+PUT {{sloppr_HostAddress}}/api/Recipes/{id}
+Content-Type: application/json
+
+{
+  "name": "string",
+  "description": "string",
+  "servingCount": 4,
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 20,
+  "difficulty": 2,
+  "notes": "string",
+  "mealIdeaId": null,
+  "ingredients": [
+    {
+      "order": 1,
+      "quantity": 1,
+      "unit": "cup",
+      "name": "rice",
+      "group": "Main",
+      "note": "string"
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "instruction": "Cook the rice.",
+      "group": "Main"
+    }
+  ]
+}
+
+###
+
+DELETE {{sloppr_HostAddress}}/api/Recipes/{id}
+
+###
+

@@ -72,6 +72,7 @@ namespace sloppr.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> PutAiProvider(int id, AiProvider aiProvider)
         {
+            // todo: binding the entity lets a client send ProviderModels; use a request DTO or ignore the collection.
             if (id != aiProvider.Id)
             {
                 return BadRequest();

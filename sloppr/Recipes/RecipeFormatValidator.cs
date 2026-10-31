@@ -44,34 +44,38 @@ public static class RecipeFormatValidator
         }
 
         var orders = new HashSet<int>();
+        var position = 0;
         foreach (var ingredient in ingredients)
         {
+            position++;
+            var label = $"Ingredient {position}";
+
             if (ingredient.Order < 1 || !orders.Add(ingredient.Order))
             {
-                errors.Add("Ingredient order must be 1 or greater and unique.");
+                errors.Add($"{label} order must be 1 or greater and unique.");
             }
 
             if (string.IsNullOrWhiteSpace(ingredient.Name)
                 || ingredient.Name.Length > RecipeFormatRules.MaxIngredientNameLength)
             {
-                errors.Add($"Ingredient name is required and must be {RecipeFormatRules.MaxIngredientNameLength} characters or fewer.");
+                errors.Add($"{label} name is required and must be {RecipeFormatRules.MaxIngredientNameLength} characters or fewer.");
             }
 
-            if (ingredient.Quantity is <= 0) errors.Add("Ingredient quantity must be greater than 0.");
+            if (ingredient.Quantity is <= 0) errors.Add($"{label} quantity must be greater than 0.");
 
             if (ingredient.Unit?.Length > RecipeFormatRules.MaxUnitLength)
             {
-                errors.Add($"Ingredient unit must be {RecipeFormatRules.MaxUnitLength} characters or fewer.");
+                errors.Add($"{label} unit must be {RecipeFormatRules.MaxUnitLength} characters or fewer.");
             }
 
             if (ingredient.Group?.Length > RecipeFormatRules.MaxGroupLength)
             {
-                errors.Add($"Ingredient group must be {RecipeFormatRules.MaxGroupLength} characters or fewer.");
+                errors.Add($"{label} group must be {RecipeFormatRules.MaxGroupLength} characters or fewer.");
             }
 
             if (ingredient.Note?.Length > RecipeFormatRules.MaxIngredientNoteLength)
             {
-                errors.Add($"Ingredient note must be {RecipeFormatRules.MaxIngredientNoteLength} characters or fewer.");
+                errors.Add($"{label} note must be {RecipeFormatRules.MaxIngredientNoteLength} characters or fewer.");
             }
         }
     }
@@ -85,22 +89,26 @@ public static class RecipeFormatValidator
         }
 
         var orders = new HashSet<int>();
+        var position = 0;
         foreach (var step in steps)
         {
+            position++;
+            var label = $"Step {position}";
+
             if (step.Order < 1 || !orders.Add(step.Order))
             {
-                errors.Add("Step order must be 1 or greater and unique.");
+                errors.Add($"{label} order must be 1 or greater and unique.");
             }
 
             if (string.IsNullOrWhiteSpace(step.Instruction)
                 || step.Instruction.Length > RecipeFormatRules.MaxInstructionLength)
             {
-                errors.Add($"Step instruction is required and must be {RecipeFormatRules.MaxInstructionLength} characters or fewer.");
+                errors.Add($"{label} instruction is required and must be {RecipeFormatRules.MaxInstructionLength} characters or fewer.");
             }
 
             if (step.Group?.Length > RecipeFormatRules.MaxGroupLength)
             {
-                errors.Add($"Step group must be {RecipeFormatRules.MaxGroupLength} characters or fewer.");
+                errors.Add($"{label} group must be {RecipeFormatRules.MaxGroupLength} characters or fewer.");
             }
         }
     }

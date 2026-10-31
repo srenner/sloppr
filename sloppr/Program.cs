@@ -59,6 +59,7 @@ builder.Services.AddScoped<MealIdeaMapper>();
 builder.Services.AddScoped<IMealIdeaService, MealIdeaService>();
 
 builder.Services.AddScoped<RecipeMapper>();
+builder.Services.AddScoped<IRecipeService, RecipeService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
