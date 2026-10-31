@@ -16,20 +16,24 @@ namespace sloppr.Controllers
                                        IChatClientFactory factory,
                                        IKeyIngredientService keyIngredientService,
                                        ICuisineService cuisineService,
+                                       IMealIdeaService mealIdeaService,
+                                       MealIdeaMapper mealIdeaMapper,
                                        IOptions<AISettings> aiSettings) : ControllerBase
     {
         [HttpPost("meal-ideas")]
-        public async Task<ActionResult> GenerateMealIdeasAsync([FromBody] MealIdeasRequest request)
+        public async Task<ActionResult<IEnumerable<MealIdeaDTO>>> GenerateMealIdeasAsync([FromBody] MealIdeasRequest request)
         {
             var ingredients = await chatService.ExtractIngredients(request.Prompt);
-            await keyIngredientService.Upsert(ingredients);
+            var keyIngredients = await keyIngredientService.Upsert(ingredients);
 
             var cuisines = await chatService.ExtractCuisines(request.Prompt);
             await cuisineService.Upsert(cuisines);
 
             var ideas = await chatService.GenerateIdeas(request.Prompt, ingredients, cuisines);
 
-            return Ok(ideas);
+            var mealIdeas = await mealIdeaService.CreateRangeAsync(ideas, keyIngredients.Select(k => k.Id));
+
+            return Ok(mealIdeas.Select(mealIdeaMapper.ToDto).ToList());
         }
 
         [HttpPost("ingredient-extraction-challenges/{modelId}")]

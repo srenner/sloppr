@@ -46,4 +46,19 @@ public class MealIdeaService : IMealIdeaService
         await _uow.CompleteAsync();
         return idea;
     }
+
+    public async Task<IEnumerable<MealIdea>> CreateRangeAsync(IEnumerable<string> names, IEnumerable<int> keyIngredientIds)
+    {
+        var ingredients = await _db.KeyIngredients
+            .Where(k => keyIngredientIds.Contains(k.Id))
+            .ToListAsync();
+
+        var ideas = names
+            .Select(name => new MealIdea { Name = name, KeyIngredients = ingredients })
+            .ToList();
+
+        await _uow.Repository<MealIdea>().AddRangeAsync(ideas);
+        await _uow.CompleteAsync();
+        return ideas;
+    }
 }
