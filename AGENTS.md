@@ -21,6 +21,7 @@ The AI's role is narrow: **write code and suggest next steps.** Do not act beyon
 - Lead with the result or direct answer. No preamble and no restating the request.
 - Default to the shortest answer that fully resolves the ask; expand only when the user
   says "explain", "why", or "walk me through".
+- Create concise plans with minimal jargon.
 - For code changes, report only: files changed, one-line reason, verification command, and
   next step. Do not paste full diffs or file contents unless asked.
 - Do not repeat settled decisions or plan content; point to the plan file instead.
