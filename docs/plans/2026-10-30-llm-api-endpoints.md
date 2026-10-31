@@ -1,7 +1,8 @@
 # LLM endpoint API design
 
 Date: 2026-10-30
-Status: design agreed for the two LLM routes; secondary scope still open
+Status: complete — implemented in `dfc04df`; open decisions resolved by their defaults
+(AiInference kept, provider endpoints unchanged).
 Scope: endpoint URLs, HTTP verbs, and parameter location only. No behavior, response-shape, or service changes.
 
 ## Goal

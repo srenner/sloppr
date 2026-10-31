@@ -2,6 +2,7 @@
 
 Date: 2026-10-31
 Branch: `fix/controller-enum-serialization`
+Status: complete — merged.
 Scope: `sloppr/Program.cs` only.
 
 ## Problem
