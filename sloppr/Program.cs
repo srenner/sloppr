@@ -7,6 +7,7 @@ using sloppr.Settings;
 using sloppr.Services;
 using sloppr.AI;
 using Microsoft.AspNetCore.Http.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 // var client = new OllamaModelClient("granite4.2:3b");
@@ -16,10 +17,9 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<JsonOptions>(options =>
-{
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-});
+// Minimal APIs and OpenAPI schema generation read these options, not MVC's.
+// Both are configured from AddStringEnums so /openapi/v1.json matches real responses.
+builder.Services.Configure<JsonOptions>(o => AddStringEnums(o.SerializerOptions));
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient("health", client =>
@@ -33,7 +33,8 @@ builder.Services.Configure<ProviderTypeSettings>(
 builder.Services.Configure<AISettings>(
     builder.Configuration.GetSection("AI"));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(o => AddStringEnums(o.JsonSerializerOptions));
 
 builder.Services.AddScoped<ChatService>();
 
@@ -104,3 +105,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Enum names on the wire, in every serializer this app configures.
+static void AddStringEnums(JsonSerializerOptions options) =>
+    options.Converters.Add(new JsonStringEnumConverter());
