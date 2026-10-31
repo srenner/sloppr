@@ -16,6 +16,37 @@ public class ApplicationDbContext : DbContext
     {
     }
 
+    public override int SaveChanges()
+    {
+        StampAuditFields();
+        return base.SaveChanges();
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        StampAuditFields();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void StampAuditFields()
+    {
+        DateTime now = DateTime.UtcNow;
+        foreach (var entry in ChangeTracker.Entries<BaseModel>())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    entry.Entity.DateCreated = now;
+                    entry.Entity.DateUpdated = now;
+                    break;
+                case EntityState.Modified:
+                    entry.Property(nameof(BaseModel.DateCreated)).IsModified = false;
+                    entry.Entity.DateUpdated = now;
+                    break;
+            }
+        }
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         #region Indexes
