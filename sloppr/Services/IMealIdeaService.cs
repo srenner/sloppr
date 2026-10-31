@@ -8,4 +8,5 @@ public interface IMealIdeaService
     public Task<MealIdea?> GetByIdWithIngredientsAsync(int id);
     public Task<IEnumerable<MealIdea>> GetFilteredAsync();
     public Task<IEnumerable<MealIdea>> GetAllAsync();
+    public Task<MealIdea> UpdateAsync(MealIdea idea);
 }

@@ -39,4 +39,11 @@ public class MealIdeaService : IMealIdeaService
             .Include(m => m.KeyIngredients)
             .ToListAsync();
     }
+
+    public async Task<MealIdea> UpdateAsync(MealIdea idea)
+    {
+        _uow.Repository<MealIdea>().Update(idea);
+        await _uow.CompleteAsync();
+        return idea;
+    }
 }

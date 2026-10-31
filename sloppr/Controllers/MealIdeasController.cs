@@ -34,5 +34,48 @@ namespace sloppr.Controllers
             }
             return mapper.ToDto(mealIdea);
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> PutMealIdea(int id, MealIdeaUpdateRequest request)
+        {
+            if (id != request.Id)
+            {
+                return BadRequest();
+            }
+            MealIdea? mealIdea = await svc.GetByIdAsync(id);
+            if (mealIdea == null)
+            {
+                return NotFound();
+            }
+            mealIdea.Name = request.Name;
+            await svc.UpdateAsync(mealIdea);
+            return NoContent();
+        }
+
+        [HttpPut("{id}/approval")]
+        public async Task<ActionResult> PutMealIdeaApproval(int id, MealIdeaApprovalRequest request)
+        {
+            MealIdea? mealIdea = await svc.GetByIdAsync(id);
+            if (mealIdea == null)
+            {
+                return NotFound();
+            }
+            mealIdea.IsUserApproved = request.IsUserApproved;
+            await svc.UpdateAsync(mealIdea);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMealIdea(int id)
+        {
+            MealIdea? mealIdea = await svc.GetByIdAsync(id);
+            if (mealIdea == null)
+            {
+                return NotFound();
+            }
+            mealIdea.IsDeleted = true;
+            await svc.UpdateAsync(mealIdea);
+            return NoContent();
+        }
     }
 }
