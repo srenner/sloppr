@@ -15,7 +15,7 @@ namespace sloppr.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.13");
 
             modelBuilder.Entity("sloppr.Models.AiModel", b =>
                 {
@@ -225,9 +225,6 @@ namespace sloppr.Migrations
                     b.Property<DateTime?>("LastUsed")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("MealIdeaId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -243,8 +240,6 @@ namespace sloppr.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MealIdeaId");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -287,7 +282,22 @@ namespace sloppr.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MealIdea");
+                    b.ToTable("MealIdeas");
+                });
+
+            modelBuilder.Entity("sloppr.Models.MealIdeaKeyIngredient", b =>
+                {
+                    b.Property<int>("MealIdeaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KeyIngredientId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("MealIdeaId", "KeyIngredientId");
+
+                    b.HasIndex("KeyIngredientId");
+
+                    b.ToTable("MealIdeaKeyIngredients", (string)null);
                 });
 
             modelBuilder.Entity("sloppr.Models.Recipe", b =>
@@ -357,11 +367,19 @@ namespace sloppr.Migrations
                     b.Navigation("AiProvider");
                 });
 
-            modelBuilder.Entity("sloppr.Models.KeyIngredient", b =>
+            modelBuilder.Entity("sloppr.Models.MealIdeaKeyIngredient", b =>
                 {
+                    b.HasOne("sloppr.Models.KeyIngredient", null)
+                        .WithMany()
+                        .HasForeignKey("KeyIngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("sloppr.Models.MealIdea", null)
-                        .WithMany("KeyIngredients")
-                        .HasForeignKey("MealIdeaId");
+                        .WithMany()
+                        .HasForeignKey("MealIdeaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("sloppr.Models.Recipe", b =>
@@ -376,11 +394,6 @@ namespace sloppr.Migrations
             modelBuilder.Entity("sloppr.Models.AiProvider", b =>
                 {
                     b.Navigation("ProviderModels");
-                });
-
-            modelBuilder.Entity("sloppr.Models.MealIdea", b =>
-                {
-                    b.Navigation("KeyIngredients");
                 });
 #pragma warning restore 612, 618
         }
