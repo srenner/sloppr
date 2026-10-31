@@ -8,11 +8,7 @@
 export interface KeyIngredientDTO {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   id?: number | string;
-  dateCreated?: string;
-  dateUpdated?: string;
   isActive?: boolean;
-  createdBy?: string;
-  updatedBy?: string;
   name: string;
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   numQueried?: number | string;
