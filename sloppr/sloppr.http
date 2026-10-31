@@ -38,6 +38,22 @@ DELETE {{sloppr_HostAddress}}/api/KeyIngredients/{id}
 
 ###
 
+// MealIdeas endpoints
+GET {{sloppr_HostAddress}}/api/MealIdeas/
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/MealIdeas/inactive
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/MealIdeas/{id}
+Accept: application/json
+
+###
+
 // AiInference endpoints
 POST {{sloppr_HostAddress}}/api/AiInference/meal-ideas
 Content-Type: application/json

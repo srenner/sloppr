@@ -44,9 +44,9 @@ rejected and later turned into recipes.
 |---|---|---|
 | 1 | `DbSet<MealIdea>`, query filter, many-to-many config in `ApplicationDbContext` | done |
 | 2 | `required Name`, initialized collections, `IsDeleted` on `MealIdeaDTO` | done |
-| 3 | Human: regenerate then apply the migration (the first `MealIdeas` migration was not applied) | pending |
+| 3 | Human: regenerate then apply the migration (the first `MealIdeas` migration was not applied) | done |
 | 4 | `IMealIdeaService` + `MealIdeaService` reads; register in `Program.cs` | done |
-| 5 | `MealIdeasController` reads (`GET`, `GET inactive`, `GET {id}`); `sloppr.http` | pending |
+| 5 | `MealIdeasController` reads (`GET`, `GET inactive`, `GET {id}`); `sloppr.http` | done |
 | 6 | `PUT {id}`, `PUT {id}/approval`, `DELETE {id}`; request DTOs; `sloppr.http` | pending |
 | 7 | `CreateGeneratedAsync`; `AiInferenceController` persists and returns `MealIdeaDTO[]` | pending |
 | 8 | Human: `npm run codegen`, `npm run build` in `sloppr-web` | pending |
@@ -63,20 +63,19 @@ rejected and later turned into recipes.
 | `PUT` | `/api/MealIdeas/{id:int}/approval` | `{ "isUserApproved": true }` | `204` / `404` |
 | `DELETE` | `/api/MealIdeas/{id:int}` | – | `204` soft delete / `404` |
 
-## Migration expectation
+## Migration
 
-`dotnet ef migrations add MealIdeas` should produce roughly:
+The applied migration is `20261031171751_MealIdeas`. It:
 
-- rename `MealIdea` to `MealIdeas`;
-- drop `FK_KeyIngredients_MealIdea_MealIdeaId`, `IX_KeyIngredients_MealIdeaId`, and
+- renames `MealIdea` to `MealIdeas`;
+- drops `FK_KeyIngredients_MealIdea_MealIdeaId`, `IX_KeyIngredients_MealIdeaId`, and
   `KeyIngredients.MealIdeaId`;
-- create join table `MealIdeaKeyIngredients` (`MealIdeaId`, `KeyIngredientId`, composite
+- creates join table `MealIdeaKeyIngredients` (`MealIdeaId`, `KeyIngredientId`, composite
   primary key, indexes, cascade FKs);
-- no new columns.
+- adds no new columns.
 
-The first generated `MealIdeas` migration (`20261031170632_MealIdeas`) used EF's implicit
-join table `KeyIngredientMealIdea` and was never applied. Remove it and regenerate after
-the explicit join-table config.
+The earlier `20261031170632_MealIdeas` used EF's implicit `KeyIngredientMealIdea` join
+table and was replaced before applying.
 
 Inspect the generated migration before applying it, because the rename and the join table
 land together.
