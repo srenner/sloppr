@@ -14,6 +14,7 @@ The AI's role is narrow: **write code and suggest next steps.** Do not act beyon
 - **Ask first:** any command (build, test, format, run, lint, package managers, git, Docker, scripts); creating/renaming/moving files; config/tooling edits (`*.csproj`, `appsettings*.json`, `angular.json`, `tsconfig*.json`, `proxy.conf.json`, lockfiles, CI, `.vscode/`); dependency changes; refactors or scope creep; test changes.
 - **Never:** git writes/history rewrites; migrations; codegen or editing `sloppr-web/src/app/api/`; secrets, DB files, `sloppr/_docs/private/`; deleting files or touching paths outside the repo; weakening/skipping/deleting tests.
 - Never claim a command passed unless you ran it; say "not verified" and give the command. Stop and ask if ambiguous.
+- Always follow code standards observed within the project. Call out pattern inconsistencies early so they can be corrected.
 
 ## Backend (`sloppr/`)
 

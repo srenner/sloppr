@@ -45,7 +45,7 @@ rejected and later turned into recipes.
 | 1 | `DbSet<MealIdea>`, query filter, many-to-many config in `ApplicationDbContext` | done |
 | 2 | `required Name`, initialized collections, `IsDeleted` on `MealIdeaDTO` | done |
 | 3 | Human: regenerate then apply the migration (the first `MealIdeas` migration was not applied) | pending |
-| 4 | `IMealIdeaService` + `MealIdeaService` reads; register in `Program.cs` | pending |
+| 4 | `IMealIdeaService` + `MealIdeaService` reads; register in `Program.cs` | done |
 | 5 | `MealIdeasController` reads (`GET`, `GET inactive`, `GET {id}`); `sloppr.http` | pending |
 | 6 | `PUT {id}`, `PUT {id}/approval`, `DELETE {id}`; request DTOs; `sloppr.http` | pending |
 | 7 | `CreateGeneratedAsync`; `AiInferenceController` persists and returns `MealIdeaDTO[]` | pending |

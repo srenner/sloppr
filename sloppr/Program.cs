@@ -55,6 +55,7 @@ builder.Services.AddScoped<IAiModelService, AiModelService>();
 builder.Services.AddScoped<AiModelMapper>();
 
 builder.Services.AddScoped<MealIdeaMapper>();
+builder.Services.AddScoped<IMealIdeaService, MealIdeaService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
