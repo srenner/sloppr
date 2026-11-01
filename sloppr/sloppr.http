@@ -82,7 +82,7 @@ POST {{sloppr_HostAddress}}/api/AiInference/meal-ideas
 Content-Type: application/json
 
 {
-  "prompt": "string"
+  "prompt": "i want an asian inspired dish that uses dark chicken meat and basmati rice."
 }
 
 ###

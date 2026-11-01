@@ -102,7 +102,8 @@ namespace sloppr.Controllers
                     new ChatMessage(ChatRole.System, systemPrompt),
                     new ChatMessage(ChatRole.User, challenge.Prompt),
                 };
-                ChatResponse? response = await client.GetResponseAsync(messages);
+                ChatResponse? response = await client.GetResponseAsync(
+                    messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
                 dto.Challenges.Add(new IngredientChallenge(challenge.Prompt, challenge.ExpectedResponse,
                                         response.Text, response.Usage.InputTokenCount, response.Usage.OutputTokenCount));
             }
