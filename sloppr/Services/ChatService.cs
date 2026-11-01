@@ -140,7 +140,19 @@ public class ChatService
         };
 
         ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
-        return JsonSerializer.Deserialize<string[]>(response.Text);
+        var json = response.Text;
+        if (string.IsNullOrWhiteSpace(json) || json.Trim() == "{}")
+        {
+            return [];
+        }
+        try
+        {
+            return JsonSerializer.Deserialize<string[]>(json) ?? [];
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
     }
 
     public async Task<string[]> GenerateIdeas(string userPrompt, string[] keyIngredients, string[] cuisines)
