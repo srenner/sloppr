@@ -1,13 +1,14 @@
+using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
 using sloppr.AI;
 using sloppr.AI.DTOs;
 using sloppr.DTOs;
 using sloppr.Enums;
 using sloppr.Models;
 using sloppr.Settings;
+using sloppr.Utilities;
 
 namespace sloppr.Services;
 
@@ -140,19 +141,7 @@ public class ChatService
         };
 
         ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
-        var json = response.Text;
-        if (string.IsNullOrWhiteSpace(json) || json.Trim() == "{}")
-        {
-            return [];
-        }
-        try
-        {
-            return JsonSerializer.Deserialize<string[]>(json) ?? [];
-        }
-        catch (JsonException)
-        {
-            return [];
-        }
+        return LlmArrayResponse.Read(response.Text).ToArray();
     }
 
     public async Task<string[]> GenerateIdeas(string userPrompt, string[] keyIngredients, string[] cuisines)
@@ -170,22 +159,26 @@ public class ChatService
 
             IChatClient client = _factory.Create(config);
 
-            string refinedPrompt = "Plan a meal based on the following ingredients: " + String.Join(", ", keyIngredients) + ".";
+            StringBuilder refinedPrompt = new StringBuilder("Plan a meal");
+            if (keyIngredients.Length > 0)
+            {
+                refinedPrompt.Append(" based on the following ingredients: ");
+                refinedPrompt.Append(String.Join(", ", keyIngredients));
+
+            }
             if (cuisines.Length > 0)
             {
-                refinedPrompt += " User has cuisine preference: " + string.Join(", ", cuisines) + ".";
+                refinedPrompt.Append(". User has cuisine preference: ");
+                refinedPrompt.Append(string.Join(", ", cuisines) + ".");
             }
-
-            refinedPrompt += " Target difficulty of 1/3.";
-
 
             List<ChatMessage> messages = new()
                 {
                     new ChatMessage(ChatRole.System, _aiSettings.IdeaGenerationPrompt),
-                    new ChatMessage(ChatRole.User, refinedPrompt),
+                    new ChatMessage(ChatRole.User, refinedPrompt.ToString()),
                 };
             ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
-            return JsonSerializer.Deserialize<string[]>(response.Text);
+            return LlmArrayResponse.Read(response.Text).ToArray();
         }
         else
         {

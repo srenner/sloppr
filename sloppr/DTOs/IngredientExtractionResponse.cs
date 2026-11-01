@@ -1,7 +1,5 @@
-using System.Text.Json;
-using Microsoft.Extensions.Options;
 using sloppr.Models;
-using sloppr.Settings;
+using sloppr.Utilities;
 
 namespace sloppr.DTOs;
 
@@ -32,10 +30,7 @@ public class IngredientChallenge
 
     public IngredientChallenge(string prompt, List<string> expectedResponse, string actualResponse, long? inputTokenCount, long? outputTokenCount)
     {
-        actualResponse = actualResponse.Replace("\n", "")
-                                        .Replace("`", "")
-                                        .Replace("json", "");
-        this.ActualResponse = actualResponse == null ? [] : JsonSerializer.Deserialize<List<string>>(actualResponse);
+        this.ActualResponse = LlmArrayResponse.Read(actualResponse);
         this.ExpectedResponse = expectedResponse;
         this.Prompt = prompt;
         this.InputTokenCount = inputTokenCount;
