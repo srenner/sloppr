@@ -6,6 +6,7 @@ public class AISettings
     public string DefaultIngredientExtractionPrompt { get; set; } = string.Empty;
     public List<ExtractionChallenge> ExtractionChallenges { get; set; } = new();
     public string IdeaGenerationPrompt { get; set; } = string.Empty;
+    public string RecipeGenerationPrompt { get; set; } = string.Empty;
 }
 
 public class ExtractionChallenge
