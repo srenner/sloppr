@@ -91,6 +91,10 @@ POST {{sloppr_HostAddress}}/api/AiInference/ingredient-extraction-challenges/{mo
 
 ###
 
+POST {{sloppr_HostAddress}}/api/AiInference/recipes/1
+
+###
+
 // Recipes endpoints
 GET {{sloppr_HostAddress}}/api/Recipes/
 Accept: application/json
@@ -99,6 +103,11 @@ Accept: application/json
 
 GET {{sloppr_HostAddress}}/api/Recipes/{id}
 Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/Recipes/1/markdown
+Accept: text/markdown
 
 ###
 

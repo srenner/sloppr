@@ -32,6 +32,15 @@ public class RecipeService : IRecipeService
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
+    public async Task<RecipeFormatVersion?> GetCurrentFormatAsync()
+    {
+        return await _db.RecipeFormats
+            .AsNoTracking()
+            .Where(f => f.IsCurrent && f.Key == RecipeFormat.Key)
+            .OrderByDescending(f => f.Version)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<RecipeSaveResult> AddAsync(Recipe recipe)
     {
         var format = await _db.RecipeFormats

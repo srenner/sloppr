@@ -15,21 +15,29 @@ public class ChatService
 {
     private readonly ProviderTypeSettings _providerTypeSettings;
     private readonly AISettings _aiSettings;
+    private static readonly JsonSerializerOptions RecipeJsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private readonly IAiModelService _modelService;
     private readonly IChatClientFactory _factory;
     private readonly ApplicationSettingService _appSettingService;
+    private readonly RecipeMapper _recipeMapper;
 
     public ChatService(IOptions<ProviderTypeSettings> options,
                         IOptions<AISettings> aiSettings,
                         IAiModelService modelService,
                         IChatClientFactory factory,
-                        ApplicationSettingService appSettingService)
+                        ApplicationSettingService appSettingService,
+                        RecipeMapper recipeMapper)
     {
         _providerTypeSettings = options.Value; // unwrap the actual settings object
         _aiSettings = aiSettings.Value;
         _modelService = modelService;
         _factory = factory;
         _appSettingService = appSettingService;
+        _recipeMapper = recipeMapper;
     }
 
     public string GetChatPath(AiProviderType type)
@@ -170,6 +178,55 @@ public class ChatService
         else
         {
             return [];
+        }
+    }
+
+    public async Task<Recipe?> GenerateRecipeAsync(MealIdea idea, string formatRules)
+    {
+        if (_appSettingService.Settings.RecipeModelId is not int recipeModelId)
+        {
+            return null;
+        }
+
+        var model = await _modelService.GetByIdWithProviderAsync(recipeModelId);
+        if (model == null)
+        {
+            return null;
+        }
+
+        var config = new ChatClientConfig
+        {
+            ProviderType = model.AiProvider.ProviderType,
+            ModelName = model.Identifier,
+            Endpoint = model.AiProvider.BaseUrl,
+            ApiKey = null // todo
+        };
+
+        var keyIngredients = string.Join(", ", idea.KeyIngredients.Select(k => k.Name));
+        var userPrompt = $"Meal idea: {idea.Name}\n"
+            + $"Key ingredients: {keyIngredients}\n"
+            + $"Format rules (JSON):\n{formatRules}";
+
+        List<ChatMessage> messages = new()
+        {
+            new ChatMessage(ChatRole.System, _aiSettings.RecipeGenerationPrompt),
+            new ChatMessage(ChatRole.User, userPrompt),
+        };
+
+        try
+        {
+            IChatClient client = _factory.Create(config);
+            ChatResponse? response = await client.GetResponseAsync(
+                messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
+
+            var generated = JsonSerializer.Deserialize<RecipeGenerationResponse>(
+                response.Text, RecipeJsonOptions);
+
+            return generated == null ? null : _recipeMapper.ToEntity(generated);
+        }
+        catch (Exception)
+        {
+            return null;
         }
     }
 }

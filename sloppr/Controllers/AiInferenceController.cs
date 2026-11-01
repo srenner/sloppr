@@ -17,7 +17,9 @@ namespace sloppr.Controllers
                                        IKeyIngredientService keyIngredientService,
                                        ICuisineService cuisineService,
                                        IMealIdeaService mealIdeaService,
+                                       IRecipeService recipeService,
                                        MealIdeaMapper mealIdeaMapper,
+                                       RecipeMapper recipeMapper,
                                        IOptions<AISettings> aiSettings) : ControllerBase
     {
         [HttpPost("meal-ideas")]
@@ -34,6 +36,41 @@ namespace sloppr.Controllers
             var mealIdeas = await mealIdeaService.CreateRangeAsync(ideas, keyIngredients.Select(k => k.Id));
 
             return Ok(mealIdeas.Select(mealIdeaMapper.ToDto).ToList());
+        }
+
+        [HttpPost("recipes/{mealIdeaId}")]
+        public async Task<ActionResult<RecipeDTO>> GenerateRecipeAsync(int mealIdeaId)
+        {
+            var mealIdea = await mealIdeaService.GetByIdWithIngredientsAsync(mealIdeaId);
+            if (mealIdea == null)
+            {
+                return NotFound();
+            }
+
+            var format = await recipeService.GetCurrentFormatAsync();
+            if (format == null)
+            {
+                return StatusCode(StatusCodes.Status502BadGateway,
+                    new[] { "No current recipe format is configured." });
+            }
+
+            var recipe = await chatService.GenerateRecipeAsync(mealIdea, format.Rules);
+            if (recipe == null)
+            {
+                return StatusCode(StatusCodes.Status502BadGateway,
+                    new[] { "The recipe model is unavailable or returned an invalid response." });
+            }
+
+            recipe.MealIdeaId = mealIdea.Id;
+
+            var result = await recipeService.AddAsync(recipe);
+            if (result.Recipe == null)
+            {
+                return StatusCode(StatusCodes.Status502BadGateway, result.Errors);
+            }
+
+            return CreatedAtAction(nameof(RecipesController.GetRecipe),
+                new { id = result.Recipe.Id }, recipeMapper.ToDto(result.Recipe));
         }
 
         [HttpPost("ingredient-extraction-challenges/{modelId}")]
