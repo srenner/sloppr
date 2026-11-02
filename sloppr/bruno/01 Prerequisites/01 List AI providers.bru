@@ -1,0 +1,36 @@
+meta {
+  name: List AI providers
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/AiProviders
+  body: none
+  auth: none
+}
+
+script:post-response {
+  const providers = res.getBody();
+  if (Array.isArray(providers) && providers.length > 0) {
+    bru.setVar("providerId", providers[0].id);
+  }
+}
+
+tests {
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("at least one provider is configured", function() {
+    const providers = res.getBody();
+    expect(Array.isArray(providers)).to.equal(true);
+    expect(providers.length > 0, "no providers; create one with POST /api/AiProviders").to.equal(true);
+  });
+
+  test("first provider has a base URL", function() {
+    const provider = res.getBody()[0];
+    expect(typeof provider.baseUrl, "provider baseUrl is missing").to.equal("string");
+    expect(provider.baseUrl.length > 0).to.equal(true);
+  });
+}

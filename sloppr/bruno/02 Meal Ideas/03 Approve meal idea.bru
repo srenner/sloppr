@@ -1,0 +1,35 @@
+meta {
+  name: Approve meal idea
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/MealIdeas/{{ideaId}}/approval
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "isUserApproved": true
+  }
+}
+
+docs {
+  This is the "user picks a favourite" step. Sending null clears the vote.
+}
+
+tests {
+  test("ideaId is set (run 'Generate meal ideas' first)", function() {
+    expect(Boolean(bru.getVar("ideaId")), "ideaId is empty").to.equal(true);
+  });
+
+  test("status is 204", function() {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

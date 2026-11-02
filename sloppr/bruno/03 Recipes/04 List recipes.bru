@@ -1,0 +1,40 @@
+meta {
+  name: List recipes
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/Recipes
+  body: none
+  auth: none
+}
+
+docs {
+  Confirms the recipe is part of the cookbook list. The count check runs only when the
+  Prerequisites folder recorded a baseline; reruns without cleanup make it stale.
+}
+
+tests {
+  test("recipeId is set (run 'Generate recipe' first)", function() {
+    expect(Boolean(bru.getVar("recipeId")), "recipeId is empty").to.equal(true);
+  });
+
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("the new recipe is in the list", function() {
+    const recipeId = Number(bru.getVar("recipeId"));
+    const recipes = res.getBody();
+    expect(Array.isArray(recipes)).to.equal(true);
+    expect(recipes.some(function(r) { return r.id === recipeId; })).to.equal(true);
+  });
+
+  test("the list grew by one", function() {
+    const before = bru.getVar("recipeCountBefore");
+    if (before !== undefined && before !== null && before !== "") {
+      expect(res.getBody().length).to.equal(Number(before) + 1);
+    }
+  });
+}

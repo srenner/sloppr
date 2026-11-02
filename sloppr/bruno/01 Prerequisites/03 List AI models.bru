@@ -1,0 +1,41 @@
+meta {
+  name: List AI models
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/AiModels
+  body: none
+  auth: none
+}
+
+script:post-response {
+  const models = res.getBody();
+  if (Array.isArray(models) && models.length > 0) {
+    bru.setVar("modelId", models[0].id);
+  }
+}
+
+docs {
+  GET /api/AiModels only returns active models. If the list is empty, discover models on
+  the provider and insert them with POST /api/AiModels/batch using "isActive": true.
+}
+
+tests {
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("at least one active model exists", function() {
+    const models = res.getBody();
+    expect(Array.isArray(models)).to.equal(true);
+    expect(models.length > 0, "no active models; insert them with isActive: true").to.equal(true);
+  });
+
+  test("first model has an identifier", function() {
+    const model = res.getBody()[0];
+    expect(typeof model.identifier).to.equal("string");
+    expect(model.identifier.length > 0).to.equal(true);
+  });
+}

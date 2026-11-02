@@ -1,0 +1,97 @@
+meta {
+  name: Generate recipe
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/AiInference/recipes/{{ideaId}}
+  body: none
+  auth: none
+}
+
+settings {
+  timeout: 180000
+}
+
+script:post-response {
+  const recipe = res.getBody();
+  if (recipe && recipe.id) {
+    bru.setVar("recipeId", recipe.id);
+    bru.setVar("recipeName", recipe.name);
+    bru.setVar("ingredientCount", (recipe.ingredients || []).length);
+    bru.setVar("stepCount", (recipe.steps || []).length);
+  }
+}
+
+docs {
+  Generates with RecipeModelId, validates against the current format row, and persists.
+  Failure modes: 404 unknown idea, 502 no format / model unavailable / unparseable
+  output / format validation errors, 409 once the linkage chunk lands.
+}
+
+tests {
+  test("ideaId is set (run the Meal Ideas folder first)", function() {
+    expect(Boolean(bru.getVar("ideaId")), "ideaId is empty").to.equal(true);
+  });
+
+  test("status is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Location header points at the new recipe", function() {
+    const recipe = res.getBody();
+    const location = String(res.getHeader("location") || "");
+    expect(location).to.include("/api/Recipes/" + recipe.id);
+  });
+
+  test("recipe is linked to the picked idea", function() {
+    expect(res.getBody().mealIdeaId).to.equal(Number(bru.getVar("ideaId")));
+  });
+
+  test("recipe info is present and in range", function() {
+    const recipe = res.getBody();
+    expect(typeof recipe.name).to.equal("string");
+    expect(recipe.name.length > 0).to.equal(true);
+    expect(typeof recipe.description).to.equal("string");
+    expect(recipe.description.length > 0).to.equal(true);
+    expect(recipe.servingCount >= 1).to.equal(true);
+    expect(recipe.prepTimeMinutes >= 0).to.equal(true);
+    expect(recipe.cookTimeMinutes >= 0).to.equal(true);
+    expect(recipe.difficulty >= 1 && recipe.difficulty <= 3).to.equal(true);
+  });
+
+  test("recipe is stamped with the current format", function() {
+    const recipe = res.getBody();
+    expect(recipe.formatKey).to.equal("standard");
+    expect(recipe.formatVersion).to.equal(1);
+  });
+
+  test("ingredients are complete and uniquely ordered", function() {
+    const ingredients = res.getBody().ingredients;
+    expect(Array.isArray(ingredients)).to.equal(true);
+    expect(ingredients.length > 0).to.equal(true);
+
+    const orders = ingredients.map(function(i) { return i.order; });
+    expect(new Set(orders).size).to.equal(orders.length);
+    orders.forEach(function(order) { expect(order >= 1).to.equal(true); });
+    ingredients.forEach(function(i) {
+      expect(typeof i.name).to.equal("string");
+      expect(i.name.length > 0).to.equal(true);
+    });
+  });
+
+  test("steps are complete and uniquely ordered", function() {
+    const steps = res.getBody().steps;
+    expect(Array.isArray(steps)).to.equal(true);
+    expect(steps.length > 0).to.equal(true);
+
+    const orders = steps.map(function(s) { return s.order; });
+    expect(new Set(orders).size).to.equal(orders.length);
+    orders.forEach(function(order) { expect(order >= 1).to.equal(true); });
+    steps.forEach(function(s) {
+      expect(typeof s.instruction).to.equal("string");
+      expect(s.instruction.length > 0).to.equal(true);
+    });
+  });
+}

@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "sloppr",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

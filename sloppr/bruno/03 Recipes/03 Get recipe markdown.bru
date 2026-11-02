@@ -1,0 +1,63 @@
+meta {
+  name: Get recipe markdown
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/Recipes/{{recipeId}}/markdown
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: text/markdown
+}
+
+docs {
+  Renders the built-in layout: title, description, info line, notes, ingredients, steps.
+  Steps are numbered from 1 in rendered order; group headings appear only when a group
+  changes.
+}
+
+tests {
+  test("recipeId is set (run 'Generate recipe' first)", function() {
+    expect(Boolean(bru.getVar("recipeId")), "recipeId is empty").to.equal(true);
+  });
+
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("content type is markdown", function() {
+    const contentType = String(res.getHeader("content-type") || "");
+    expect(contentType).to.include("text/markdown");
+  });
+
+  test("markdown has the expected sections", function() {
+    const md = res.getBody();
+    expect(typeof md).to.equal("string");
+    expect(md.startsWith("# ")).to.equal(true);
+    expect(md).to.include("## Ingredients");
+    expect(md).to.include("## Steps");
+  });
+
+  test("markdown shows the recipe name and info line", function() {
+    const md = res.getBody();
+    expect(md).to.include("# " + bru.getVar("recipeName"));
+    expect(md).to.include("**Servings:**");
+    expect(md).to.include("**Prep:**");
+    expect(md).to.include("**Cook:**");
+    expect(md).to.include("**Difficulty:**");
+  });
+
+  test("steps are numbered from 1", function() {
+    const md = res.getBody();
+    expect(md).to.include("\n1. ");
+  });
+
+  test("markdown is plain, not a code fence", function() {
+    const md = res.getBody();
+    expect(md.includes("```")).to.equal(false);
+  });
+}

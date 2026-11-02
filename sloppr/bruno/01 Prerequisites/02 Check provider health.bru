@@ -1,0 +1,36 @@
+meta {
+  name: Check provider health
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/AiProviders/{{providerId}}/health
+  body: none
+  auth: none
+}
+
+settings {
+  timeout: 20000
+}
+
+docs {
+  Refreshes the provider's health against its BaseUrl and HealthPath. A failure here
+  usually means Ollama is not running or baseUrl points at the wrong port.
+}
+
+tests {
+  test("providerId is set (run 'List AI providers' first)", function() {
+    expect(Boolean(bru.getVar("providerId")), "providerId is empty").to.equal(true);
+  });
+
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("provider reports healthy", function() {
+    const health = res.getBody();
+    expect(health.isHealthy, "provider is not healthy; check lastHealthResponse").to.equal(true);
+    expect(health.lastHealthStatusCode).to.equal(200);
+  });
+}

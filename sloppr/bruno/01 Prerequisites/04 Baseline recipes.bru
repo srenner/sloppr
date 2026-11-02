@@ -1,0 +1,32 @@
+meta {
+  name: Baseline recipes
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/Recipes
+  body: none
+  auth: none
+}
+
+script:post-response {
+  const recipes = res.getBody();
+  if (Array.isArray(recipes)) {
+    bru.setVar("recipeCountBefore", recipes.length);
+  }
+}
+
+docs {
+  Records the recipe count so the final list check can prove the new recipe was added.
+}
+
+tests {
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("returns an array", function() {
+    expect(Array.isArray(res.getBody())).to.equal(true);
+  });
+}
