@@ -1,0 +1,32 @@
+meta {
+  name: List meal ideas
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/MealIdeas
+  body: none
+  auth: none
+}
+
+docs {
+  Proves generation persisted the ideas: the picked id must come back from the list.
+}
+
+tests {
+  test("ideaId is set (run 'Generate meal ideas' first)", function() {
+    expect(Boolean(bru.getVar("ideaId")), "ideaId is empty").to.equal(true);
+  });
+
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("the generated idea is in the list", function() {
+    const ideaId = Number(bru.getVar("ideaId"));
+    const ideas = res.getBody();
+    expect(Array.isArray(ideas)).to.equal(true);
+    expect(ideas.some(function(idea) { return idea.id === ideaId; })).to.equal(true);
+  });
+}

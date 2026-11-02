@@ -1,0 +1,76 @@
+meta {
+  name: Generate meal ideas
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/AiInference/meal-ideas
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "prompt": "{{prompt}}"
+  }
+}
+
+settings {
+  timeout: 180000
+}
+
+script:post-response {
+  const ideas = res.getBody();
+  if (Array.isArray(ideas) && ideas.length > 0) {
+    bru.setVar("ideaId", ideas[0].id);
+    bru.setVar("ideaName", ideas[0].name);
+  }
+}
+
+docs {
+  One model call extracts ingredients and cuisines, then a second proposes ideas. An empty
+  array with 200 means the model returned prose or invalid JSON; the parser fails soft.
+  The first idea becomes the picked one for the rest of the run.
+}
+
+tests {
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("returns at least one idea", function() {
+    const ideas = res.getBody();
+    expect(Array.isArray(ideas)).to.equal(true);
+    expect(ideas.length > 0, "empty array: model returned unparseable output").to.equal(true);
+  });
+
+  test("every idea is persisted with an id and a name", function() {
+    const ideas = res.getBody();
+    ideas.forEach(function(idea) {
+      expect(idea.id > 0).to.equal(true);
+      expect(typeof idea.name).to.equal("string");
+      expect(idea.name.length > 0).to.equal(true);
+    });
+  });
+
+  test("ideas start unapproved", function() {
+    res.getBody().forEach(function(idea) {
+      expect(idea.isUserApproved).to.equal(null);
+    });
+  });
+
+  test("ideas carry key ingredients from the prompt", function() {
+    res.getBody().forEach(function(idea) {
+      expect(Array.isArray(idea.keyIngredients)).to.equal(true);
+      expect(
+        idea.keyIngredients.length > 0,
+        "no key ingredients: check ExtractionModelId and rerun"
+      ).to.equal(true);
+    });
+  });
+}

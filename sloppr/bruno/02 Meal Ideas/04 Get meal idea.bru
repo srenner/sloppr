@@ -1,0 +1,37 @@
+meta {
+  name: Get meal idea
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/MealIdeas/{{ideaId}}
+  body: none
+  auth: none
+}
+
+docs {
+  Reads the idea back and confirms the approval was stored.
+}
+
+tests {
+  test("ideaId is set (run 'Generate meal ideas' first)", function() {
+    expect(Boolean(bru.getVar("ideaId")), "ideaId is empty").to.equal(true);
+  });
+
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("the approval was stored", function() {
+    const idea = res.getBody();
+    expect(idea.id).to.equal(Number(bru.getVar("ideaId")));
+    expect(idea.isUserApproved).to.equal(true);
+  });
+
+  test("key ingredients survived the round trip", function() {
+    const idea = res.getBody();
+    expect(Array.isArray(idea.keyIngredients)).to.equal(true);
+    expect(idea.keyIngredients.length > 0).to.equal(true);
+  });
+}

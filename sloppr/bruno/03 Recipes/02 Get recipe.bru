@@ -1,0 +1,45 @@
+meta {
+  name: Get recipe
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/Recipes/{{recipeId}}
+  body: none
+  auth: none
+}
+
+docs {
+  Reads the stored recipe back and checks that ingredients and steps come back sorted by
+  their order, independent of what order the model returned them in.
+}
+
+tests {
+  test("recipeId is set (run 'Generate recipe' first)", function() {
+    expect(Boolean(bru.getVar("recipeId")), "recipeId is empty").to.equal(true);
+  });
+
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("the stored recipe matches the generation response", function() {
+    const recipe = res.getBody();
+    expect(recipe.id).to.equal(Number(bru.getVar("recipeId")));
+    expect(recipe.name).to.equal(bru.getVar("recipeName"));
+    expect(recipe.mealIdeaId).to.equal(Number(bru.getVar("ideaId")));
+    expect(recipe.ingredients.length).to.equal(Number(bru.getVar("ingredientCount")));
+    expect(recipe.steps.length).to.equal(Number(bru.getVar("stepCount")));
+  });
+
+  test("ingredients come back sorted by order", function() {
+    const orders = res.getBody().ingredients.map(function(i) { return i.order; });
+    expect(orders).to.deep.equal([...orders].sort(function(a, b) { return a - b; }));
+  });
+
+  test("steps come back sorted by order", function() {
+    const orders = res.getBody().steps.map(function(s) { return s.order; });
+    expect(orders).to.deep.equal([...orders].sort(function(a, b) { return a - b; }));
+  });
+}
