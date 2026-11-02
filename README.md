@@ -1,12 +1,12 @@
 # sloppr: it's what's for dinner
 
-## What?
+## ...What?
 
 sloppr is a self hosted web app that you install on your home network. It uses AI to give you ideas about what to cook for dinner, and helps you maintain a family cookbook.
 
 ## How?
 
-.NET, Angular, SQLite, Ollama
+.NET, Angular, SQLite, LLMs
 
 ## Why?
 
