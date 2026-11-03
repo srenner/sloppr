@@ -199,8 +199,26 @@ public class ChatService
 
             var generated = JsonSerializer.Deserialize<RecipeGenerationResponse>(
                 response.Text, RecipeJsonOptions);
+            if (generated == null)
+            {
+                return null;
+            }
 
-            return generated == null ? null : _recipeMapper.ToEntity(generated);
+            var recipe = _recipeMapper.ToEntity(generated);
+
+            var ingredientOrder = 1;
+            foreach (var ingredient in recipe.Ingredients)
+            {
+                ingredient.Order = ingredientOrder++;
+            }
+
+            var stepOrder = 1;
+            foreach (var step in recipe.Steps)
+            {
+                step.Order = stepOrder++;
+            }
+
+            return recipe;
         }
         catch (Exception)
         {
