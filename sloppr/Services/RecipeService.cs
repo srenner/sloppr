@@ -31,36 +31,20 @@ public class RecipeService : IRecipeService
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
-    public async Task<RecipeSaveResult> AddAsync(Recipe recipe)
+    public async Task AddAsync(Recipe recipe)
     {
         Normalize(recipe);
-
-        var errors = await ValidateAsync(recipe);
-        if (errors.Count > 0)
-        {
-            return new RecipeSaveResult(null, errors);
-        }
 
         await _uow.Repository<Recipe>().AddAsync(recipe);
         await _uow.CompleteAsync();
-        return new RecipeSaveResult(recipe, []);
     }
 
-    public async Task<RecipeSaveResult> UpdateAsync(Recipe recipe)
+    public async Task UpdateAsync(Recipe recipe)
     {
-        var errors = new List<string>();
-
         Normalize(recipe);
-
-        errors.AddRange(await ValidateAsync(recipe));
-        if (errors.Count > 0)
-        {
-            return new RecipeSaveResult(null, errors);
-        }
 
         _uow.Repository<Recipe>().Update(recipe);
         await _uow.CompleteAsync();
-        return new RecipeSaveResult(recipe, []);
     }
 
     public async Task DeleteAsync(Recipe recipe)
@@ -74,18 +58,5 @@ public class RecipeService : IRecipeService
     {
         recipe.Ingredients ??= [];
         recipe.Steps ??= [];
-    }
-
-    private async Task<List<string>> ValidateAsync(Recipe recipe)
-    {
-        var errors = new List<string>();
-
-        if (recipe.MealIdeaId is int mealIdeaId
-            && !await _db.MealIdeas.AnyAsync(m => m.Id == mealIdeaId))
-        {
-            errors.Add("Meal idea does not exist.");
-        }
-
-        return errors;
     }
 }

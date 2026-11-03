@@ -32,11 +32,7 @@ namespace sloppr.Controllers
         public async Task<ActionResult<RecipeDTO>> PostRecipe(RecipeRequest request)
         {
             var recipe = mapper.ToEntity(request);
-            var result = await svc.AddAsync(recipe);
-            if (!result.IsValid)
-            {
-                return BadRequest(result.Errors);
-            }
+            await svc.AddAsync(recipe);
             return CreatedAtAction(nameof(GetRecipe), new { id = recipe.Id }, mapper.ToDto(recipe));
         }
 
@@ -51,11 +47,7 @@ namespace sloppr.Controllers
 
             ApplyRequest(request, recipe);
 
-            var result = await svc.UpdateAsync(recipe);
-            if (!result.IsValid)
-            {
-                return BadRequest(result.Errors);
-            }
+            await svc.UpdateAsync(recipe);
             return NoContent();
         }
 

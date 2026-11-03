@@ -56,14 +56,10 @@ namespace sloppr.Controllers
 
             recipe.MealIdeaId = mealIdea.Id;
 
-            var result = await recipeService.AddAsync(recipe);
-            if (result.Recipe == null)
-            {
-                return StatusCode(StatusCodes.Status502BadGateway, result.Errors);
-            }
+            await recipeService.AddAsync(recipe);
 
             return CreatedAtAction(nameof(RecipesController.GetRecipe), "Recipes",
-                new { id = result.Recipe.Id }, recipeMapper.ToDto(result.Recipe));
+                new { id = recipe.Id }, recipeMapper.ToDto(recipe));
         }
 
         [HttpPost("ingredient-extraction-challenges/{modelId}")]
