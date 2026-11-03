@@ -8,7 +8,8 @@ namespace sloppr.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class RecipesController(IRecipeService svc,
-                                   RecipeMapper mapper) : ControllerBase
+                                   RecipeMapper mapper,
+                                   IRecipeTemplateService templateSvc) : ControllerBase
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RecipeDTO>>> GetRecipesAsync()
@@ -61,6 +62,27 @@ namespace sloppr.Controllers
             }
             await svc.DeleteAsync(recipe);
             return NoContent();
+        }
+
+        [HttpGet("{id}/markdown")]
+        public async Task<ActionResult<string>> GetRecipeMarkdown(int id, [FromQuery] string? template = null)
+        {
+            Recipe? recipe = await svc.GetByIdAsync(id);
+            if (recipe == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var recipeDto = mapper.ToDto(recipe);
+                var markdown = await templateSvc.RenderAsync(recipeDto, template);
+                return Content(markdown, "text/markdown; charset=utf-8");
+            }
+            catch (FileNotFoundException)
+            {
+                return NotFound($"Template '{template}' not found.");
+            }
         }
 
         private void ApplyRequest(RecipeRequest request, Recipe recipe)
