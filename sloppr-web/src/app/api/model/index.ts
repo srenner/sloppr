@@ -16,6 +16,7 @@ export * from './cuisine';
 export * from './cuisineDTO';
 export * from './getApiAiIngredientExtractionChallengeParams';
 export * from './getApiAiProvidersHealthParams';
+export * from './getApiRecipesIdMarkdownParams';
 export * from './keyIngredient';
 export * from './keyIngredientDTO';
 export * from './mealIdeaApprovalRequest';

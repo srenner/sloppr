@@ -25,6 +25,7 @@ import {
 } from 'rxjs';
 
 import type {
+  GetApiRecipesIdMarkdownParams,
   RecipeDTO,
   RecipeRequest
 } from '../model';
@@ -68,7 +69,69 @@ type HttpClientObserveOptions = HttpClientOptions & {
   readonly observe?: 'body' | 'events' | 'response';
 };
 
+type AngularHttpParamValue = string | number | boolean | Array<string | number | boolean>;
+type AngularHttpParamValueWithNullable = AngularHttpParamValue | null;
 
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys?: ReadonlySet<string>,
+  preserveRequiredNullables?: false,
+  passthroughKeys?: undefined,
+): Record<string, AngularHttpParamValue>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> | undefined,
+  preserveRequiredNullables: true,
+  passthroughKeys?: undefined,
+): Record<string, AngularHttpParamValueWithNullable>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> | undefined,
+  preserveRequiredNullables: boolean | undefined,
+  passthroughKeys: ReadonlySet<string>,
+): Record<string, unknown>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> = new Set(),
+  preserveRequiredNullables = false,
+  passthroughKeys: ReadonlySet<string> = new Set(),
+): Record<string, unknown> {
+  const filteredParams: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (passthroughKeys.has(key)) {
+      if (value !== undefined) {
+        filteredParams[key] = value;
+      }
+      continue;
+    }
+    if (Array.isArray(value)) {
+      const filtered = value.filter(
+        (item) =>
+          item != null &&
+          (typeof item === 'string' ||
+            typeof item === 'number' ||
+            typeof item === 'boolean'),
+      ) as Array<string | number | boolean>;
+      if (filtered.length) {
+        filteredParams[key] = filtered;
+      }
+    } else if (value === null && requiredNullableKeys.has(key)) {
+      // With a paramsSerializer (preserveRequiredNullables) the literal null
+      // is passed through for it to consume; without one, emit an empty
+      // string so the required key still reaches the wire as `?key=`
+      // instead of being silently dropped. See #3712.
+      filteredParams[key] = preserveRequiredNullables ? null : '';
+    } else if (
+      value != null &&
+      (typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean')
+    ) {
+      filteredParams[key] = value;
+    }
+  }
+  return filteredParams;
+}
 
 
 
@@ -91,6 +154,14 @@ export const PostApiRecipesAccept = {
 export type GetApiRecipesIdAccept = typeof GetApiRecipesIdAccept[keyof typeof GetApiRecipesIdAccept];
 
 export const GetApiRecipesIdAccept = {
+  text_plain: 'text/plain',
+  application_json: 'application/json',
+  text_json: 'text/json',
+} as const;
+
+export type GetApiRecipesIdMarkdownAccept = typeof GetApiRecipesIdMarkdownAccept[keyof typeof GetApiRecipesIdMarkdownAccept];
+
+export const GetApiRecipesIdMarkdownAccept = {
   text_plain: 'text/plain',
   application_json: 'application/json',
   text_json: 'text/json',
@@ -289,6 +360,56 @@ export class RecipesService {
         observe: 'body',
       }
     );
+  }
+ getApiRecipesIdMarkdown(id: number | string,
+    accept: 'text/plain',
+    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientOptions): Observable<string>;
+  getApiRecipesIdMarkdown(id: number | string,
+    accept: 'application/json',
+    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientOptions): Observable<string>;
+  getApiRecipesIdMarkdown(id: number | string,
+    accept: 'text/json',
+    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientOptions): Observable<string>;
+  getApiRecipesIdMarkdown(id: number | string,
+    accept?: GetApiRecipesIdMarkdownAccept,
+    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientOptions): Observable<string>;
+  getApiRecipesIdMarkdown(
+    id: number | string,
+    accept: GetApiRecipesIdMarkdownAccept = 'application/json',
+    params?: GetApiRecipesIdMarkdownParams,
+    options?: HttpClientOptions
+  ): Observable<string> {
+    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
+
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.get<string>(`/api/Recipes/${id}/markdown`, {
+        ...options,
+        responseType: 'json',
+        headers,
+        params: filteredParams,
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.get(`/api/Recipes/${id}/markdown`, {
+        ...options,
+        responseType: 'text',
+        headers,
+        params: filteredParams,
+
+      }) as Observable<string>;
+    }
+
+    return this.http.get<string>(`/api/Recipes/${id}/markdown`, {
+        ...options,
+        responseType: 'json',
+        headers,
+        params: filteredParams,
+
+      });
   }
 };
 
