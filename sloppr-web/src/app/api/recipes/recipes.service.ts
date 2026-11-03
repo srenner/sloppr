@@ -290,35 +290,5 @@ export class RecipesService {
       }
     );
   }
- getApiRecipesIdMarkdown<TData = void>(id: number | string, options?: HttpClientBodyOptions): Observable<TData>;
- getApiRecipesIdMarkdown<TData = void>(id: number | string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
- getApiRecipesIdMarkdown<TData = void>(id: number | string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
-  getApiRecipesIdMarkdown<TData = void>(
-    id: number | string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
-    if (options?.observe === 'events') {
-      return this.http.get<TData>(
-      `/api/Recipes/${id}/markdown`,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'events',
-      }
-    );
-    }
-
-    if (options?.observe === 'response') {
-      return this.http.get<TData>(
-      `/api/Recipes/${id}/markdown`,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'response',
-      }
-    );
-    }
-
-    return this.http.get<TData>(
-      `/api/Recipes/${id}/markdown`,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'body',
-      }
-    );
-  }
 };
 

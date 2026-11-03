@@ -106,11 +106,6 @@ Accept: application/json
 
 ###
 
-GET {{sloppr_HostAddress}}/api/Recipes/1/markdown
-Accept: text/markdown
-
-###
-
 POST {{sloppr_HostAddress}}/api/Recipes/
 Content-Type: application/json
 
@@ -120,7 +115,6 @@ Content-Type: application/json
   "servingCount": 4,
   "prepTimeMinutes": 10,
   "cookTimeMinutes": 20,
-  "difficulty": 2,
   "notes": "string",
   "mealIdeaId": null,
   "ingredients": [
@@ -153,7 +147,6 @@ Content-Type: application/json
   "servingCount": 4,
   "prepTimeMinutes": 10,
   "cookTimeMinutes": 20,
-  "difficulty": 2,
   "notes": "string",
   "mealIdeaId": null,
   "ingredients": [

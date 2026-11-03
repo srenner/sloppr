@@ -1,5 +1,3 @@
-using sloppr.Recipes;
-
 namespace sloppr.DTOs;
 
 public class RecipeDTO
@@ -17,11 +15,8 @@ public class RecipeDTO
     public int ServingCount { get; set; }
     public int PrepTimeMinutes { get; set; }
     public int CookTimeMinutes { get; set; }
-    public int Difficulty { get; set; }
+    public int? Difficulty { get; set; }
     public string? Notes { get; set; }
-
-    public string FormatKey { get; set; } = RecipeFormat.Key;
-    public int FormatVersion { get; set; } = RecipeFormat.Version;
 
     public int? MealIdeaId { get; set; }
     public ICollection<RecipeIngredientDTO> Ingredients { get; set; } = [];

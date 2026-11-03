@@ -15,7 +15,7 @@ namespace sloppr.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.13");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
 
             modelBuilder.Entity("sloppr.Models.AiModel", b =>
                 {
@@ -323,19 +323,8 @@ namespace sloppr.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Difficulty")
+                    b.Property<int?>("Difficulty")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("FormatKey")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue("standard");
-
-                    b.Property<int>("FormatVersion")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(1);
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
@@ -367,53 +356,7 @@ namespace sloppr.Migrations
 
                     b.HasIndex("MealIdeaId");
 
-                    b.HasIndex("FormatKey", "FormatVersion");
-
                     b.ToTable("Recipes");
-                });
-
-            modelBuilder.Entity("sloppr.Models.RecipeFormatVersion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsCurrent")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Rules")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RecipeFormats", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedBy = "system",
-                            DateCreated = new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsCurrent = true,
-                            Key = "standard",
-                            Rules = "{\n  \"info\": {\n    \"name\": { \"required\": true, \"maxLength\": 120 },\n    \"description\": { \"required\": true, \"maxLength\": 500 },\n    \"servingCount\": { \"min\": 1 },\n    \"prepTimeMinutes\": { \"min\": 0 },\n    \"cookTimeMinutes\": { \"min\": 0 },\n    \"difficulty\": { \"min\": 1, \"max\": 3 },\n    \"notes\": { \"maxLength\": 1000 }\n  },\n  \"ingredients\": {\n    \"minCount\": 1,\n    \"fields\": {\n      \"order\": { \"min\": 1, \"unique\": true },\n      \"quantity\": { \"minExclusive\": 0 },\n      \"unit\": { \"maxLength\": 40 },\n      \"name\": { \"required\": true, \"maxLength\": 120 },\n      \"group\": { \"maxLength\": 50 },\n      \"note\": { \"maxLength\": 200 }\n    }\n  },\n  \"steps\": {\n    \"minCount\": 1,\n    \"fields\": {\n      \"order\": { \"min\": 1, \"unique\": true },\n      \"instruction\": { \"required\": true, \"maxLength\": 1000 },\n      \"group\": { \"maxLength\": 50 }\n    }\n  }\n}",
-                            Version = 1
-                        });
                 });
 
             modelBuilder.Entity("sloppr.Models.RecipeIngredient", b =>
@@ -508,13 +451,6 @@ namespace sloppr.Migrations
                     b.HasOne("sloppr.Models.MealIdea", "MealIdea")
                         .WithMany()
                         .HasForeignKey("MealIdeaId");
-
-                    b.HasOne("sloppr.Models.RecipeFormatVersion", null)
-                        .WithMany()
-                        .HasForeignKey("FormatKey", "FormatVersion")
-                        .HasPrincipalKey("Key", "Version")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
                     b.Navigation("MealIdea");
                 });

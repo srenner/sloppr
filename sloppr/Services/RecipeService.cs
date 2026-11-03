@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using sloppr.DataAccess;
 using sloppr.Models;
-using sloppr.Recipes;
 
 namespace sloppr.Services;
 
@@ -32,29 +31,8 @@ public class RecipeService : IRecipeService
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
-    public async Task<RecipeFormatVersion?> GetCurrentFormatAsync()
-    {
-        return await _db.RecipeFormats
-            .AsNoTracking()
-            .Where(f => f.IsCurrent && f.Key == RecipeFormat.Key)
-            .OrderByDescending(f => f.Version)
-            .FirstOrDefaultAsync();
-    }
-
     public async Task<RecipeSaveResult> AddAsync(Recipe recipe)
     {
-        var format = await _db.RecipeFormats
-            .Where(f => f.IsCurrent && f.Key == RecipeFormat.Key)
-            .OrderByDescending(f => f.Version)
-            .FirstOrDefaultAsync();
-        if (format is null)
-        {
-            return new RecipeSaveResult(null, ["No current recipe format is configured."]);
-        }
-
-        recipe.FormatKey = format.Key;
-        recipe.FormatVersion = format.Version;
-
         Normalize(recipe);
 
         var errors = await ValidateAsync(recipe);
@@ -73,13 +51,6 @@ public class RecipeService : IRecipeService
         var errors = new List<string>();
 
         Normalize(recipe);
-
-        var formatExists = await _db.RecipeFormats
-            .AnyAsync(f => f.Key == recipe.FormatKey && f.Version == recipe.FormatVersion);
-        if (!formatExists)
-        {
-            errors.Add("Unknown recipe format.");
-        }
 
         errors.AddRange(await ValidateAsync(recipe));
         if (errors.Count > 0)
@@ -115,7 +86,6 @@ public class RecipeService : IRecipeService
             errors.Add("Meal idea does not exist.");
         }
 
-        errors.AddRange(RecipeFormatValidator.Validate(recipe));
         return errors;
     }
 }

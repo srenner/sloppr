@@ -16,8 +16,11 @@ export interface RecipeRequest {
   prepTimeMinutes?: number | string;
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   cookTimeMinutes?: number | string;
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  difficulty?: number | string;
+  /**
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)$
+     */
+  difficulty?: number | string | null;
   /** @nullable */
   notes?: string | null;
   /**

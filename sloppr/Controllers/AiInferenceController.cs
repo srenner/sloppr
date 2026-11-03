@@ -47,14 +47,7 @@ namespace sloppr.Controllers
                 return NotFound();
             }
 
-            var format = await recipeService.GetCurrentFormatAsync();
-            if (format == null)
-            {
-                return StatusCode(StatusCodes.Status502BadGateway,
-                    new[] { "No current recipe format is configured." });
-            }
-
-            var recipe = await chatService.GenerateRecipeAsync(mealIdea, format.Rules);
+            var recipe = await chatService.GenerateRecipeAsync(mealIdea);
             if (recipe == null)
             {
                 return StatusCode(StatusCodes.Status502BadGateway,
@@ -69,7 +62,7 @@ namespace sloppr.Controllers
                 return StatusCode(StatusCodes.Status502BadGateway, result.Errors);
             }
 
-            return CreatedAtAction(nameof(RecipesController.GetRecipe),
+            return CreatedAtAction(nameof(RecipesController.GetRecipe), "Recipes",
                 new { id = result.Recipe.Id }, recipeMapper.ToDto(result.Recipe));
         }
 

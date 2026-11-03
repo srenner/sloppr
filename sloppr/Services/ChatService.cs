@@ -186,7 +186,7 @@ public class ChatService
         }
     }
 
-    public async Task<Recipe?> GenerateRecipeAsync(MealIdea idea, string formatRules)
+    public async Task<Recipe?> GenerateRecipeAsync(MealIdea idea)
     {
         if (_appSettingService.Settings.RecipeModelId is not int recipeModelId)
         {
@@ -209,8 +209,7 @@ public class ChatService
 
         var keyIngredients = string.Join(", ", idea.KeyIngredients.Select(k => k.Name));
         var userPrompt = $"Meal idea: {idea.Name}\n"
-            + $"Key ingredients: {keyIngredients}\n"
-            + $"Format rules (JSON):\n{formatRules}";
+            + $"Key ingredients: {keyIngredients}";
 
         List<ChatMessage> messages = new()
         {
@@ -222,7 +221,11 @@ public class ChatService
         {
             IChatClient client = _factory.Create(config);
             ChatResponse? response = await client.GetResponseAsync(
-                messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
+                messages, new ChatOptions
+                {
+                    ResponseFormat = ChatResponseFormat.ForJsonSchema<RecipeGenerationResponse>(
+                        RecipeJsonOptions, "recipe", "A complete recipe")
+                });
 
             var generated = JsonSerializer.Deserialize<RecipeGenerationResponse>(
                 response.Text, RecipeJsonOptions);

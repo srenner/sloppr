@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using sloppr.DTOs;
 using sloppr.Models;
-using sloppr.Recipes;
 using sloppr.Services;
 
 namespace sloppr.Controllers
@@ -27,17 +26,6 @@ namespace sloppr.Controllers
                 return NotFound();
             }
             return mapper.ToDto(recipe);
-        }
-
-        [HttpGet("{id}/markdown")]
-        public async Task<IActionResult> GetRecipeMarkdown(int id)
-        {
-            Recipe? recipe = await svc.GetByIdAsync(id);
-            if (recipe == null)
-            {
-                return NotFound();
-            }
-            return Content(RecipeMarkdownRenderer.Render(recipe), "text/markdown; charset=utf-8");
         }
 
         [HttpPost]

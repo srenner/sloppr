@@ -1,7 +1,9 @@
 # Manual test: prompt → meal ideas → pick → recipe → view
 
 Date: 2026-11-01
-Status: ready to run
+Status: partially superseded — format and markdown checks were removed by
+[`2026-11-02-recipe-format-reset.md`](2026-11-02-recipe-format-reset.md); the rest is
+still usable.
 Scope: `sloppr/` backend, run by a human. No Angular UI yet, so "the user" is a REST
 client (Scalar, `sloppr.http`, or any HTTP client).
 Time: 15–30 minutes, most of it waiting on the local model.
