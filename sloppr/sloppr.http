@@ -106,6 +106,12 @@ Accept: application/json
 
 ###
 
+// Omit ?template to use default.md; unknown names also fall back to it.
+GET {{sloppr_HostAddress}}/api/Recipes/{id}/markdown?template=default
+Accept: text/markdown
+
+###
+
 POST {{sloppr_HostAddress}}/api/Recipes/
 Content-Type: application/json
 

@@ -19,6 +19,7 @@ script:post-response {
   if (recipe && recipe.id) {
     bru.setVar("recipeId", recipe.id);
     bru.setVar("recipeName", recipe.name);
+    bru.setVar("recipeDifficulty", recipe.difficulty == null ? "" : String(recipe.difficulty));
     bru.setVar("ingredientCount", (recipe.ingredients || []).length);
     bru.setVar("stepCount", (recipe.steps || []).length);
   }
