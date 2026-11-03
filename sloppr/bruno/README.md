@@ -1,7 +1,6 @@
 # sloppr Bruno collection
 
 Manual end-to-end test of the dinner flow: prompt → meal ideas → approval → recipe.
-It mirrors `docs/plans/2026-11-01-manual-happy-path-test.md`.
 
 ## Prerequisites
 

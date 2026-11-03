@@ -4,7 +4,6 @@ Two independent projects, no root solution or manifest. Run commands from each p
 
 - `sloppr/` — ASP.NET Core API (.NET 10, EF Core + SQLite, Microsoft.Extensions.AI/Ollama). Entrypoint: `sloppr/Program.cs`.
 - `sloppr-web/` — Angular 21 standalone frontend; follow `sloppr-web/AGENTS.md`.
-- Plans live in `docs/plans/` as `<YYYY-MM-DD>-<topic>.md`.
 
 ## Workspace boundary
 
@@ -36,7 +35,6 @@ The AI's role is narrow: **write code and suggest next steps.** Do not act beyon
 - Create concise plans with minimal jargon.
 - For code changes, report only: files changed, one-line reason, verification command, and
   next step. Do not paste full diffs or file contents unless asked.
-- Do not repeat settled decisions or plan content; point to the plan file instead.
 - Stop at the requested chunk or step. Do not preview the next one unless asked.
 - Ask at most one question per response, and only when the answer changes the
   implementation. Bundle related choices into that question.
