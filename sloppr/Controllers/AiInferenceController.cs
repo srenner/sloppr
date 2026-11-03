@@ -92,7 +92,12 @@ namespace sloppr.Controllers
                     new ChatMessage(ChatRole.User, challenge.Prompt),
                 };
                 ChatResponse? response = await client.GetResponseAsync(
-                    messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
+                    messages, new ChatOptions
+                    {
+                        ResponseFormat = ChatResponseFormat.ForJsonSchema<ExtractedIngredientsResponse>(
+                            schemaName: "ingredients",
+                            schemaDescription: "Ingredients extracted from the user prompt")
+                    });
                 dto.Challenges.Add(new IngredientChallenge(challenge.Prompt, challenge.ExpectedResponse,
                                         response.Text, response.Usage.InputTokenCount, response.Usage.OutputTokenCount));
             }

@@ -8,7 +8,6 @@ using sloppr.DTOs;
 using sloppr.Enums;
 using sloppr.Models;
 using sloppr.Settings;
-using sloppr.Utilities;
 
 namespace sloppr.Services;
 
@@ -16,8 +15,9 @@ public class ChatService
 {
     private readonly ProviderTypeSettings _providerTypeSettings;
     private readonly AISettings _aiSettings;
-    private static readonly JsonSerializerOptions RecipeJsonOptions = new()
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true
     };
 
@@ -71,7 +71,8 @@ public class ChatService
         if (model != null)
         {
             var systemPrompt = _aiSettings.DefaultIngredientExtractionPrompt;
-            return await ExtractArray(systemPrompt, prompt, model);
+            return await ExtractArray<ExtractedIngredientsResponse>(
+                systemPrompt, prompt, model, result => result.Ingredients);
         }
         else
         {
@@ -85,7 +86,8 @@ public class ChatService
         if (model != null)
         {
             var systemPrompt = _aiSettings.DefaultCuisineExtractionPrompt;
-            return await ExtractArray(systemPrompt, prompt, model);
+            return await ExtractArray<ExtractedCuisinesResponse>(
+                systemPrompt, prompt, model, result => result.Cuisines);
         }
         else
         {
@@ -93,7 +95,11 @@ public class ChatService
         }
     }
 
-    private async Task<string[]> ExtractArray(string systemPrompt, string userPrompt, AiModel model)
+    private async Task<string[]> ExtractArray<TResponse>(string systemPrompt,
+                                                         string userPrompt,
+                                                         AiModel model,
+                                                         Func<TResponse, List<string>> select)
+        where TResponse : class
     {
         var config = new ChatClientConfig
         {
@@ -110,8 +116,13 @@ public class ChatService
                 new ChatMessage(ChatRole.User, userPrompt),
         };
 
-        ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
-        return LlmArrayResponse.Read(response.Text).ToArray();
+        ChatResponse response = await client.GetResponseAsync(messages, new ChatOptions
+        {
+            ResponseFormat = ChatResponseFormat.ForJsonSchema<TResponse>(JsonOptions)
+        });
+
+        var parsed = JsonSerializer.Deserialize<TResponse>(response.Text, JsonOptions);
+        return parsed is null ? [] : select(parsed).ToArray();
     }
 
     public async Task<string[]> GenerateIdeas(string userPrompt, string[] keyIngredients, string[] cuisines)
@@ -147,8 +158,13 @@ public class ChatService
                     new ChatMessage(ChatRole.System, _aiSettings.IdeaGenerationPrompt),
                     new ChatMessage(ChatRole.User, refinedPrompt.ToString()),
                 };
-            ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
-            return LlmArrayResponse.Read(response.Text).ToArray();
+            ChatResponse response = await client.GetResponseAsync(messages, new ChatOptions
+            {
+                ResponseFormat = ChatResponseFormat.ForJsonSchema<GeneratedIdeasResponse>(JsonOptions)
+            });
+
+            var generated = JsonSerializer.Deserialize<GeneratedIdeasResponse>(response.Text, JsonOptions);
+            return generated is null ? [] : generated.Ideas.ToArray();
         }
         else
         {
@@ -190,15 +206,15 @@ public class ChatService
         try
         {
             IChatClient client = _factory.Create(config);
-            ChatResponse? response = await client.GetResponseAsync(
+            ChatResponse response = await client.GetResponseAsync(
                 messages, new ChatOptions
                 {
                     ResponseFormat = ChatResponseFormat.ForJsonSchema<RecipeGenerationResponse>(
-                        RecipeJsonOptions, "recipe", "A complete recipe")
+                        JsonOptions, "recipe", "A complete recipe")
                 });
 
             var generated = JsonSerializer.Deserialize<RecipeGenerationResponse>(
-                response.Text, RecipeJsonOptions);
+                response.Text, JsonOptions);
             if (generated == null)
             {
                 return null;
