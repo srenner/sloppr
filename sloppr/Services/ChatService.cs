@@ -65,36 +65,6 @@ public class ChatService
         return "";
     }
 
-
-    public async Task ExecuteOrchestration(string userPrompt)
-    {
-        // extract ingredients from prompt
-        // system prompt specifies LLM to return json array of key ingredients
-        // Upsert to KeyIngredients table, increment numqueried
-        string[] keyIngredients = ["ground beef", "rice", "carrots"];
-
-        // generate 3 ideas from keyIngredients
-        // system prompt specifies LLM to return json array of ideas
-        string[] mealIdeas =
-        {
-            "Beef & Carrot Fried Rice",
-            "Korean-Style Beef Rice Bowls",
-            "Stuffed Bell Peppers with Beef & Rice"
-        };
-
-        // user can thumbs-down an idea they don't want to see
-        // user picks idea to generate recipe
-        // LLM returns markdown recipe
-
-        // recipe builder prompt:
-
-        string rPrompt = "Generate a recipe for " + mealIdeas[0] +
-        " for a family dinner. The meal should incorporate the following key ingredients: "
-        + string.Join(", ", keyIngredients) + ". Additional ingredients should only contain common household staples.";
-
-
-    }
-
     public async Task<string[]> ExtractIngredients(string prompt)
     {
         var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.ExtractionModelId.Value);
