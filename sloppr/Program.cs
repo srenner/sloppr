@@ -60,6 +60,7 @@ builder.Services.AddScoped<IMealIdeaService, MealIdeaService>();
 
 builder.Services.AddScoped<RecipeMapper>();
 builder.Services.AddScoped<IRecipeService, RecipeService>();
+builder.Services.AddScoped<IRecipeTemplateService, RecipeTemplateService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

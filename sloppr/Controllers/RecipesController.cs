@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using sloppr.DTOs;
 using sloppr.Models;
-using sloppr.Recipes;
 using sloppr.Services;
 
 namespace sloppr.Controllers
@@ -9,8 +8,11 @@ namespace sloppr.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class RecipesController(IRecipeService svc,
-                                   RecipeMapper mapper) : ControllerBase
+                                   RecipeMapper mapper,
+                                   IRecipeTemplateService templateSvc) : ControllerBase
     {
+        private const string MarkdownContentType = "text/markdown";
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RecipeDTO>>> GetRecipesAsync()
         {
@@ -29,26 +31,11 @@ namespace sloppr.Controllers
             return mapper.ToDto(recipe);
         }
 
-        [HttpGet("{id}/markdown")]
-        public async Task<IActionResult> GetRecipeMarkdown(int id)
-        {
-            Recipe? recipe = await svc.GetByIdAsync(id);
-            if (recipe == null)
-            {
-                return NotFound();
-            }
-            return Content(RecipeMarkdownRenderer.Render(recipe), "text/markdown; charset=utf-8");
-        }
-
         [HttpPost]
         public async Task<ActionResult<RecipeDTO>> PostRecipe(RecipeRequest request)
         {
             var recipe = mapper.ToEntity(request);
-            var result = await svc.AddAsync(recipe);
-            if (!result.IsValid)
-            {
-                return BadRequest(result.Errors);
-            }
+            await svc.AddAsync(recipe);
             return CreatedAtAction(nameof(GetRecipe), new { id = recipe.Id }, mapper.ToDto(recipe));
         }
 
@@ -63,11 +50,7 @@ namespace sloppr.Controllers
 
             ApplyRequest(request, recipe);
 
-            var result = await svc.UpdateAsync(recipe);
-            if (!result.IsValid)
-            {
-                return BadRequest(result.Errors);
-            }
+            await svc.UpdateAsync(recipe);
             return NoContent();
         }
 
@@ -81,6 +64,30 @@ namespace sloppr.Controllers
             }
             await svc.DeleteAsync(recipe);
             return NoContent();
+        }
+
+        [HttpGet("{id}/markdown")]
+        [Produces(MarkdownContentType)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetRecipeMarkdown(int id, [FromQuery] string? template = null)
+        {
+            Recipe? recipe = await svc.GetByIdAsync(id);
+            if (recipe == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var recipeDto = mapper.ToDto(recipe);
+                var markdown = await templateSvc.RenderAsync(recipeDto, template);
+                return Content(markdown, $"{MarkdownContentType}; charset=utf-8");
+            }
+            catch (FileNotFoundException)
+            {
+                return NotFound("Recipe template not found.");
+            }
         }
 
         private void ApplyRequest(RecipeRequest request, Recipe recipe)

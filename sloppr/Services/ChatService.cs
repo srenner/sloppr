@@ -8,7 +8,6 @@ using sloppr.DTOs;
 using sloppr.Enums;
 using sloppr.Models;
 using sloppr.Settings;
-using sloppr.Utilities;
 
 namespace sloppr.Services;
 
@@ -16,8 +15,9 @@ public class ChatService
 {
     private readonly ProviderTypeSettings _providerTypeSettings;
     private readonly AISettings _aiSettings;
-    private static readonly JsonSerializerOptions RecipeJsonOptions = new()
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true
     };
 
@@ -65,43 +65,14 @@ public class ChatService
         return "";
     }
 
-
-    public async Task ExecuteOrchestration(string userPrompt)
-    {
-        // extract ingredients from prompt
-        // system prompt specifies LLM to return json array of key ingredients
-        // Upsert to KeyIngredients table, increment numqueried
-        string[] keyIngredients = ["ground beef", "rice", "carrots"];
-
-        // generate 3 ideas from keyIngredients
-        // system prompt specifies LLM to return json array of ideas
-        string[] mealIdeas =
-        {
-            "Beef & Carrot Fried Rice",
-            "Korean-Style Beef Rice Bowls",
-            "Stuffed Bell Peppers with Beef & Rice"
-        };
-
-        // user can thumbs-down an idea they don't want to see
-        // user picks idea to generate recipe
-        // LLM returns markdown recipe
-
-        // recipe builder prompt:
-
-        string rPrompt = "Generate a recipe for " + mealIdeas[0] +
-        " for a family dinner. The meal should incorporate the following key ingredients: "
-        + string.Join(", ", keyIngredients) + ". Additional ingredients should only contain common household staples.";
-
-
-    }
-
     public async Task<string[]> ExtractIngredients(string prompt)
     {
         var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.ExtractionModelId.Value);
         if (model != null)
         {
             var systemPrompt = _aiSettings.DefaultIngredientExtractionPrompt;
-            return await ExtractArray(systemPrompt, prompt, model);
+            return await ExtractArray<ExtractedIngredientsResponse>(
+                systemPrompt, prompt, model, result => result.Ingredients);
         }
         else
         {
@@ -115,7 +86,8 @@ public class ChatService
         if (model != null)
         {
             var systemPrompt = _aiSettings.DefaultCuisineExtractionPrompt;
-            return await ExtractArray(systemPrompt, prompt, model);
+            return await ExtractArray<ExtractedCuisinesResponse>(
+                systemPrompt, prompt, model, result => result.Cuisines);
         }
         else
         {
@@ -123,7 +95,11 @@ public class ChatService
         }
     }
 
-    private async Task<string[]> ExtractArray(string systemPrompt, string userPrompt, AiModel model)
+    private async Task<string[]> ExtractArray<TResponse>(string systemPrompt,
+                                                         string userPrompt,
+                                                         AiModel model,
+                                                         Func<TResponse, List<string>> select)
+        where TResponse : class
     {
         var config = new ChatClientConfig
         {
@@ -140,8 +116,13 @@ public class ChatService
                 new ChatMessage(ChatRole.User, userPrompt),
         };
 
-        ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
-        return LlmArrayResponse.Read(response.Text).ToArray();
+        ChatResponse response = await client.GetResponseAsync(messages, new ChatOptions
+        {
+            ResponseFormat = ChatResponseFormat.ForJsonSchema<TResponse>(JsonOptions)
+        });
+
+        var parsed = JsonSerializer.Deserialize<TResponse>(response.Text, JsonOptions);
+        return parsed is null ? [] : select(parsed).ToArray();
     }
 
     public async Task<string[]> GenerateIdeas(string userPrompt, string[] keyIngredients, string[] cuisines)
@@ -177,8 +158,13 @@ public class ChatService
                     new ChatMessage(ChatRole.System, _aiSettings.IdeaGenerationPrompt),
                     new ChatMessage(ChatRole.User, refinedPrompt.ToString()),
                 };
-            ChatResponse? response = await client.GetResponseAsync(messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
-            return LlmArrayResponse.Read(response.Text).ToArray();
+            ChatResponse response = await client.GetResponseAsync(messages, new ChatOptions
+            {
+                ResponseFormat = ChatResponseFormat.ForJsonSchema<GeneratedIdeasResponse>(JsonOptions)
+            });
+
+            var generated = JsonSerializer.Deserialize<GeneratedIdeasResponse>(response.Text, JsonOptions);
+            return generated is null ? [] : generated.Ideas.ToArray();
         }
         else
         {
@@ -186,7 +172,7 @@ public class ChatService
         }
     }
 
-    public async Task<Recipe?> GenerateRecipeAsync(MealIdea idea, string formatRules)
+    public async Task<Recipe?> GenerateRecipeAsync(MealIdea idea)
     {
         if (_appSettingService.Settings.RecipeModelId is not int recipeModelId)
         {
@@ -209,8 +195,7 @@ public class ChatService
 
         var keyIngredients = string.Join(", ", idea.KeyIngredients.Select(k => k.Name));
         var userPrompt = $"Meal idea: {idea.Name}\n"
-            + $"Key ingredients: {keyIngredients}\n"
-            + $"Format rules (JSON):\n{formatRules}";
+            + $"Key ingredients: {keyIngredients}";
 
         List<ChatMessage> messages = new()
         {
@@ -221,13 +206,35 @@ public class ChatService
         try
         {
             IChatClient client = _factory.Create(config);
-            ChatResponse? response = await client.GetResponseAsync(
-                messages, new ChatOptions { ResponseFormat = ChatResponseFormat.Json });
+            ChatResponse response = await client.GetResponseAsync(
+                messages, new ChatOptions
+                {
+                    ResponseFormat = ChatResponseFormat.ForJsonSchema<RecipeGenerationResponse>(
+                        JsonOptions, "recipe", "A complete recipe")
+                });
 
             var generated = JsonSerializer.Deserialize<RecipeGenerationResponse>(
-                response.Text, RecipeJsonOptions);
+                response.Text, JsonOptions);
+            if (generated == null)
+            {
+                return null;
+            }
 
-            return generated == null ? null : _recipeMapper.ToEntity(generated);
+            var recipe = _recipeMapper.ToEntity(generated);
+
+            var ingredientOrder = 1;
+            foreach (var ingredient in recipe.Ingredients)
+            {
+                ingredient.Order = ingredientOrder++;
+            }
+
+            var stepOrder = 1;
+            foreach (var step in recipe.Steps)
+            {
+                step.Order = stepOrder++;
+            }
+
+            return recipe;
         }
         catch (Exception)
         {

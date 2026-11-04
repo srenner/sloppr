@@ -19,15 +19,15 @@ script:post-response {
   if (recipe && recipe.id) {
     bru.setVar("recipeId", recipe.id);
     bru.setVar("recipeName", recipe.name);
+    bru.setVar("recipeDifficulty", recipe.difficulty == null ? "" : String(recipe.difficulty));
     bru.setVar("ingredientCount", (recipe.ingredients || []).length);
     bru.setVar("stepCount", (recipe.steps || []).length);
   }
 }
 
 docs {
-  Generates with RecipeModelId, validates against the current format row, and persists.
-  Failure modes: 404 unknown idea, 502 no format / model unavailable / unparseable
-  output / format validation errors, 409 once the linkage chunk lands.
+  Generates with RecipeModelId and persists. Failure modes: 404 unknown idea, 502 model
+  unavailable or unparseable output, 409 once the linkage chunk lands.
 }
 
 tests {
@@ -58,13 +58,9 @@ tests {
     expect(recipe.servingCount >= 1).to.equal(true);
     expect(recipe.prepTimeMinutes >= 0).to.equal(true);
     expect(recipe.cookTimeMinutes >= 0).to.equal(true);
-    expect(recipe.difficulty >= 1 && recipe.difficulty <= 3).to.equal(true);
-  });
-
-  test("recipe is stamped with the current format", function() {
-    const recipe = res.getBody();
-    expect(recipe.formatKey).to.equal("standard");
-    expect(recipe.formatVersion).to.equal(1);
+    if (recipe.difficulty !== null && recipe.difficulty !== undefined) {
+      expect(recipe.difficulty >= 1 && recipe.difficulty <= 3).to.equal(true);
+    }
   });
 
   test("ingredients are complete and uniquely ordered", function() {

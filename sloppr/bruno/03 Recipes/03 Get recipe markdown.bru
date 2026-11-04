@@ -15,9 +15,8 @@ headers {
 }
 
 docs {
-  Renders the built-in layout: title, description, info line, notes, ingredients, steps.
-  Steps are numbered from 1 in rendered order; group headings appear only when a group
-  changes.
+  Renders the stored recipe with Templates/Recipes/default.md. Append ?template=<name> to
+  select another template; unknown names fall back to the default.
 }
 
 tests {
@@ -34,30 +33,46 @@ tests {
     expect(contentType).to.include("text/markdown");
   });
 
-  test("markdown has the expected sections", function() {
+  test("markdown uses the default template", function() {
     const md = res.getBody();
     expect(typeof md).to.equal("string");
-    expect(md.startsWith("# ")).to.equal(true);
+    expect(md.startsWith("# Standard Recipe")).to.equal(true);
+    expect(md).to.include("# " + bru.getVar("recipeName"));
+  });
+
+  test("markdown has the expected sections", function() {
+    const md = res.getBody();
     expect(md).to.include("## Ingredients");
     expect(md).to.include("## Steps");
   });
 
-  test("markdown shows the recipe name and info line", function() {
+  test("markdown shows the recipe info", function() {
     const md = res.getBody();
-    expect(md).to.include("# " + bru.getVar("recipeName"));
     expect(md).to.include("**Servings:**");
-    expect(md).to.include("**Prep:**");
-    expect(md).to.include("**Cook:**");
-    expect(md).to.include("**Difficulty:**");
+    expect(md).to.include("**Prep Time:**");
+    expect(md).to.include("**Cook Time:**");
+  });
+
+  test("difficulty line matches the stored value", function() {
+    const md = res.getBody();
+    const difficulty = bru.getVar("recipeDifficulty");
+    if (difficulty) {
+      expect(md).to.include("**Difficulty:** " + difficulty + "/3");
+    } else {
+      expect(md.includes("**Difficulty:**")).to.equal(false);
+    }
   });
 
   test("steps are numbered from 1", function() {
-    const md = res.getBody();
-    expect(md).to.include("\n1. ");
+    expect(res.getBody()).to.include("\n1. ");
   });
 
   test("markdown is plain, not a code fence", function() {
     const md = res.getBody();
     expect(md.includes("```")).to.equal(false);
+  });
+
+  test("no template placeholders remain", function() {
+    expect(res.getBody().includes("{{")).to.equal(false);
   });
 }

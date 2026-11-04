@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using sloppr.DataAccess;
 using sloppr.Models;
-using sloppr.Recipes;
 
 namespace sloppr.Services;
 
@@ -32,64 +31,20 @@ public class RecipeService : IRecipeService
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
-    public async Task<RecipeFormatVersion?> GetCurrentFormatAsync()
+    public async Task AddAsync(Recipe recipe)
     {
-        return await _db.RecipeFormats
-            .AsNoTracking()
-            .Where(f => f.IsCurrent && f.Key == RecipeFormat.Key)
-            .OrderByDescending(f => f.Version)
-            .FirstOrDefaultAsync();
-    }
-
-    public async Task<RecipeSaveResult> AddAsync(Recipe recipe)
-    {
-        var format = await _db.RecipeFormats
-            .Where(f => f.IsCurrent && f.Key == RecipeFormat.Key)
-            .OrderByDescending(f => f.Version)
-            .FirstOrDefaultAsync();
-        if (format is null)
-        {
-            return new RecipeSaveResult(null, ["No current recipe format is configured."]);
-        }
-
-        recipe.FormatKey = format.Key;
-        recipe.FormatVersion = format.Version;
-
         Normalize(recipe);
-
-        var errors = await ValidateAsync(recipe);
-        if (errors.Count > 0)
-        {
-            return new RecipeSaveResult(null, errors);
-        }
 
         await _uow.Repository<Recipe>().AddAsync(recipe);
         await _uow.CompleteAsync();
-        return new RecipeSaveResult(recipe, []);
     }
 
-    public async Task<RecipeSaveResult> UpdateAsync(Recipe recipe)
+    public async Task UpdateAsync(Recipe recipe)
     {
-        var errors = new List<string>();
-
         Normalize(recipe);
-
-        var formatExists = await _db.RecipeFormats
-            .AnyAsync(f => f.Key == recipe.FormatKey && f.Version == recipe.FormatVersion);
-        if (!formatExists)
-        {
-            errors.Add("Unknown recipe format.");
-        }
-
-        errors.AddRange(await ValidateAsync(recipe));
-        if (errors.Count > 0)
-        {
-            return new RecipeSaveResult(null, errors);
-        }
 
         _uow.Repository<Recipe>().Update(recipe);
         await _uow.CompleteAsync();
-        return new RecipeSaveResult(recipe, []);
     }
 
     public async Task DeleteAsync(Recipe recipe)
@@ -103,19 +58,5 @@ public class RecipeService : IRecipeService
     {
         recipe.Ingredients ??= [];
         recipe.Steps ??= [];
-    }
-
-    private async Task<List<string>> ValidateAsync(Recipe recipe)
-    {
-        var errors = new List<string>();
-
-        if (recipe.MealIdeaId is int mealIdeaId
-            && !await _db.MealIdeas.AnyAsync(m => m.Id == mealIdeaId))
-        {
-            errors.Add("Meal idea does not exist.");
-        }
-
-        errors.AddRange(RecipeFormatValidator.Validate(recipe));
-        return errors;
     }
 }

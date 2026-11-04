@@ -106,7 +106,8 @@ Accept: application/json
 
 ###
 
-GET {{sloppr_HostAddress}}/api/Recipes/1/markdown
+// Omit ?template to use default.md; unknown names also fall back to it.
+GET {{sloppr_HostAddress}}/api/Recipes/{id}/markdown?template=default
 Accept: text/markdown
 
 ###
@@ -120,7 +121,6 @@ Content-Type: application/json
   "servingCount": 4,
   "prepTimeMinutes": 10,
   "cookTimeMinutes": 20,
-  "difficulty": 2,
   "notes": "string",
   "mealIdeaId": null,
   "ingredients": [
@@ -153,7 +153,6 @@ Content-Type: application/json
   "servingCount": 4,
   "prepTimeMinutes": 10,
   "cookTimeMinutes": 20,
-  "difficulty": 2,
   "notes": "string",
   "mealIdeaId": null,
   "ingredients": [
