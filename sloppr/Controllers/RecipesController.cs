@@ -11,6 +11,8 @@ namespace sloppr.Controllers
                                    RecipeMapper mapper,
                                    IRecipeTemplateService templateSvc) : ControllerBase
     {
+        private const string MarkdownContentType = "text/markdown";
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RecipeDTO>>> GetRecipesAsync()
         {
@@ -65,7 +67,10 @@ namespace sloppr.Controllers
         }
 
         [HttpGet("{id}/markdown")]
-        public async Task<ActionResult<string>> GetRecipeMarkdown(int id, [FromQuery] string? template = null)
+        [Produces(MarkdownContentType)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetRecipeMarkdown(int id, [FromQuery] string? template = null)
         {
             Recipe? recipe = await svc.GetByIdAsync(id);
             if (recipe == null)
@@ -77,11 +82,11 @@ namespace sloppr.Controllers
             {
                 var recipeDto = mapper.ToDto(recipe);
                 var markdown = await templateSvc.RenderAsync(recipeDto, template);
-                return Content(markdown, "text/markdown; charset=utf-8");
+                return Content(markdown, $"{MarkdownContentType}; charset=utf-8");
             }
             catch (FileNotFoundException)
             {
-                return NotFound($"Template '{template}' not found.");
+                return NotFound("Recipe template not found.");
             }
         }
 

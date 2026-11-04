@@ -159,14 +159,6 @@ export const GetApiRecipesIdAccept = {
   text_json: 'text/json',
 } as const;
 
-export type GetApiRecipesIdMarkdownAccept = typeof GetApiRecipesIdMarkdownAccept[keyof typeof GetApiRecipesIdMarkdownAccept];
-
-export const GetApiRecipesIdMarkdownAccept = {
-  text_plain: 'text/plain',
-  application_json: 'application/json',
-  text_json: 'text/json',
-} as const;
-
 @Injectable({ providedIn: 'root' })
 export class RecipesService {
   private readonly http = inject(HttpClient);
@@ -362,54 +354,43 @@ export class RecipesService {
     );
   }
  getApiRecipesIdMarkdown(id: number | string,
-    accept: 'text/plain',
-    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientOptions): Observable<string>;
-  getApiRecipesIdMarkdown(id: number | string,
-    accept: 'application/json',
-    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientOptions): Observable<string>;
-  getApiRecipesIdMarkdown(id: number | string,
-    accept: 'text/json',
-    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientOptions): Observable<string>;
-  getApiRecipesIdMarkdown(id: number | string,
-    accept?: GetApiRecipesIdMarkdownAccept,
-    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientOptions): Observable<string>;
+    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientBodyOptions): Observable<string>;
+ getApiRecipesIdMarkdown(id: number | string,
+    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientEventOptions): Observable<HttpEvent<string>>;
+ getApiRecipesIdMarkdown(id: number | string,
+    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<string>>;
   getApiRecipesIdMarkdown(
     id: number | string,
-    accept: GetApiRecipesIdMarkdownAccept = 'application/json',
-    params?: GetApiRecipesIdMarkdownParams,
-    options?: HttpClientOptions
-  ): Observable<string> {
+    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientObserveOptions): Observable<string | HttpEvent<string> | AngularHttpResponse<string>> {
     const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
 
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
-
-    if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.get<string>(`/api/Recipes/${id}/markdown`, {
-        ...options,
-        responseType: 'json',
-        headers,
-        params: filteredParams,
-
-      });
-    } else if (accept.startsWith('text/') || accept.includes('xml')) {
-      return this.http.get(`/api/Recipes/${id}/markdown`, {
-        ...options,
+    if (options?.observe === 'events') {
+      return this.http.get(
+      `/api/Recipes/${id}/markdown`,{
         responseType: 'text',
-        headers,
-        params: filteredParams,
-
-      }) as Observable<string>;
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+        params: filteredParams,}
+    ) as Observable<HttpEvent<string>>;
     }
 
-    return this.http.get<string>(`/api/Recipes/${id}/markdown`, {
-        ...options,
-        responseType: 'json',
-        headers,
-        params: filteredParams,
+    if (options?.observe === 'response') {
+      return this.http.get(
+      `/api/Recipes/${id}/markdown`,{
+        responseType: 'text',
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+        params: filteredParams,}
+    ) as Observable<AngularHttpResponse<string>>;
+    }
 
-      });
+    return this.http.get(
+      `/api/Recipes/${id}/markdown`,{
+        responseType: 'text',
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+        params: filteredParams,}
+    ) as Observable<string>;
   }
 };
 
