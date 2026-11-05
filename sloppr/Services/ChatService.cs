@@ -46,59 +46,25 @@ public class ChatService
         return _providerTypeSettings.Types[type].ChatPath;
     }
 
-    public async Task<string> ExecuteIngredientChallengeAsync(int modelId)
-    {
-        var model = await _modelService.GetByIdWithProviderAsync(modelId);
-
-
-        var systemPrompt = _aiSettings.DefaultIngredientExtractionPrompt;
-        var challenges = _aiSettings.ExtractionChallenges;
-
-        var config = new ChatClientConfig
-        {
-            ProviderType = model.AiProvider.ProviderType,
-            ModelName = model.Identifier,
-            Endpoint = model.AiProvider.BaseUrl,
-            ApiKey = null // todo
-        };
-
-        return "";
-    }
-
-    public async Task<string[]> ExtractIngredients(string prompt)
+    public async Task<(string[] Ingredients, string[] Cuisines)> ExtractIngredientsAndCuisines(string prompt)
     {
         var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.ExtractionModelId.Value);
-        if (model != null)
+        if (model is null)
         {
-            var systemPrompt = _aiSettings.DefaultIngredientExtractionPrompt;
-            return await ExtractArray<ExtractedIngredientsResponse>(
-                systemPrompt, prompt, model, result => result.Ingredients);
+            return ([], []);
         }
-        else
-        {
-            return [];
-        }
+
+        var extracted = await ExtractResponse<ExtractedIngredientsAndCuisinesResponse>(
+            _aiSettings.DefaultExtractionPrompt, prompt, model);
+
+        return extracted is null
+            ? ([], [])
+            : (extracted.Ingredients.ToArray(), extracted.Cuisines.ToArray());
     }
 
-    public async Task<string[]> ExtractCuisines(string prompt)
-    {
-        var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.ExtractionModelId.Value);
-        if (model != null)
-        {
-            var systemPrompt = _aiSettings.DefaultCuisineExtractionPrompt;
-            return await ExtractArray<ExtractedCuisinesResponse>(
-                systemPrompt, prompt, model, result => result.Cuisines);
-        }
-        else
-        {
-            return [];
-        }
-    }
-
-    private async Task<string[]> ExtractArray<TResponse>(string systemPrompt,
-                                                         string userPrompt,
-                                                         AiModel model,
-                                                         Func<TResponse, List<string>> select)
+    private async Task<TResponse?> ExtractResponse<TResponse>(string systemPrompt,
+                                                              string userPrompt,
+                                                              AiModel model)
         where TResponse : class
     {
         var config = new ChatClientConfig
@@ -121,8 +87,7 @@ public class ChatService
             ResponseFormat = ChatResponseFormat.ForJsonSchema<TResponse>(JsonOptions)
         });
 
-        var parsed = JsonSerializer.Deserialize<TResponse>(response.Text, JsonOptions);
-        return parsed is null ? [] : select(parsed).ToArray();
+        return JsonSerializer.Deserialize<TResponse>(response.Text, JsonOptions);
     }
 
     public async Task<string[]> GenerateIdeas(string userPrompt, string[] keyIngredients, string[] cuisines)
