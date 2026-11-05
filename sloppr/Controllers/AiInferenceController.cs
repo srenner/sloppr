@@ -63,11 +63,11 @@ namespace sloppr.Controllers
         }
 
         [HttpPost("ingredient-extraction-challenges/{modelId}")]
-        public async Task<ActionResult> ExecuteIngredientExtractionChallengesAsync(int modelId)
+        public async Task<ActionResult<IngredientExtractionResponse>> ExecuteIngredientExtractionChallengesAsync(int modelId)
         {
             var model = await modelService.GetByIdWithProviderAsync(modelId);
 
-            if (model == null) return NotFound();
+            if (model is null || model.AiProvider is null) return NotFound();
 
             var systemPrompt = aiSettings.Value.DefaultIngredientExtractionPrompt;
             var challenges = aiSettings.Value.ExtractionChallenges;
@@ -86,20 +86,29 @@ namespace sloppr.Controllers
 
             foreach (var challenge in challenges)
             {
-                List<ChatMessage> messages = new()
+                try
                 {
-                    new ChatMessage(ChatRole.System, systemPrompt),
-                    new ChatMessage(ChatRole.User, challenge.Prompt),
-                };
-                ChatResponse? response = await client.GetResponseAsync(
-                    messages, new ChatOptions
+                    List<ChatMessage> messages = new()
                     {
-                        ResponseFormat = ChatResponseFormat.ForJsonSchema<ExtractedIngredientsResponse>(
-                            schemaName: "ingredients",
-                            schemaDescription: "Ingredients extracted from the user prompt")
-                    });
-                dto.Challenges.Add(new IngredientChallenge(challenge.Prompt, challenge.ExpectedResponse,
-                                        response.Text, response.Usage.InputTokenCount, response.Usage.OutputTokenCount));
+                        new ChatMessage(ChatRole.System, systemPrompt),
+                        new ChatMessage(ChatRole.User, challenge.Prompt),
+                    };
+                    ChatResponse response = await client.GetResponseAsync(
+                        messages, new ChatOptions
+                        {
+                            ResponseFormat = ChatResponseFormat.ForJsonSchema<ExtractedIngredientsResponse>(
+                                schemaName: "ingredients",
+                                schemaDescription: "Ingredients extracted from the user prompt")
+                        });
+                    dto.Challenges.Add(new IngredientChallenge(challenge.Prompt, challenge.ExpectedResponse,
+                        response.Text, response.Usage?.InputTokenCount, response.Usage?.OutputTokenCount));
+                }
+                catch (Exception ex)
+                {
+                    dto.Challenges.Add(new IngredientChallenge(challenge.Prompt, challenge.ExpectedResponse,
+                        string.Empty, null, null)
+                    { Error = ex.Message });
+                }
             }
             return Ok(dto);
         }

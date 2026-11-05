@@ -47,4 +47,5 @@ public class IngredientChallenge
     public bool IsExactMatch => ExpectedResponse?.SequenceEqual(ActualResponse, StringComparer.OrdinalIgnoreCase) ?? false;
 
     public int? Score { get; set; }
+    public string? Error { get; set; }
 }
