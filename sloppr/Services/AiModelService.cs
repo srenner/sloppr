@@ -1,6 +1,4 @@
-using Microsoft.Extensions.AI;
 using sloppr.DataAccess;
-using sloppr.DTOs;
 using sloppr.Models;
 
 namespace sloppr.Services;
@@ -52,13 +50,5 @@ public class AiModelService(IUnitOfWork uow) : IAiModelService
     }
 
     #endregion
-
-    public ICollection<IngredientExtractionResponse> CalculateIngredientExtractionScore(ICollection<ChatResponse> responses)
-    {
-
-
-
-        throw new NotImplementedException();
-    }
 
 }

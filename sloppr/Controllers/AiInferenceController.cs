@@ -1,26 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Options;
-using sloppr.AI;
-using sloppr.AI.DTOs;
 using sloppr.DTOs;
 using sloppr.Services;
-using sloppr.Settings;
 
 namespace sloppr.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AiInferenceController(ChatService chatService,
-                                       IAiModelService modelService,
-                                       IChatClientFactory factory,
                                        IKeyIngredientService keyIngredientService,
                                        ICuisineService cuisineService,
                                        IMealIdeaService mealIdeaService,
                                        IRecipeService recipeService,
                                        MealIdeaMapper mealIdeaMapper,
-                                       RecipeMapper recipeMapper,
-                                       IOptions<AISettings> aiSettings) : ControllerBase
+                                       RecipeMapper recipeMapper) : ControllerBase
     {
         [HttpPost("meal-ideas")]
         public async Task<ActionResult<IEnumerable<MealIdeaDTO>>> GenerateMealIdeasAsync([FromBody] MealIdeasRequest request)

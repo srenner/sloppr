@@ -87,11 +87,6 @@ Content-Type: application/json
 
 ###
 
-POST {{sloppr_HostAddress}}/api/AiInference/ingredient-extraction-challenges/{modelId}
-Accept: application/json
-
-###
-
 POST {{sloppr_HostAddress}}/api/AiInference/recipes/1
 
 ###

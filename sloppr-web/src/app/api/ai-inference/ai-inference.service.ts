@@ -6,12 +6,10 @@
  */
 import {
   HttpClient,
-  HttpHeaders,
-  HttpResponse as AngularHttpResponse
+  HttpHeaders
 } from '@angular/common/http';
 import type {
   HttpContext,
-  HttpEvent,
   HttpParams
 } from '@angular/common/http';
 
@@ -178,41 +176,7 @@ export class AiInferenceService {
 
       });
   }
- postApiAiInferenceIngredientExtractionChallengesModelId<TData = void>(modelId: number | string, options?: HttpClientBodyOptions): Observable<TData>;
- postApiAiInferenceIngredientExtractionChallengesModelId<TData = void>(modelId: number | string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
- postApiAiInferenceIngredientExtractionChallengesModelId<TData = void>(modelId: number | string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
-  postApiAiInferenceIngredientExtractionChallengesModelId<TData = void>(
-    modelId: number | string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
-    if (options?.observe === 'events') {
-      return this.http.post<TData>(
-      `/api/AiInference/ingredient-extraction-challenges/${modelId}`,
-      undefined,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'events',
-      }
-    );
-    }
-
-    if (options?.observe === 'response') {
-      return this.http.post<TData>(
-      `/api/AiInference/ingredient-extraction-challenges/${modelId}`,
-      undefined,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'response',
-      }
-    );
-    }
-
-    return this.http.post<TData>(
-      `/api/AiInference/ingredient-extraction-challenges/${modelId}`,
-      undefined,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'body',
-      }
-    );
-  }
 };
 
 export type PostApiAiInferenceMealIdeasClientResult = NonNullable<string | MealIdeaDTO[]>
 export type PostApiAiInferenceRecipesMealIdeaIdClientResult = NonNullable<string | RecipeDTO>
-export type PostApiAiInferenceIngredientExtractionChallengesModelIdClientResult = NonNullable<void>
