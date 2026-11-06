@@ -14,6 +14,9 @@ namespace sloppr.Controllers
                                        MealIdeaMapper mealIdeaMapper,
                                        RecipeMapper recipeMapper) : ControllerBase
     {
+        /// <summary>
+        /// Take initial user prompt, upsert extracted ingredients and cuisines, and generate meal ideas.
+        /// </summary>
         [HttpPost("meal-ideas")]
         public async Task<ActionResult<IEnumerable<MealIdeaDTO>>> GenerateMealIdeasAsync([FromBody] MealIdeasRequest request)
         {
@@ -29,6 +32,9 @@ namespace sloppr.Controllers
             return Ok(mealIdeas.Select(mealIdeaMapper.ToDto).ToList());
         }
 
+        /// <summary>
+        /// LLM call to create a Recipe based on a Meal Idea
+        /// </summary>
         [HttpPost("recipes/{mealIdeaId}")]
         public async Task<ActionResult<RecipeDTO>> GenerateRecipeAsync(int mealIdeaId)
         {
