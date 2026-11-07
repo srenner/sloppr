@@ -1,0 +1,58 @@
+meta {
+  name: Save recipe
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/Recipes
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {{recipePreview}}
+}
+
+script:post-response {
+  const recipe = res.getBody();
+  if (recipe && recipe.id) {
+    bru.setVar("recipeId", recipe.id);
+    bru.setVar("recipeName", recipe.name);
+    bru.setVar("recipeDifficulty", recipe.difficulty == null ? "" : String(recipe.difficulty));
+    bru.setVar("ingredientCount", (recipe.ingredients || []).length);
+    bru.setVar("stepCount", (recipe.steps || []).length);
+  }
+}
+
+docs {
+  Persists the preview from "Generate recipe". This is the step the UI calls when the
+  user saves a recipe for later or accepts it for tonight.
+}
+
+tests {
+  test("recipePreview is set (run 'Generate recipe' first)", function() {
+    expect(Boolean(bru.getVar("recipePreview")), "recipePreview is empty").to.equal(true);
+  });
+
+  test("status is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Location header points at the new recipe", function() {
+    const location = String(res.getHeader("location") || "");
+    expect(location).to.include("/api/Recipes/" + res.getBody().id);
+  });
+
+  test("saved recipe keeps the preview contents", function() {
+    const recipe = res.getBody();
+    expect(recipe.name).to.equal(bru.getVar("recipeName"));
+    expect(recipe.mealIdeaId).to.equal(Number(bru.getVar("ideaId")));
+    expect(recipe.ingredients.length).to.equal(Number(bru.getVar("ingredientCount")));
+    expect(recipe.steps.length).to.equal(Number(bru.getVar("stepCount")));
+  });
+}

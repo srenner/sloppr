@@ -1,7 +1,7 @@
 # sloppr Bruno collection
 
-Manual end-to-end test of the dinner flow: prompt → meal ideas → approval → recipe →
-markdown.
+Manual end-to-end test of the dinner flow: prompt → meal ideas → approval → recipe
+preview → save → markdown.
 
 ## Prerequisites
 
@@ -49,9 +49,10 @@ Set automatically as the run progresses:
 | `recipeCountBefore` | Baseline recipes | List recipes |
 | `ideaId` | Generate meal ideas | List / approve / get meal idea, generate recipe |
 | `ideaName` | Generate meal ideas | – (logged for the run notes) |
-| `recipeId` | Generate recipe | Get recipe, get recipe markdown, list recipes |
-| `recipeName` | Generate recipe | Get recipe, get recipe markdown |
-| `recipeDifficulty` | Generate recipe | Get recipe markdown |
+| `recipePreview` | Generate recipe | Save recipe |
+| `recipeId` | Save recipe | Get recipe, get recipe markdown, list recipes |
+| `recipeName` | Generate / save recipe | Get recipe, get recipe markdown |
+| `recipeDifficulty` | Generate / save recipe | Get recipe markdown |
 
 Running a single request out of order fails its guard test with a message telling you
 which request to run first. To run out of order, set `ideaId` or `recipeId` in the
@@ -60,7 +61,8 @@ collection or environment file.
 ## What it asserts
 
 - Contract shape and status codes for each step.
-- Persistence: ideas and recipes are readable through their `GET` routes.
+- Persistence: ideas are readable through their `GET` routes after generation; recipe
+  previews become readable only after the explicit save step.
 - Approval is stored and read back.
 - Recipe fields are present; ingredient/step orders are unique; `GET` returns them sorted.
 - Markdown renders through the default template with the expected sections and no
@@ -70,7 +72,8 @@ Not asserted: recipe quality, ingredient realism, timing, or failure paths.
 
 ## Known behaviours
 
-- Approval is a UX step. Generating from an unapproved idea still returns `201`.
-- Generating twice for the same idea currently creates a second recipe; `409` arrives
-  with the planned meal-idea/recipe linkage chunk.
+- Approval is a UX step. Generating a recipe from an unapproved idea still returns `200`.
+- Recipe generation returns a preview; `POST /api/Recipes` is the step that persists it.
+- Saving twice for the same idea currently creates a second recipe; `409` arrives with the
+  planned meal-idea/recipe linkage chunk.
 - Recipes are soft-deleted; `DELETE` does not remove rows.

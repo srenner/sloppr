@@ -87,6 +87,8 @@ Content-Type: application/json
 
 ###
 
+// Preview only: returns 200 with an unsaved recipe (id 0).
+// Persist the accepted recipe with POST /api/Recipes.
 POST {{sloppr_HostAddress}}/api/AiInference/recipes/1
 
 ###
