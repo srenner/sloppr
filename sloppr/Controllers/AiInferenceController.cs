@@ -10,7 +10,6 @@ namespace sloppr.Controllers
                                        IKeyIngredientService keyIngredientService,
                                        ICuisineService cuisineService,
                                        IMealIdeaService mealIdeaService,
-                                       IRecipeService recipeService,
                                        MealIdeaMapper mealIdeaMapper,
                                        RecipeMapper recipeMapper) : ControllerBase
     {
@@ -33,7 +32,8 @@ namespace sloppr.Controllers
         }
 
         /// <summary>
-        /// LLM call to create a Recipe based on a Meal Idea
+        /// LLM call to preview a Recipe based on a Meal Idea. The preview is not persisted;
+        /// save it with POST /api/Recipes when the user accepts it.
         /// </summary>
         [HttpPost("recipes/{mealIdeaId}")]
         public async Task<ActionResult<RecipeDTO>> GenerateRecipeAsync(int mealIdeaId)
@@ -53,10 +53,7 @@ namespace sloppr.Controllers
 
             recipe.MealIdeaId = mealIdea.Id;
 
-            await recipeService.AddAsync(recipe);
-
-            return CreatedAtAction(nameof(RecipesController.GetRecipe), "Recipes",
-                new { id = recipe.Id }, recipeMapper.ToDto(recipe));
+            return Ok(recipeMapper.ToDto(recipe));
         }
     }
 }

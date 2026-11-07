@@ -1,7 +1,7 @@
 meta {
   name: Get recipe markdown
   type: http
-  seq: 3
+  seq: 4
 }
 
 get {
@@ -20,7 +20,7 @@ docs {
 }
 
 tests {
-  test("recipeId is set (run 'Generate recipe' first)", function() {
+  test("recipeId is set (run 'Save recipe' first)", function() {
     expect(Boolean(bru.getVar("recipeId")), "recipeId is empty").to.equal(true);
   });
 

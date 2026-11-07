@@ -16,8 +16,8 @@ settings {
 
 script:post-response {
   const recipe = res.getBody();
-  if (recipe && recipe.id) {
-    bru.setVar("recipeId", recipe.id);
+  if (recipe && recipe.name) {
+    bru.setVar("recipePreview", JSON.stringify(recipe));
     bru.setVar("recipeName", recipe.name);
     bru.setVar("recipeDifficulty", recipe.difficulty == null ? "" : String(recipe.difficulty));
     bru.setVar("ingredientCount", (recipe.ingredients || []).length);
@@ -26,8 +26,9 @@ script:post-response {
 }
 
 docs {
-  Generates with RecipeModelId and persists. Failure modes: 404 unknown idea, 502 model
-  unavailable or unparseable output, 409 once the linkage chunk lands.
+  Previews a recipe with RecipeModelId. Nothing is written yet; run "Save recipe" to
+  persist the preview. Failure modes: 404 unknown idea, 502 model unavailable or
+  unparseable output.
 }
 
 tests {
@@ -35,14 +36,12 @@ tests {
     expect(Boolean(bru.getVar("ideaId")), "ideaId is empty").to.equal(true);
   });
 
-  test("status is 201", function() {
-    expect(res.getStatus()).to.equal(201);
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
   });
 
-  test("Location header points at the new recipe", function() {
-    const recipe = res.getBody();
-    const location = String(res.getHeader("location") || "");
-    expect(location).to.include("/api/Recipes/" + recipe.id);
+  test("preview is not persisted", function() {
+    expect(res.getBody().id).to.equal(0);
   });
 
   test("recipe is linked to the picked idea", function() {

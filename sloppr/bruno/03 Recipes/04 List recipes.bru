@@ -1,7 +1,7 @@
 meta {
   name: List recipes
   type: http
-  seq: 4
+  seq: 5
 }
 
 get {
@@ -16,7 +16,7 @@ docs {
 }
 
 tests {
-  test("recipeId is set (run 'Generate recipe' first)", function() {
+  test("recipeId is set (run 'Save recipe' first)", function() {
     expect(Boolean(bru.getVar("recipeId")), "recipeId is empty").to.equal(true);
   });
 
