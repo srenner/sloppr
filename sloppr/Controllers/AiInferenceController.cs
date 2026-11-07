@@ -10,7 +10,6 @@ namespace sloppr.Controllers
                                        IKeyIngredientService keyIngredientService,
                                        ICuisineService cuisineService,
                                        IMealIdeaService mealIdeaService,
-                                       IRecipeService recipeService,
                                        MealIdeaMapper mealIdeaMapper,
                                        RecipeMapper recipeMapper) : ControllerBase
     {
@@ -53,10 +52,7 @@ namespace sloppr.Controllers
 
             recipe.MealIdeaId = mealIdea.Id;
 
-            await recipeService.AddAsync(recipe);
-
-            return CreatedAtAction(nameof(RecipesController.GetRecipe), "Recipes",
-                new { id = recipe.Id }, recipeMapper.ToDto(recipe));
+            return Ok(recipeMapper.ToDto(recipe));
         }
     }
 }
