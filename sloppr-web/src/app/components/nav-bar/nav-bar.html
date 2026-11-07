@@ -1,9 +1,16 @@
 <nav class="bg-gray-800 p-4">
   <div class="container mx-auto flex items-center justify-between">
     <div class="text-white font-bold text-xl">sloppr</div>
-    <div class="space-x-4">
-      <a routerLink="/" class="text-gray-300 hover:text-white">Home</a>
-      <a routerLink="/about" class="text-gray-300 hover:text-white">About</a>
+    <div class="flex items-center space-x-4">
+      <button
+        type="button"
+        class="rounded-lg p-1.5 text-gray-300 hover:bg-gray-700 hover:text-white"
+        aria-label="Settings"
+        title="Settings"
+        (click)="settingsClick.emit()"
+      >
+        <svg lucideSettings [size]="20"></svg>
+      </button>
     </div>
   </div>
 </nav>

@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, output } from '@angular/core';
+import { LucideSettings } from '@lucide/angular';
 
 @Component({
   selector: 'app-nav-bar',
-  imports: [],
+  imports: [LucideSettings],
   templateUrl: './nav-bar.html',
   styleUrl: './nav-bar.css',
 })
-export class NavBar {}
+export class NavBar {
+  readonly settingsClick = output<void>();
+}
