@@ -117,6 +117,11 @@ public class ChatService
                 refinedPrompt.Append(". User has cuisine preference: ");
                 refinedPrompt.Append(string.Join(", ", cuisines) + ".");
             }
+            if (userPrompt.Length > 0)
+            {
+                refinedPrompt.Append(" Input from user: ");
+                refinedPrompt.Append(userPrompt);
+            }
 
             List<ChatMessage> messages = new()
                 {
