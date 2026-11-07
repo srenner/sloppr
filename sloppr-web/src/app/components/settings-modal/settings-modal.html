@@ -1,0 +1,25 @@
+<dialog
+  #dialog
+  class="m-auto w-full max-w-4xl rounded-2xl border border-gray-200 bg-white p-0 shadow-xl backdrop:bg-black/50"
+  (click)="onBackdropClick($event)"
+>
+  <div class="flex max-h-[85vh] flex-col">
+    <header class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+      <h2 class="text-xl font-semibold text-gray-800">Settings</h2>
+      <button
+        type="button"
+        class="rounded-lg px-2 py-1 text-2xl leading-none text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+        aria-label="Close settings"
+        (click)="close()"
+      >
+        &times;
+      </button>
+    </header>
+
+    <div class="flex-1 overflow-y-auto px-6 py-4">
+      <p class="text-sm text-gray-500">
+        AI providers, models, and preferences will live here. Nothing to configure yet.
+      </p>
+    </div>
+  </div>
+</dialog>
