@@ -38,7 +38,8 @@ The AI's role is narrow: **write code and suggest next steps.** Do not act beyon
 - Stop at the requested chunk or step. Do not preview the next one unless asked.
 - Ask at most one question per response, and only when the answer changes the
   implementation. Bundle related choices into that question.
-- For reviews, start with the verdict ("Yes", "Mostly", "No"), then list only deviations.
+- For reviews, start with the verdict ("Yes", "Mostly", "No"), then state each deviation in
+  one line. Do not add reasoning, consequences, or examples unless asked.
 - Prefer bullets over paragraphs; use a table only when comparing options.
 
 ## Project docs
