@@ -8,35 +8,33 @@ namespace sloppr.Services;
 
 public class KeyIngredientService : IKeyIngredientService
 {
-    private readonly IUnitOfWork _uow;
     private readonly ApplicationDbContext _db;
 
-    public KeyIngredientService(IUnitOfWork uow, ApplicationDbContext db)
+    public KeyIngredientService(ApplicationDbContext db)
     {
-        _uow = uow;
         _db = db;
     }
 
     public async Task AddAsync(KeyIngredient ingredient)
     {
-        await _uow.Repository<KeyIngredient>().AddAsync(ingredient);
-        await _uow.CompleteAsync();
+        _db.KeyIngredients.Add(ingredient);
+        await _db.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<KeyIngredient>> GetAllAsync()
     {
-        return await _uow.Repository<KeyIngredient>().GetAllAsync();
+        return await _db.KeyIngredients.IgnoreQueryFilters().AsNoTracking().ToListAsync();
     }
 
     public async Task<KeyIngredient?> GetByIdAsync(int id)
     {
-        return await _uow.Repository<KeyIngredient>().GetByIdAsync(id);
+        return await _db.KeyIngredients.FindAsync(id);
     }
 
     public async Task<KeyIngredient> UpdateAsync(KeyIngredient ingredient)
     {
-        _uow.Repository<KeyIngredient>().Update(ingredient);
-        await _uow.CompleteAsync();
+        _db.KeyIngredients.Update(ingredient);
+        await _db.SaveChangesAsync();
         return ingredient;
     }
 

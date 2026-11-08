@@ -57,6 +57,7 @@ public class RecipeTemplateService : IRecipeTemplateService
     public async Task<IReadOnlyList<RecipeTemplate>> GetAllAsync()
     {
         return await _db.RecipeTemplates
+            .AsNoTracking()
             .OrderByDescending(t => t.Name == DefaultTemplateName)
             .ThenBy(t => t.Name)
             .ToListAsync();

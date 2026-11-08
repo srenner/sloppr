@@ -63,8 +63,6 @@ builder.Services.AddScoped<IRecipeService, RecipeService>();
 builder.Services.AddScoped<RecipeTemplateMapper>();
 builder.Services.AddScoped<IRecipeTemplateService, RecipeTemplateService>();
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
 
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

@@ -6,29 +6,30 @@ namespace sloppr.Services;
 
 public class MealIdeaService : IMealIdeaService
 {
-    private readonly IUnitOfWork _uow;
     private readonly ApplicationDbContext _db;
 
-    public MealIdeaService(IUnitOfWork uow, ApplicationDbContext db)
+    public MealIdeaService(ApplicationDbContext db)
     {
-        _uow = uow;
         _db = db;
     }
 
     public async Task<MealIdea?> GetByIdAsync(int id)
     {
-        return await _uow.Repository<MealIdea>().GetByIdAsync(id);
+        return await _db.MealIdeas.FindAsync(id);
     }
 
     public async Task<MealIdea?> GetByIdWithIngredientsAsync(int id)
     {
-        return await _uow.Repository<MealIdea>().GetByIdAsync(id, m => m.KeyIngredients);
+        return await _db.MealIdeas
+            .Include(m => m.KeyIngredients)
+            .FirstOrDefaultAsync(m => m.Id == id);
     }
 
     public async Task<IEnumerable<MealIdea>> GetFilteredAsync()
     {
         return await _db.MealIdeas
             .Include(m => m.KeyIngredients)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -37,13 +38,14 @@ public class MealIdeaService : IMealIdeaService
         return await _db.MealIdeas
             .IgnoreQueryFilters()
             .Include(m => m.KeyIngredients)
+            .AsNoTracking()
             .ToListAsync();
     }
 
     public async Task<MealIdea> UpdateAsync(MealIdea idea)
     {
-        _uow.Repository<MealIdea>().Update(idea);
-        await _uow.CompleteAsync();
+        _db.MealIdeas.Update(idea);
+        await _db.SaveChangesAsync();
         return idea;
     }
 
@@ -57,8 +59,8 @@ public class MealIdeaService : IMealIdeaService
             .Select(name => new MealIdea { Name = name, KeyIngredients = ingredients })
             .ToList();
 
-        await _uow.Repository<MealIdea>().AddRangeAsync(ideas);
-        await _uow.CompleteAsync();
+        _db.MealIdeas.AddRange(ideas);
+        await _db.SaveChangesAsync();
         return ideas;
     }
 }

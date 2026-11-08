@@ -6,7 +6,7 @@ Commands are human-run; suggest them: `dotnet build`, `dotnet run --launch-profi
 
 - Fresh clone: the SQLite DB is gitignored and not auto-migrated; human runs `dotnet ef database update` before `dotnet run`. `dotnet ef migrations add <Name>` is human-only.
 - Routes are `api/[controller]`; OpenAPI/Scalar only in Development at `/openapi/v1.json` and `/scalar`.
-- Repositories: `GetFilteredAsync()` applies global filters; `GetAllAsync()` uses `IgnoreQueryFilters()`.
+- Data access: services inject `ApplicationDbContext` (no repository layer). Reads: `_db.<Set>`; `GetFilteredAsync()` keeps global filters, `GetAllAsync()` uses `IgnoreQueryFilters()`; `AsNoTracking()` for lists. Writes: `Add`/`Update`/`Remove` + `SaveChangesAsync()`. Includes, projections, and raw SQL allowed.
 - DTOs live in `DTOs/` as `ModelNameDTO.cs`; don't modify models for DTO work; Mapperly source-gen mapping.
 - Keep `sloppr/sloppr.http` in sync with controller endpoints.
 - Only Ollama/OpenAI are supported (Anthropic throws `NotSupportedException`); prompts/provider URLs are in `appsettings.json`; DB-backed settings load once at startup.

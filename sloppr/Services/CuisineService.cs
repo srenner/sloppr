@@ -7,35 +7,33 @@ namespace sloppr.Services;
 
 public class CuisineService : ICuisineService
 {
-    private readonly IUnitOfWork _uow;
     private readonly ApplicationDbContext _db;
 
-    public CuisineService(IUnitOfWork uow, ApplicationDbContext db)
+    public CuisineService(ApplicationDbContext db)
     {
-        _uow = uow;
         _db = db;
     }
 
     public async Task AddAsync(Cuisine cuisine)
     {
-        await _uow.Repository<Cuisine>().AddAsync(cuisine);
-        await _uow.CompleteAsync();
+        _db.Cuisines.Add(cuisine);
+        await _db.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<Cuisine>> GetAllAsync()
     {
-        return await _uow.Repository<Cuisine>().GetAllAsync();
+        return await _db.Cuisines.IgnoreQueryFilters().AsNoTracking().ToListAsync();
     }
 
     public async Task<Cuisine?> GetByIdAsync(int id)
     {
-        return await _uow.Repository<Cuisine>().GetByIdAsync(id);
+        return await _db.Cuisines.FindAsync(id);
     }
 
     public async Task<Cuisine> UpdateAsync(Cuisine cuisine)
     {
-        _uow.Repository<Cuisine>().Update(cuisine);
-        await _uow.CompleteAsync();
+        _db.Cuisines.Update(cuisine);
+        await _db.SaveChangesAsync();
         return cuisine;
     }
 
