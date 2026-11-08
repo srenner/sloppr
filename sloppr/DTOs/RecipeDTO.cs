@@ -19,6 +19,7 @@ public class RecipeDTO
     public string? Notes { get; set; }
 
     public int? MealIdeaId { get; set; }
+    public string? TemplateName { get; set; }
     public ICollection<RecipeIngredientDTO> Ingredients { get; set; } = [];
     public ICollection<RecipeStepDTO> Steps { get; set; } = [];
 }

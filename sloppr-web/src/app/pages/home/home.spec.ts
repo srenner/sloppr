@@ -81,6 +81,11 @@ describe('Home', () => {
     const preview = recipe(1);
     request.flush(preview);
     fixture.detectChanges();
+
+    const markdown = http.expectOne('/api/Recipes/markdown');
+    expect(markdown.request.method).toBe('POST');
+    markdown.flush(`# ${preview.name}\n\n${preview.description}\n\n1. Cook the rice.`);
+    fixture.detectChanges();
     return preview;
   }
 

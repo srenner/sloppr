@@ -1,159 +1,276 @@
 namespace sloppr.Services;
 
-using System.Text.RegularExpressions;
+using Fluid;
+using Microsoft.EntityFrameworkCore;
+using sloppr.DataAccess;
 using sloppr.DTOs;
-
-public interface IRecipeTemplateService
-{
-    Task<string> RenderAsync(RecipeDTO recipe, string? templateName = null);
-}
+using sloppr.Models;
 
 public class RecipeTemplateService : IRecipeTemplateService
 {
-    private readonly string _templatesFolder;
+    private const string DefaultTemplateName = "default";
+    private const string StarterResourceSuffix = ".Recipes.default.mdt";
+    private const int MaxTemplateLength = 100_000;
 
-    public RecipeTemplateService(IWebHostEnvironment env)
-    {
-        _templatesFolder = Path.Combine(env.ContentRootPath, "Templates", "Recipes");
-    }
+    private static readonly Lazy<string> StarterContent = new(LoadStarterContent);
+    private static readonly FluidParser Parser = new();
+
+    // Templates are user-authored, so apply the execution limits recommended for
+    // untrusted input. The options object is immutable and safe to share.
+    private static readonly TemplateOptions TemplateOptions = new TemplateOptionsBuilder()
+        .WithMaxRecursion(20)
+        .WithMaxSteps(10_000)
+        .WithMaxOutputSize(1_000_000)
+        .WithMaxCollectionSize(10_000)
+        .Build();
+
+    private readonly ApplicationDbContext _db;
+
+    public RecipeTemplateService(ApplicationDbContext db) => _db = db;
 
     public async Task<string> RenderAsync(RecipeDTO recipe, string? templateName = null)
     {
-        templateName = string.IsNullOrWhiteSpace(templateName) ? "default" : templateName;
-        // Sanitize templateName to prevent path traversal
-        templateName = Path.GetFileNameWithoutExtension(templateName);
+        RecipeTemplate? template;
 
-        var templatePath = Path.Combine(_templatesFolder, $"{templateName}.md");
-        if (!File.Exists(templatePath))
+        if (!string.IsNullOrWhiteSpace(templateName))
         {
-            templatePath = Path.Combine(_templatesFolder, "default.md");
-        }
-
-        if (!File.Exists(templatePath))
-        {
-            throw new FileNotFoundException($"Recipe template '{templateName}' not found.");
-        }
-
-        var templateContent = await File.ReadAllTextAsync(templatePath);
-        return RenderTemplate(templateContent, recipe);
-    }
-
-    private static string RenderTemplate(string template, RecipeDTO recipe)
-    {
-        // Simple mustache-like parsing
-        // 1. Process sections: {{#Section}}...{{/Section}}
-        template = ProcessSections(template, recipe);
-
-        // 2. Process scalar variables: {{Variable}}
-        template = ProcessVariables(template, recipe);
-
-        // Clean up extra blank lines resulting from empty sections
-        template = Regex.Replace(template, @"\n{3,}", "\n\n");
-
-        return template.Trim();
-    }
-
-    private static string ProcessSections(string template, RecipeDTO recipe)
-    {
-        // Difficulty section
-        template = ProcessBooleanOrNullableSection(template, "Difficulty", recipe.Difficulty.HasValue, () =>
-        {
-            return RenderVariablesForObject(GetSectionContent(template, "Difficulty"), recipe);
-        });
-
-        // Notes section
-        template = ProcessBooleanOrNullableSection(template, "Notes", !string.IsNullOrWhiteSpace(recipe.Notes), () =>
-        {
-            var content = GetSectionContent(template, "Notes");
-            return content.Replace("{{Notes}}", recipe.Notes ?? string.Empty);
-        });
-
-        // Ingredients section (list)
-        template = ProcessListSection(template, "Ingredients", recipe.Ingredients, (itemContent, item) =>
-        {
-            var rendered = itemContent;
-            rendered = ProcessBooleanOrNullableSection(rendered, "Quantity", item.Quantity.HasValue, () =>
-                GetSectionContent(rendered, "Quantity").Replace("{{Quantity}}", item.Quantity?.ToString() ?? ""));
-            rendered = ProcessBooleanOrNullableSection(rendered, "Unit", !string.IsNullOrWhiteSpace(item.Unit), () =>
-                GetSectionContent(rendered, "Unit").Replace("{{Unit}}", item.Unit ?? ""));
-            rendered = ProcessBooleanOrNullableSection(rendered, "Group", !string.IsNullOrWhiteSpace(item.Group), () =>
-                GetSectionContent(rendered, "Group").Replace("{{Group}}", item.Group ?? ""));
-            rendered = ProcessBooleanOrNullableSection(rendered, "Note", !string.IsNullOrWhiteSpace(item.Note), () =>
-                GetSectionContent(rendered, "Note").Replace("{{Note}}", item.Note ?? ""));
-
-            rendered = rendered.Replace("{{Name}}", item.Name ?? "");
-            return rendered.TrimEnd('\r', '\n');
-        });
-
-        // Steps section (list)
-        template = ProcessListSection(template, "Steps", recipe.Steps, (itemContent, item) =>
-        {
-            var rendered = itemContent;
-            rendered = ProcessBooleanOrNullableSection(rendered, "Group", !string.IsNullOrWhiteSpace(item.Group), () =>
-                GetSectionContent(rendered, "Group").Replace("{{Group}}", item.Group ?? ""));
-
-            rendered = rendered.Replace("{{Instruction}}", item.Instruction ?? "");
-            return rendered.TrimEnd('\r', '\n');
-        });
-
-        return template;
-    }
-
-    private static string ProcessBooleanOrNullableSection(string template, string tagName, bool condition, Func<string> renderInner)
-    {
-        var pattern = $@"{{#({tagName})}}(.*?){{/\1}}";
-        return Regex.Replace(template, pattern, match =>
-        {
-            if (!condition) return string.Empty;
-            return renderInner();
-        }, RegexOptions.Singleline);
-    }
-
-    private static string ProcessListSection<T>(string template, string tagName, IEnumerable<T> items, Func<string, T, string> renderItem)
-    {
-        var pattern = $@"{{#({tagName})}}(.*?){{/\1}}";
-        return Regex.Replace(template, pattern, match =>
-        {
-            var list = items?.ToList();
-            if (list == null || list.Count == 0) return string.Empty;
-
-            var innerTemplate = match.Groups[2].Value;
-            var results = new List<string>();
-            foreach (var item in list)
+            template = await GetByNameAsync(templateName.Trim());
+            if (template == null)
             {
-                results.Add(renderItem(innerTemplate, item));
+                throw new RecipeTemplateNotFoundException(
+                    $"Recipe template '{templateName}' was not found.");
             }
-            return string.Join(Environment.NewLine, results);
-        }, RegexOptions.Singleline);
-    }
-
-    private static string GetSectionContent(string template, string tagName)
-    {
-        var match = Regex.Match(template, $@"{{#{tagName}}}(.*?){{/{tagName}}}", RegexOptions.Singleline);
-        return match.Success ? match.Groups[1].Value : string.Empty;
-    }
-
-    private static string RenderVariablesForObject(string template, object obj)
-    {
-        // Simple property replacement
-        var props = obj.GetType().GetProperties();
-        foreach (var prop in props)
-        {
-            var val = prop.GetValue(obj)?.ToString() ?? string.Empty;
-            template = template.Replace($"{{{{{prop.Name}}}}}", val);
         }
+        else
+        {
+            template = await ResolveAsync(recipe);
+            if (template == null)
+            {
+                throw new RecipeTemplateNotFoundException(
+                    "No recipe template is configured. Create or import one first.");
+            }
+        }
+
+        return Render(template.Content, recipe);
+    }
+
+    public async Task<IReadOnlyList<RecipeTemplate>> GetAllAsync()
+    {
+        return await _db.RecipeTemplates
+            .OrderByDescending(t => t.Name == DefaultTemplateName)
+            .ThenBy(t => t.Name)
+            .ToListAsync();
+    }
+
+    public async Task<RecipeTemplate?> GetByNameAsync(string name)
+    {
+        return await _db.RecipeTemplates.FirstOrDefaultAsync(t => t.Name == name);
+    }
+
+    public async Task<RecipeTemplate> CreateAsync(RecipeTemplateRequest request)
+    {
+        var name = NormalizeName(request.Name);
+        ValidateTemplate(request.Content);
+
+        if (await _db.RecipeTemplates.AnyAsync(t => t.Name == name))
+        {
+            throw new RecipeTemplateConflictException(
+                $"A recipe template named '{name}' already exists.");
+        }
+
+        var template = new RecipeTemplate { Name = name, Content = request.Content };
+        _db.RecipeTemplates.Add(template);
+        await _db.SaveChangesAsync();
         return template;
     }
 
-    private static string ProcessVariables(string template, RecipeDTO recipe)
+    public async Task<RecipeTemplate?> UpdateAsync(string name, string content)
     {
-        template = template.Replace("{{Name}}", recipe.Name ?? "");
-        template = template.Replace("{{Description}}", recipe.Description ?? "");
-        template = template.Replace("{{Servings}}", recipe.ServingCount.ToString());
-        template = template.Replace("{{PrepMinutes}}", recipe.PrepTimeMinutes.ToString());
-        template = template.Replace("{{CookMinutes}}", recipe.CookTimeMinutes.ToString());
-        template = template.Replace("{{Difficulty}}", recipe.Difficulty?.ToString() ?? "");
-        template = template.Replace("{{Notes}}", recipe.Notes ?? "");
+        ValidateTemplate(content);
+
+        var template = await GetByNameAsync(NormalizeName(name));
+        if (template == null)
+        {
+            return null;
+        }
+
+        template.Content = content;
+        await _db.SaveChangesAsync();
         return template;
+    }
+
+    public async Task<bool> DeleteAsync(string name)
+    {
+        var template = await GetByNameAsync(NormalizeName(name));
+        if (template == null)
+        {
+            return false;
+        }
+
+        _db.RecipeTemplates.Remove(template);
+        await _db.SaveChangesAsync();
+        return true;
+    }
+
+    /// <summary>
+    /// Inserts the seeded starter template once per database. Deliberately does not
+    /// run when templates already exist or after the one-time seed has happened, so a
+    /// user who deletes every template does not get it resurrected on restart.
+    /// </summary>
+    public async Task SeedDefaultAsync()
+    {
+        var settings = await _db.ApplicationSettings.SingleAsync();
+        if (settings.HasSeededRecipeTemplates)
+        {
+            return;
+        }
+
+        if (!await _db.RecipeTemplates.AnyAsync(t => t.Name == DefaultTemplateName))
+        {
+            _db.RecipeTemplates.Add(new RecipeTemplate
+            {
+                Name = DefaultTemplateName,
+                Content = StarterContent.Value,
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(settings.DefaultRecipeTemplateName))
+        {
+            settings.DefaultRecipeTemplateName = DefaultTemplateName;
+        }
+
+        settings.HasSeededRecipeTemplates = true;
+        await _db.SaveChangesAsync();
+    }
+
+    public string GetStarterContent() => StarterContent.Value;
+
+    private async Task<RecipeTemplate?> ResolveAsync(RecipeDTO recipe)
+    {
+        if (!string.IsNullOrWhiteSpace(recipe.TemplateName))
+        {
+            var overrideTemplate = await GetByNameAsync(recipe.TemplateName);
+            if (overrideTemplate != null)
+            {
+                return overrideTemplate;
+            }
+        }
+
+        var settings = await _db.ApplicationSettings.SingleAsync();
+        if (!string.IsNullOrWhiteSpace(settings.DefaultRecipeTemplateName))
+        {
+            var defaultTemplate = await GetByNameAsync(settings.DefaultRecipeTemplateName);
+            if (defaultTemplate != null)
+            {
+                return defaultTemplate;
+            }
+        }
+
+        return await GetByNameAsync(DefaultTemplateName);
+    }
+
+    private static string Render(string template, RecipeDTO recipe)
+    {
+        var parsed = ParseOrThrow(template);
+        var model = BuildModel(recipe);
+
+        return parsed.Render(new TemplateContext(model, TemplateOptions)).Trim();
+    }
+
+    private static IFluidTemplate ParseOrThrow(string template)
+    {
+        if (!Parser.TryParse(template, out var parsed, out var error))
+        {
+            throw new RecipeTemplateValidationException(
+                $"Template is not valid Liquid: {error}");
+        }
+
+        return parsed;
+    }
+
+    private static object BuildModel(RecipeDTO recipe)
+    {
+        return new
+        {
+            name = recipe.Name,
+            description = recipe.Description,
+            serving_count = recipe.ServingCount,
+            prep_time_minutes = recipe.PrepTimeMinutes,
+            cook_time_minutes = recipe.CookTimeMinutes,
+            difficulty = recipe.Difficulty,
+            notes = recipe.Notes,
+            ingredients = (recipe.Ingredients ?? []).Select(i => new
+            {
+                quantity = i.Quantity,
+                unit = i.Unit,
+                name = i.Name,
+                group = i.Group,
+                note = i.Note,
+            }),
+            steps = (recipe.Steps ?? []).Select(s => new
+            {
+                instruction = s.Instruction,
+                group = s.Group,
+            }),
+        };
+    }
+
+    private static string NormalizeName(string name)
+    {
+        var trimmed = (name ?? string.Empty).Trim();
+
+        if (trimmed.Length == 0)
+        {
+            throw new RecipeTemplateValidationException("Template name is required.");
+        }
+
+        if (trimmed.Length > 100)
+        {
+            throw new RecipeTemplateValidationException(
+                "Template name must be 100 characters or fewer.");
+        }
+
+        if (trimmed.Any(c => !(char.IsLetterOrDigit(c) || c is ' ' or '-' or '_')))
+        {
+            throw new RecipeTemplateValidationException(
+                "Template name may only contain letters, digits, spaces, hyphens, and underscores.");
+        }
+
+        return trimmed;
+    }
+
+    private static void ValidateTemplate(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            throw new RecipeTemplateValidationException("Template content is required.");
+        }
+
+        if (content.Length > MaxTemplateLength)
+        {
+            throw new RecipeTemplateValidationException(
+                $"Template content must be {MaxTemplateLength} characters or fewer.");
+        }
+
+        ParseOrThrow(content);
+    }
+
+    private static string LoadStarterContent()
+    {
+        var assembly = typeof(RecipeTemplateService).Assembly;
+        var resourceName = assembly.GetManifestResourceNames()
+            .FirstOrDefault(n => n.EndsWith(StarterResourceSuffix, StringComparison.OrdinalIgnoreCase));
+
+        if (resourceName == null)
+        {
+            throw new InvalidOperationException(
+                "The seeded recipe template resource could not be found.");
+        }
+
+        using var stream = assembly.GetManifestResourceStream(resourceName)
+            ?? throw new InvalidOperationException(
+                "The seeded recipe template resource could not be opened.");
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
     }
 }

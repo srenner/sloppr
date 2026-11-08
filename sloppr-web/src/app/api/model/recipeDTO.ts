@@ -36,6 +36,8 @@ export interface RecipeDTO {
      * @pattern ^-?(?:0|[1-9]\d*)$
      */
   mealIdeaId?: number | string | null;
+  /** @nullable */
+  templateName?: string | null;
   ingredients?: RecipeIngredientDTO[];
   steps?: RecipeStepDTO[];
 }

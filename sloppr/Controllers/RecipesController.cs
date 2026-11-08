@@ -84,9 +84,40 @@ namespace sloppr.Controllers
                 var markdown = await templateSvc.RenderAsync(recipeDto, template);
                 return Content(markdown, $"{MarkdownContentType}; charset=utf-8");
             }
-            catch (FileNotFoundException)
+            catch (RecipeTemplateNotFoundException ex)
             {
-                return NotFound("Recipe template not found.");
+                return NotFound(ex.Message);
+            }
+            catch (RecipeTemplateValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Renders an unsaved recipe preview as markdown. Nothing is persisted.
+        /// Omit the template to use the recipe's override, then the global default.
+        /// </summary>
+        [HttpPost("markdown")]
+        [Produces(MarkdownContentType)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> PreviewRecipeMarkdown(
+            [FromBody] RecipeDTO recipe,
+            [FromQuery] string? template = null)
+        {
+            try
+            {
+                var markdown = await templateSvc.RenderAsync(recipe, template);
+                return Content(markdown, $"{MarkdownContentType}; charset=utf-8");
+            }
+            catch (RecipeTemplateNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (RecipeTemplateValidationException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
@@ -100,6 +131,7 @@ namespace sloppr.Controllers
             recipe.Difficulty = request.Difficulty;
             recipe.Notes = request.Notes;
             recipe.MealIdeaId = request.MealIdeaId;
+            recipe.TemplateName = request.TemplateName;
 
             recipe.Ingredients.Clear();
             foreach (var ingredient in request.Ingredients ?? [])

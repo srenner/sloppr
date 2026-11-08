@@ -129,7 +129,13 @@ namespace sloppr.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("DefaultRecipeTemplateName")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("ExtractionModelId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasSeededRecipeTemplates")
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("IdeaModelId")
@@ -149,7 +155,8 @@ namespace sloppr.Migrations
                         new
                         {
                             Id = 1,
-                            ApplicationName = "sloppr"
+                            ApplicationName = "sloppr",
+                            HasSeededRecipeTemplates = false
                         });
                 });
 
@@ -348,6 +355,9 @@ namespace sloppr.Migrations
                     b.Property<int>("ServingCount")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("TemplateName")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -418,6 +428,48 @@ namespace sloppr.Migrations
                     b.HasIndex("RecipeId");
 
                     b.ToTable("RecipeSteps");
+                });
+
+            modelBuilder.Entity("sloppr.Models.RecipeTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("RecipeTemplates");
                 });
 
             modelBuilder.Entity("sloppr.Models.AiModel", b =>

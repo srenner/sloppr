@@ -1,0 +1,25 @@
+# {{ name }}
+
+{{ description }}
+
+- **Servings:** {{ serving_count }}
+- **Prep Time:** {{ prep_time_minutes }} mins
+- **Cook Time:** {{ cook_time_minutes }} mins
+{% if difficulty %}- **Difficulty:** {{ difficulty }}/3{% endif %}
+
+## Ingredients
+
+{% for ingredient in ingredients %}
+- {% if ingredient.quantity %}{{ ingredient.quantity }} {% endif %}{% if ingredient.unit %}{{ ingredient.unit }} {% endif %}{{ ingredient.name }}{% if ingredient.group %} *({{ ingredient.group }})*{% endif %}{% if ingredient.note %} — {{ ingredient.note }}{% endif %}
+{% endfor %}
+
+## Steps
+
+{% for step in steps %}
+1. {{ step.instruction }}
+{% endfor %}
+
+{% if notes %}## Notes
+
+{{ notes }}
+{% endif %}

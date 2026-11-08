@@ -28,6 +28,8 @@ export interface RecipeRequest {
      * @pattern ^-?(?:0|[1-9]\d*)$
      */
   mealIdeaId?: number | string | null;
+  /** @nullable */
+  templateName?: string | null;
   ingredients?: RecipeIngredientRequest[];
   steps?: RecipeStepRequest[];
 }

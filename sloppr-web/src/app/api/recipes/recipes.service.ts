@@ -26,6 +26,7 @@ import {
 
 import type {
   GetApiRecipesIdMarkdownParams,
+  PostApiRecipesMarkdownParams,
   RecipeDTO,
   RecipeRequest
 } from '../model';
@@ -386,6 +387,48 @@ export class RecipesService {
 
     return this.http.get(
       `/api/Recipes/${id}/markdown`,{
+        responseType: 'text',
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+        params: filteredParams,}
+    ) as Observable<string>;
+  }
+ postApiRecipesMarkdown(recipeDTO: RecipeDTO,
+    params?: PostApiRecipesMarkdownParams, options?: HttpClientBodyOptions): Observable<string>;
+ postApiRecipesMarkdown(recipeDTO: RecipeDTO,
+    params?: PostApiRecipesMarkdownParams, options?: HttpClientEventOptions): Observable<HttpEvent<string>>;
+ postApiRecipesMarkdown(recipeDTO: RecipeDTO,
+    params?: PostApiRecipesMarkdownParams, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<string>>;
+  postApiRecipesMarkdown(
+    recipeDTO: RecipeDTO,
+    params?: PostApiRecipesMarkdownParams, options?: HttpClientObserveOptions): Observable<string | HttpEvent<string> | AngularHttpResponse<string>> {
+    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
+
+    if (options?.observe === 'events') {
+      return this.http.post(
+      `/api/Recipes/markdown`,
+      recipeDTO,{
+        responseType: 'text',
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+        params: filteredParams,}
+    ) as Observable<HttpEvent<string>>;
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.post(
+      `/api/Recipes/markdown`,
+      recipeDTO,{
+        responseType: 'text',
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+        params: filteredParams,}
+    ) as Observable<AngularHttpResponse<string>>;
+    }
+
+    return this.http.post(
+      `/api/Recipes/markdown`,
+      recipeDTO,{
         responseType: 'text',
     ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'body',

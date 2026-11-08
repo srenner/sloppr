@@ -60,6 +60,7 @@ builder.Services.AddScoped<IMealIdeaService, MealIdeaService>();
 
 builder.Services.AddScoped<RecipeMapper>();
 builder.Services.AddScoped<IRecipeService, RecipeService>();
+builder.Services.AddScoped<RecipeTemplateMapper>();
 builder.Services.AddScoped<IRecipeTemplateService, RecipeTemplateService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -90,6 +91,10 @@ using (var scope = app.Services.CreateScope())
     var settingsService = scope.ServiceProvider
         .GetRequiredService<ApplicationSettingService>();
     await settingsService.Load();
+
+    var templateService = scope.ServiceProvider
+        .GetRequiredService<IRecipeTemplateService>();
+    await templateService.SeedDefaultAsync();
 }
 
 if (app.Environment.IsDevelopment())
