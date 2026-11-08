@@ -1,5 +1,161 @@
 @sloppr_HostAddress = http://localhost:5220
 
+// AiProviders endpoints
+GET {{sloppr_HostAddress}}/api/AiProviders/
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/AiProviders/inactive
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/AiProviders/{id}
+Accept: application/json
+
+###
+
+// Prechecks an unsaved provider by base URL. The health path comes from
+// ProviderTypeSettings in appsettings.json.
+GET {{sloppr_HostAddress}}/api/AiProviders/health?BaseUrl=http://localhost:11434&HealthCheckPath=/
+Accept: application/json
+
+###
+
+POST {{sloppr_HostAddress}}/api/AiProviders/1/health
+
+###
+
+GET {{sloppr_HostAddress}}/api/AiProviders/1/discover-models
+Accept: application/json
+
+###
+
+POST {{sloppr_HostAddress}}/api/AiProviders/
+Content-Type: application/json
+
+{
+  "name": "Ollama",
+  "providerType": "Ollama",
+  "baseUrl": "http://localhost:11434"
+}
+
+###
+
+PUT {{sloppr_HostAddress}}/api/AiProviders/{id}
+Content-Type: application/json
+
+{
+  "id": 0,
+  "name": "Ollama",
+  "providerType": "Ollama",
+  "baseUrl": "http://localhost:11434"
+}
+
+###
+
+DELETE {{sloppr_HostAddress}}/api/AiProviders/{id}
+
+###
+
+// AiModels endpoints
+GET {{sloppr_HostAddress}}/api/AiModels/
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/AiModels/inactive
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/AiModels/{id}
+Accept: application/json
+
+###
+
+POST {{sloppr_HostAddress}}/api/AiModels/
+Content-Type: application/json
+
+{
+  "name": "Granite 4.1 8B",
+  "identifier": "granite4.1:8b",
+  "aiProviderId": 1,
+  "contextWindow": 128000,
+  "capabilities": null
+}
+
+###
+
+POST {{sloppr_HostAddress}}/api/AiModels/batch
+Content-Type: application/json
+
+[
+  {
+    "name": "Granite 4.1 8B",
+    "identifier": "granite4.1:8b",
+    "isActive": false,
+    "aiProviderId": 1,
+    "contextWindow": 128000,
+    "capabilities": null
+  }
+]
+
+###
+
+PUT {{sloppr_HostAddress}}/api/AiModels/{id}
+Content-Type: application/json
+
+{
+  "id": 0,
+  "name": "Granite 4.1 8B",
+  "identifier": "granite4.1:8b",
+  "aiProviderId": 1,
+  "contextWindow": 128000,
+  "capabilities": null
+}
+
+###
+
+DELETE {{sloppr_HostAddress}}/api/AiModels/{id}
+
+###
+
+// Cuisines endpoints
+GET {{sloppr_HostAddress}}/api/Cuisines/
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/Cuisines/{id}
+Accept: application/json
+
+###
+
+POST {{sloppr_HostAddress}}/api/Cuisines/
+Content-Type: application/json
+
+{
+  "name": "mexican"
+}
+
+###
+
+PUT {{sloppr_HostAddress}}/api/Cuisines/{id}
+Content-Type: application/json
+
+{
+  "id": 0,
+  "name": "mexican"
+}
+
+###
+
+DELETE {{sloppr_HostAddress}}/api/Cuisines/{id}
+
+###
+
 // KeyIngredients endpoints
 GET {{sloppr_HostAddress}}/api/KeyIngredients/
 Accept: application/json
@@ -16,9 +172,7 @@ Content-Type: application/json
 
 {
   "id": 0,
-  "name": "string",
-  "description": "string",
-  "isDeleted": true
+  "name": "chicken"
 }
 
 ###
@@ -27,9 +181,7 @@ POST {{sloppr_HostAddress}}/api/KeyIngredients/
 Content-Type: application/json
 
 {
-  "name": "string",
-  "description": "string",
-  "isDeleted": true
+  "name": "chicken"
 }
 
 ###
@@ -204,7 +356,6 @@ Content-Type: application/json
 
 DELETE {{sloppr_HostAddress}}/api/RecipeTemplates/{name}
 
-
 ###
 
 POST {{sloppr_HostAddress}}/api/Recipes/
@@ -216,8 +367,10 @@ Content-Type: application/json
   "servingCount": 4,
   "prepTimeMinutes": 10,
   "cookTimeMinutes": 20,
+  "difficulty": 2,
   "notes": "string",
   "mealIdeaId": null,
+  "templateName": null,
   "ingredients": [
     {
       "order": 1,
@@ -248,8 +401,10 @@ Content-Type: application/json
   "servingCount": 4,
   "prepTimeMinutes": 10,
   "cookTimeMinutes": 20,
+  "difficulty": 2,
   "notes": "string",
   "mealIdeaId": null,
+  "templateName": null,
   "ingredients": [
     {
       "order": 1,
