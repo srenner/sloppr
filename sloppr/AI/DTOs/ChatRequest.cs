@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.AI;
-using sloppr.Enums;
 
 namespace sloppr.AI.DTOs;
 

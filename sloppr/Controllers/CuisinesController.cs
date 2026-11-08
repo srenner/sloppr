@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using sloppr.DTOs;
+using sloppr.Mappers;
 using sloppr.Models;
 using sloppr.Services;
 
@@ -11,10 +12,10 @@ namespace sloppr.Controllers
                                     CuisineMapper mapper) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cuisine>>> GetCuisines()
+        public async Task<ActionResult<IEnumerable<CuisineDTO>>> GetCuisines()
         {
             var cuisines = await svc.GetAllAsync();
-            return Ok(cuisines);
+            return Ok(cuisines.Select(mapper.ToDto).ToList());
         }
 
         [HttpGet("{id}")]
@@ -40,10 +41,10 @@ namespace sloppr.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Cuisine>> PostCuisine(Cuisine cuisine)
+        public async Task<ActionResult<CuisineDTO>> PostCuisine(Cuisine cuisine)
         {
             await svc.AddAsync(cuisine);
-            return CreatedAtAction("GetCuisine", new { id = cuisine.Id }, cuisine);
+            return CreatedAtAction("GetCuisine", new { id = cuisine.Id }, mapper.ToDto(cuisine));
         }
 
         [HttpDelete("{id}")]

@@ -12,23 +12,23 @@ namespace sloppr.Controllers
                                     AiModelMapper mapper) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AiModel>>> GetActiveAiModelsAsync()
+        public async Task<ActionResult<IEnumerable<AiModelDTO>>> GetActiveAiModelsAsync()
         {
             var models = await svc.GetFilteredAsync();
-            return Ok(models);
+            return Ok(models.Select(mapper.ToDto).ToList());
         }
 
         [HttpGet("inactive")]
-        public async Task<ActionResult<IEnumerable<AiModel>>> GetInactiveAiModelsAsync()
+        public async Task<ActionResult<IEnumerable<AiModelDTO>>> GetInactiveAiModelsAsync()
         {
             var models = await svc.GetAllAsync();
-            return Ok(models.Where(w => w.IsActive == false));
+            return Ok(models.Where(w => w.IsActive == false).Select(mapper.ToDto).ToList());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<AiModelDTO>> GetAiModel(int id)
         {
-            AiModel? aiModel = await svc.GetByIdAsync(id);
+            AiModel? aiModel = await svc.GetByIdWithProviderAsync(id);
             if (aiModel == null)
             {
                 return NotFound();
@@ -48,10 +48,11 @@ namespace sloppr.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<AiModel>> PostAiModel(AiModel aiModel)
+        public async Task<ActionResult<AiModelDTO>> PostAiModel(AiModel aiModel)
         {
             await svc.AddAsync(aiModel);
-            return CreatedAtAction("GetAiModel", new { id = aiModel.Id }, aiModel);
+            var created = await svc.GetByIdWithProviderAsync(aiModel.Id);
+            return CreatedAtAction("GetAiModel", new { id = aiModel.Id }, mapper.ToDto(created!));
         }
 
         [HttpPost("batch")]

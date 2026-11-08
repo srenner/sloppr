@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using sloppr.AI.Extraction;
 using sloppr.DataAccess;
 using sloppr.Mappers;
 using sloppr.Settings;

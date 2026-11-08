@@ -1,12 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using sloppr.AI;
-using sloppr.AI.ModelDiscoveryResponse;
 using sloppr.DataAccess;
 using sloppr.Models;
 using sloppr.Settings;
-using System.Net.Http;
-using System.Text;
 
 namespace sloppr.Services;
 

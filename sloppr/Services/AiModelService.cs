@@ -37,12 +37,19 @@ public class AiModelService(ApplicationDbContext db) : IAiModelService
 
     public async Task<IEnumerable<AiModel>> GetFilteredAsync()
     {
-        return await _db.AiModels.AsNoTracking().ToListAsync();
+        return await _db.AiModels
+            .Include(x => x.AiProvider)
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<AiModel>> GetAllAsync()
     {
-        return await _db.AiModels.IgnoreQueryFilters().AsNoTracking().ToListAsync();
+        return await _db.AiModels
+            .IgnoreQueryFilters()
+            .Include(x => x.AiProvider)
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<AiModel> UpdateAsync(AiModel model)

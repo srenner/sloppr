@@ -1,6 +1,3 @@
-
-using sloppr.AI.ModelDiscoveryResponse;
-using sloppr.Enums;
 using sloppr.Models;
 
 namespace sloppr.Services;

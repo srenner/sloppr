@@ -1,5 +1,3 @@
-using System;
-
 namespace sloppr.Models;
 
 public class MealIdea : BaseModel

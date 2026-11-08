@@ -197,19 +197,19 @@ export const PostApiAiProvidersIdHealthAccept = {
 export class AiProvidersService {
   private readonly http = inject(HttpClient);
  getApiAiProviders(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiAiProviders(accept: 'application/json', options?: HttpClientOptions): Observable<AiProvider[]>;
-  getApiAiProviders(accept: 'text/json', options?: HttpClientOptions): Observable<AiProvider[]>;
-  getApiAiProviders(accept?: GetApiAiProvidersAccept, options?: HttpClientOptions): Observable<AiProvider[] | string>;
+  getApiAiProviders(accept: 'application/json', options?: HttpClientOptions): Observable<AiProviderDTO[]>;
+  getApiAiProviders(accept: 'text/json', options?: HttpClientOptions): Observable<AiProviderDTO[]>;
+  getApiAiProviders(accept?: GetApiAiProvidersAccept, options?: HttpClientOptions): Observable<AiProviderDTO[] | string>;
   getApiAiProviders(
     accept: GetApiAiProvidersAccept = 'application/json',
     options?: HttpClientOptions
-  ): Observable<AiProvider[] | string> {
+  ): Observable<AiProviderDTO[] | string> {
     const headers = options?.headers instanceof HttpHeaders
       ? options.headers.set('Accept', accept)
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.get<AiProvider[]>(`/api/AiProviders`, {
+      return this.http.get<AiProviderDTO[]>(`/api/AiProviders`, {
         ...options,
         responseType: 'json',
         headers,
@@ -226,7 +226,7 @@ export class AiProvidersService {
       }) as Observable<string>;
     }
 
-    return this.http.get<AiProvider[]>(`/api/AiProviders`, {
+    return this.http.get<AiProviderDTO[]>(`/api/AiProviders`, {
         ...options,
         responseType: 'json',
         headers,
@@ -237,22 +237,22 @@ export class AiProvidersService {
  postApiAiProviders(aiProvider: AiProvider,
     accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
   postApiAiProviders(aiProvider: AiProvider,
-    accept: 'application/json', options?: HttpClientOptions): Observable<AiProvider>;
+    accept: 'application/json', options?: HttpClientOptions): Observable<AiProviderDTO>;
   postApiAiProviders(aiProvider: AiProvider,
-    accept: 'text/json', options?: HttpClientOptions): Observable<AiProvider>;
+    accept: 'text/json', options?: HttpClientOptions): Observable<AiProviderDTO>;
   postApiAiProviders(aiProvider: AiProvider,
-    accept?: PostApiAiProvidersAccept, options?: HttpClientOptions): Observable<AiProvider | string>;
+    accept?: PostApiAiProvidersAccept, options?: HttpClientOptions): Observable<AiProviderDTO | string>;
   postApiAiProviders(
     aiProvider: AiProvider,
     accept: PostApiAiProvidersAccept = 'application/json',
     options?: HttpClientOptions
-  ): Observable<AiProvider | string> {
+  ): Observable<AiProviderDTO | string> {
     const headers = options?.headers instanceof HttpHeaders
       ? options.headers.set('Accept', accept)
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<AiProvider>(`/api/AiProviders`, aiProvider, {
+      return this.http.post<AiProviderDTO>(`/api/AiProviders`, aiProvider, {
         ...options,
         responseType: 'json',
         headers,
@@ -269,7 +269,7 @@ export class AiProvidersService {
       }) as Observable<string>;
     }
 
-    return this.http.post<AiProvider>(`/api/AiProviders`, aiProvider, {
+    return this.http.post<AiProviderDTO>(`/api/AiProviders`, aiProvider, {
         ...options,
         responseType: 'json',
         headers,
@@ -278,19 +278,19 @@ export class AiProvidersService {
       });
   }
  getApiAiProvidersInactive(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiAiProvidersInactive(accept: 'application/json', options?: HttpClientOptions): Observable<AiProvider[]>;
-  getApiAiProvidersInactive(accept: 'text/json', options?: HttpClientOptions): Observable<AiProvider[]>;
-  getApiAiProvidersInactive(accept?: GetApiAiProvidersInactiveAccept, options?: HttpClientOptions): Observable<AiProvider[] | string>;
+  getApiAiProvidersInactive(accept: 'application/json', options?: HttpClientOptions): Observable<AiProviderDTO[]>;
+  getApiAiProvidersInactive(accept: 'text/json', options?: HttpClientOptions): Observable<AiProviderDTO[]>;
+  getApiAiProvidersInactive(accept?: GetApiAiProvidersInactiveAccept, options?: HttpClientOptions): Observable<AiProviderDTO[] | string>;
   getApiAiProvidersInactive(
     accept: GetApiAiProvidersInactiveAccept = 'application/json',
     options?: HttpClientOptions
-  ): Observable<AiProvider[] | string> {
+  ): Observable<AiProviderDTO[] | string> {
     const headers = options?.headers instanceof HttpHeaders
       ? options.headers.set('Accept', accept)
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.get<AiProvider[]>(`/api/AiProviders/inactive`, {
+      return this.http.get<AiProviderDTO[]>(`/api/AiProviders/inactive`, {
         ...options,
         responseType: 'json',
         headers,
@@ -307,7 +307,7 @@ export class AiProvidersService {
       }) as Observable<string>;
     }
 
-    return this.http.get<AiProvider[]>(`/api/AiProviders/inactive`, {
+    return this.http.get<AiProviderDTO[]>(`/api/AiProviders/inactive`, {
         ...options,
         responseType: 'json',
         headers,

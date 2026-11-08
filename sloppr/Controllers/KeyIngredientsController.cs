@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using sloppr.DTOs;
+using sloppr.Mappers;
 using sloppr.Models;
 using sloppr.Services;
 
@@ -11,10 +12,10 @@ namespace sloppr.Controllers
                                             KeyIngredientMapper mapper) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<KeyIngredient>>> GetKeyIngredients()
+        public async Task<ActionResult<IEnumerable<KeyIngredientDTO>>> GetKeyIngredients()
         {
             var ingredients = await svc.GetAllAsync();
-            return Ok(ingredients);
+            return Ok(ingredients.Select(mapper.ToDto).ToList());
         }
 
         [HttpGet("{id}")]
@@ -40,10 +41,11 @@ namespace sloppr.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<KeyIngredient>> PostKeyIngredient(KeyIngredient keyIngredient)
+        public async Task<ActionResult<KeyIngredientDTO>> PostKeyIngredient(KeyIngredient keyIngredient)
         {
             await svc.AddAsync(keyIngredient);
-            return CreatedAtAction("GetKeyIngredient", new { id = keyIngredient.Id }, keyIngredient);
+            return CreatedAtAction("GetKeyIngredient", new { id = keyIngredient.Id },
+                mapper.ToDto(keyIngredient));
         }
 
         [HttpDelete("{id}")]

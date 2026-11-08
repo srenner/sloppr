@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using sloppr.AI.ModelDiscoveryResponse;
 using sloppr.Enums;
 using sloppr.Models;

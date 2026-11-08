@@ -100,19 +100,19 @@ export const GetApiKeyIngredientsIdAccept = {
 export class KeyIngredientsService {
   private readonly http = inject(HttpClient);
  getApiKeyIngredients(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiKeyIngredients(accept: 'application/json', options?: HttpClientOptions): Observable<KeyIngredient[]>;
-  getApiKeyIngredients(accept: 'text/json', options?: HttpClientOptions): Observable<KeyIngredient[]>;
-  getApiKeyIngredients(accept?: GetApiKeyIngredientsAccept, options?: HttpClientOptions): Observable<KeyIngredient[] | string>;
+  getApiKeyIngredients(accept: 'application/json', options?: HttpClientOptions): Observable<KeyIngredientDTO[]>;
+  getApiKeyIngredients(accept: 'text/json', options?: HttpClientOptions): Observable<KeyIngredientDTO[]>;
+  getApiKeyIngredients(accept?: GetApiKeyIngredientsAccept, options?: HttpClientOptions): Observable<KeyIngredientDTO[] | string>;
   getApiKeyIngredients(
     accept: GetApiKeyIngredientsAccept = 'application/json',
     options?: HttpClientOptions
-  ): Observable<KeyIngredient[] | string> {
+  ): Observable<KeyIngredientDTO[] | string> {
     const headers = options?.headers instanceof HttpHeaders
       ? options.headers.set('Accept', accept)
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.get<KeyIngredient[]>(`/api/KeyIngredients`, {
+      return this.http.get<KeyIngredientDTO[]>(`/api/KeyIngredients`, {
         ...options,
         responseType: 'json',
         headers,
@@ -129,7 +129,7 @@ export class KeyIngredientsService {
       }) as Observable<string>;
     }
 
-    return this.http.get<KeyIngredient[]>(`/api/KeyIngredients`, {
+    return this.http.get<KeyIngredientDTO[]>(`/api/KeyIngredients`, {
         ...options,
         responseType: 'json',
         headers,
@@ -140,22 +140,22 @@ export class KeyIngredientsService {
  postApiKeyIngredients(keyIngredient: KeyIngredient,
     accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
   postApiKeyIngredients(keyIngredient: KeyIngredient,
-    accept: 'application/json', options?: HttpClientOptions): Observable<KeyIngredient>;
+    accept: 'application/json', options?: HttpClientOptions): Observable<KeyIngredientDTO>;
   postApiKeyIngredients(keyIngredient: KeyIngredient,
-    accept: 'text/json', options?: HttpClientOptions): Observable<KeyIngredient>;
+    accept: 'text/json', options?: HttpClientOptions): Observable<KeyIngredientDTO>;
   postApiKeyIngredients(keyIngredient: KeyIngredient,
-    accept?: PostApiKeyIngredientsAccept, options?: HttpClientOptions): Observable<KeyIngredient | string>;
+    accept?: PostApiKeyIngredientsAccept, options?: HttpClientOptions): Observable<KeyIngredientDTO | string>;
   postApiKeyIngredients(
     keyIngredient: KeyIngredient,
     accept: PostApiKeyIngredientsAccept = 'application/json',
     options?: HttpClientOptions
-  ): Observable<KeyIngredient | string> {
+  ): Observable<KeyIngredientDTO | string> {
     const headers = options?.headers instanceof HttpHeaders
       ? options.headers.set('Accept', accept)
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<KeyIngredient>(`/api/KeyIngredients`, keyIngredient, {
+      return this.http.post<KeyIngredientDTO>(`/api/KeyIngredients`, keyIngredient, {
         ...options,
         responseType: 'json',
         headers,
@@ -172,7 +172,7 @@ export class KeyIngredientsService {
       }) as Observable<string>;
     }
 
-    return this.http.post<KeyIngredient>(`/api/KeyIngredients`, keyIngredient, {
+    return this.http.post<KeyIngredientDTO>(`/api/KeyIngredients`, keyIngredient, {
         ...options,
         responseType: 'json',
         headers,

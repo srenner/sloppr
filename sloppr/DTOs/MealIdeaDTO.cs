@@ -1,5 +1,3 @@
-using sloppr.Models;
-
 namespace sloppr.DTOs
 {
     public class MealIdeaDTO

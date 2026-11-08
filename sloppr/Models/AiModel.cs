@@ -1,6 +1,3 @@
-using System.Text.Json;
-using sloppr.Enums;
-
 namespace sloppr.Models;
 
 public class AiModel : BaseModel

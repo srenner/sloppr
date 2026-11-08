@@ -13,17 +13,17 @@ namespace sloppr.Controllers
                                        AiModelMapper modelMapper) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AiProvider>>> GetActiveAiProvidersAsync()
+        public async Task<ActionResult<IEnumerable<AiProviderDTO>>> GetActiveAiProvidersAsync()
         {
             var providers = await svc.GetFilteredAsync();
-            return Ok(providers);
+            return Ok(providers.Select(providerMapper.ToDto).ToList());
         }
 
         [HttpGet("inactive")]
-        public async Task<ActionResult<IEnumerable<AiProvider>>> GetInactiveAiProvidersAsync()
+        public async Task<ActionResult<IEnumerable<AiProviderDTO>>> GetInactiveAiProvidersAsync()
         {
             var models = await svc.GetAllAsync();
-            return Ok(models.Where(w => w.IsActive == false));
+            return Ok(models.Where(w => w.IsActive == false).Select(providerMapper.ToDto).ToList());
         }
 
         [HttpGet("{id}")]
@@ -82,23 +82,25 @@ namespace sloppr.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<AiProvider>> PostAiProvider(AiProvider aiProvider)
+        public async Task<ActionResult<AiProviderDTO>> PostAiProvider(AiProvider aiProvider)
         {
             await svc.AddAsync(aiProvider);
             if (aiProvider.IsHealthy == true)
             {
-                return CreatedAtAction(nameof(GetAiProvider), new { id = aiProvider.Id }, aiProvider);
+                return CreatedAtAction(nameof(GetAiProvider), new { id = aiProvider.Id },
+                    providerMapper.ToDto(aiProvider));
             }
             else
             {
                 var status = aiProvider.LastHealthStatusCode;
                 if (status >= 400 && status < 500)
                 {
-                    return UnprocessableEntity(aiProvider);
+                    return UnprocessableEntity(providerMapper.ToDto(aiProvider));
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status502BadGateway, aiProvider);
+                    return StatusCode(StatusCodes.Status502BadGateway,
+                        providerMapper.ToDto(aiProvider));
                 }
             }
         }

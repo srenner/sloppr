@@ -100,19 +100,19 @@ export const GetApiCuisinesIdAccept = {
 export class CuisinesService {
   private readonly http = inject(HttpClient);
  getApiCuisines(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiCuisines(accept: 'application/json', options?: HttpClientOptions): Observable<Cuisine[]>;
-  getApiCuisines(accept: 'text/json', options?: HttpClientOptions): Observable<Cuisine[]>;
-  getApiCuisines(accept?: GetApiCuisinesAccept, options?: HttpClientOptions): Observable<Cuisine[] | string>;
+  getApiCuisines(accept: 'application/json', options?: HttpClientOptions): Observable<CuisineDTO[]>;
+  getApiCuisines(accept: 'text/json', options?: HttpClientOptions): Observable<CuisineDTO[]>;
+  getApiCuisines(accept?: GetApiCuisinesAccept, options?: HttpClientOptions): Observable<CuisineDTO[] | string>;
   getApiCuisines(
     accept: GetApiCuisinesAccept = 'application/json',
     options?: HttpClientOptions
-  ): Observable<Cuisine[] | string> {
+  ): Observable<CuisineDTO[] | string> {
     const headers = options?.headers instanceof HttpHeaders
       ? options.headers.set('Accept', accept)
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.get<Cuisine[]>(`/api/Cuisines`, {
+      return this.http.get<CuisineDTO[]>(`/api/Cuisines`, {
         ...options,
         responseType: 'json',
         headers,
@@ -129,7 +129,7 @@ export class CuisinesService {
       }) as Observable<string>;
     }
 
-    return this.http.get<Cuisine[]>(`/api/Cuisines`, {
+    return this.http.get<CuisineDTO[]>(`/api/Cuisines`, {
         ...options,
         responseType: 'json',
         headers,
@@ -140,22 +140,22 @@ export class CuisinesService {
  postApiCuisines(cuisine: Cuisine,
     accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
   postApiCuisines(cuisine: Cuisine,
-    accept: 'application/json', options?: HttpClientOptions): Observable<Cuisine>;
+    accept: 'application/json', options?: HttpClientOptions): Observable<CuisineDTO>;
   postApiCuisines(cuisine: Cuisine,
-    accept: 'text/json', options?: HttpClientOptions): Observable<Cuisine>;
+    accept: 'text/json', options?: HttpClientOptions): Observable<CuisineDTO>;
   postApiCuisines(cuisine: Cuisine,
-    accept?: PostApiCuisinesAccept, options?: HttpClientOptions): Observable<Cuisine | string>;
+    accept?: PostApiCuisinesAccept, options?: HttpClientOptions): Observable<CuisineDTO | string>;
   postApiCuisines(
     cuisine: Cuisine,
     accept: PostApiCuisinesAccept = 'application/json',
     options?: HttpClientOptions
-  ): Observable<Cuisine | string> {
+  ): Observable<CuisineDTO | string> {
     const headers = options?.headers instanceof HttpHeaders
       ? options.headers.set('Accept', accept)
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<Cuisine>(`/api/Cuisines`, cuisine, {
+      return this.http.post<CuisineDTO>(`/api/Cuisines`, cuisine, {
         ...options,
         responseType: 'json',
         headers,
@@ -172,7 +172,7 @@ export class CuisinesService {
       }) as Observable<string>;
     }
 
-    return this.http.post<Cuisine>(`/api/Cuisines`, cuisine, {
+    return this.http.post<CuisineDTO>(`/api/Cuisines`, cuisine, {
         ...options,
         responseType: 'json',
         headers,

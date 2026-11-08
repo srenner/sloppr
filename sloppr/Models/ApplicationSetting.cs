@@ -1,6 +1,3 @@
-using System;
-using Humanizer;
-
 namespace sloppr.Models;
 
 public class ApplicationSetting

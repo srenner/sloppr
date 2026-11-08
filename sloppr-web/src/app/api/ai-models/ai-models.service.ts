@@ -117,19 +117,19 @@ export const PostApiAiModelsBatchAccept = {
 export class AiModelsService {
   private readonly http = inject(HttpClient);
  getApiAiModels(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiAiModels(accept: 'application/json', options?: HttpClientOptions): Observable<AiModel[]>;
-  getApiAiModels(accept: 'text/json', options?: HttpClientOptions): Observable<AiModel[]>;
-  getApiAiModels(accept?: GetApiAiModelsAccept, options?: HttpClientOptions): Observable<AiModel[] | string>;
+  getApiAiModels(accept: 'application/json', options?: HttpClientOptions): Observable<AiModelDTO[]>;
+  getApiAiModels(accept: 'text/json', options?: HttpClientOptions): Observable<AiModelDTO[]>;
+  getApiAiModels(accept?: GetApiAiModelsAccept, options?: HttpClientOptions): Observable<AiModelDTO[] | string>;
   getApiAiModels(
     accept: GetApiAiModelsAccept = 'application/json',
     options?: HttpClientOptions
-  ): Observable<AiModel[] | string> {
+  ): Observable<AiModelDTO[] | string> {
     const headers = options?.headers instanceof HttpHeaders
       ? options.headers.set('Accept', accept)
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.get<AiModel[]>(`/api/AiModels`, {
+      return this.http.get<AiModelDTO[]>(`/api/AiModels`, {
         ...options,
         responseType: 'json',
         headers,
@@ -146,7 +146,7 @@ export class AiModelsService {
       }) as Observable<string>;
     }
 
-    return this.http.get<AiModel[]>(`/api/AiModels`, {
+    return this.http.get<AiModelDTO[]>(`/api/AiModels`, {
         ...options,
         responseType: 'json',
         headers,
@@ -157,22 +157,22 @@ export class AiModelsService {
  postApiAiModels(aiModel: AiModel,
     accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
   postApiAiModels(aiModel: AiModel,
-    accept: 'application/json', options?: HttpClientOptions): Observable<AiModel>;
+    accept: 'application/json', options?: HttpClientOptions): Observable<AiModelDTO>;
   postApiAiModels(aiModel: AiModel,
-    accept: 'text/json', options?: HttpClientOptions): Observable<AiModel>;
+    accept: 'text/json', options?: HttpClientOptions): Observable<AiModelDTO>;
   postApiAiModels(aiModel: AiModel,
-    accept?: PostApiAiModelsAccept, options?: HttpClientOptions): Observable<AiModel | string>;
+    accept?: PostApiAiModelsAccept, options?: HttpClientOptions): Observable<AiModelDTO | string>;
   postApiAiModels(
     aiModel: AiModel,
     accept: PostApiAiModelsAccept = 'application/json',
     options?: HttpClientOptions
-  ): Observable<AiModel | string> {
+  ): Observable<AiModelDTO | string> {
     const headers = options?.headers instanceof HttpHeaders
       ? options.headers.set('Accept', accept)
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<AiModel>(`/api/AiModels`, aiModel, {
+      return this.http.post<AiModelDTO>(`/api/AiModels`, aiModel, {
         ...options,
         responseType: 'json',
         headers,
@@ -189,7 +189,7 @@ export class AiModelsService {
       }) as Observable<string>;
     }
 
-    return this.http.post<AiModel>(`/api/AiModels`, aiModel, {
+    return this.http.post<AiModelDTO>(`/api/AiModels`, aiModel, {
         ...options,
         responseType: 'json',
         headers,
@@ -198,19 +198,19 @@ export class AiModelsService {
       });
   }
  getApiAiModelsInactive(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiAiModelsInactive(accept: 'application/json', options?: HttpClientOptions): Observable<AiModel[]>;
-  getApiAiModelsInactive(accept: 'text/json', options?: HttpClientOptions): Observable<AiModel[]>;
-  getApiAiModelsInactive(accept?: GetApiAiModelsInactiveAccept, options?: HttpClientOptions): Observable<AiModel[] | string>;
+  getApiAiModelsInactive(accept: 'application/json', options?: HttpClientOptions): Observable<AiModelDTO[]>;
+  getApiAiModelsInactive(accept: 'text/json', options?: HttpClientOptions): Observable<AiModelDTO[]>;
+  getApiAiModelsInactive(accept?: GetApiAiModelsInactiveAccept, options?: HttpClientOptions): Observable<AiModelDTO[] | string>;
   getApiAiModelsInactive(
     accept: GetApiAiModelsInactiveAccept = 'application/json',
     options?: HttpClientOptions
-  ): Observable<AiModel[] | string> {
+  ): Observable<AiModelDTO[] | string> {
     const headers = options?.headers instanceof HttpHeaders
       ? options.headers.set('Accept', accept)
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.get<AiModel[]>(`/api/AiModels/inactive`, {
+      return this.http.get<AiModelDTO[]>(`/api/AiModels/inactive`, {
         ...options,
         responseType: 'json',
         headers,
@@ -227,7 +227,7 @@ export class AiModelsService {
       }) as Observable<string>;
     }
 
-    return this.http.get<AiModel[]>(`/api/AiModels/inactive`, {
+    return this.http.get<AiModelDTO[]>(`/api/AiModels/inactive`, {
         ...options,
         responseType: 'json',
         headers,
