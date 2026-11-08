@@ -1,51 +1,54 @@
+using Microsoft.EntityFrameworkCore;
 using sloppr.DataAccess;
 using sloppr.Models;
 
 namespace sloppr.Services;
 
-public class AiModelService(IUnitOfWork uow) : IAiModelService
+public class AiModelService(ApplicationDbContext db) : IAiModelService
 {
-    private readonly IUnitOfWork _uow = uow;
+    private readonly ApplicationDbContext _db = db;
 
 
     #region CRUD operations
 
     public async Task AddAsync(AiModel model)
     {
-        await _uow.Repository<AiModel>().AddAsync(model);
-        await _uow.CompleteAsync();
+        _db.AiModels.Add(model);
+        await _db.SaveChangesAsync();
     }
 
     public async Task<int> AddRangeAsync(IEnumerable<AiModel> models)
     {
-        await _uow.Repository<AiModel>().AddRangeAsync(models);
-        return await _uow.CompleteAsync();
+        _db.AiModels.AddRange(models);
+        return await _db.SaveChangesAsync();
     }
 
     public async Task<AiModel?> GetByIdAsync(int id)
     {
-        return await _uow.Repository<AiModel>().GetByIdAsync(id);
+        return await _db.AiModels.FindAsync(id);
     }
 
     public async Task<AiModel?> GetByIdWithProviderAsync(int id)
     {
-        return await _uow.Repository<AiModel>().GetByIdAsync(id, x => x.AiProvider);
+        return await _db.AiModels
+            .Include(x => x.AiProvider)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<IEnumerable<AiModel>> GetFilteredAsync()
     {
-        return await _uow.Repository<AiModel>().GetFilteredAsync();
+        return await _db.AiModels.AsNoTracking().ToListAsync();
     }
 
     public async Task<IEnumerable<AiModel>> GetAllAsync()
     {
-        return await _uow.Repository<AiModel>().GetAllAsync();
+        return await _db.AiModels.IgnoreQueryFilters().AsNoTracking().ToListAsync();
     }
 
     public async Task<AiModel> UpdateAsync(AiModel model)
     {
-        _uow.Repository<AiModel>().Update(model);
-        await _uow.CompleteAsync();
+        _db.AiModels.Update(model);
+        await _db.SaveChangesAsync();
         return model;
     }
 

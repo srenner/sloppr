@@ -6,12 +6,10 @@ namespace sloppr.Services;
 
 public class RecipeService : IRecipeService
 {
-    private readonly IUnitOfWork _uow;
     private readonly ApplicationDbContext _db;
 
-    public RecipeService(IUnitOfWork uow, ApplicationDbContext db)
+    public RecipeService(ApplicationDbContext db)
     {
-        _uow = uow;
         _db = db;
     }
 
@@ -20,6 +18,8 @@ public class RecipeService : IRecipeService
         return await _db.Recipes
             .Include(r => r.Ingredients.OrderBy(i => i.Order))
             .Include(r => r.Steps.OrderBy(s => s.Order))
+            .AsSplitQuery()
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -28,6 +28,7 @@ public class RecipeService : IRecipeService
         return await _db.Recipes
             .Include(r => r.Ingredients.OrderBy(i => i.Order))
             .Include(r => r.Steps.OrderBy(s => s.Order))
+            .AsSplitQuery()
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
@@ -35,23 +36,23 @@ public class RecipeService : IRecipeService
     {
         Normalize(recipe);
 
-        await _uow.Repository<Recipe>().AddAsync(recipe);
-        await _uow.CompleteAsync();
+        _db.Recipes.Add(recipe);
+        await _db.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Recipe recipe)
     {
         Normalize(recipe);
 
-        _uow.Repository<Recipe>().Update(recipe);
-        await _uow.CompleteAsync();
+        _db.Recipes.Update(recipe);
+        await _db.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Recipe recipe)
     {
         recipe.IsDeleted = true;
-        _uow.Repository<Recipe>().Update(recipe);
-        await _uow.CompleteAsync();
+        _db.Recipes.Update(recipe);
+        await _db.SaveChangesAsync();
     }
 
     private static void Normalize(Recipe recipe)

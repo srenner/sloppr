@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using sloppr.AI;
 using sloppr.AI.ModelDiscoveryResponse;
@@ -9,12 +10,12 @@ using System.Text;
 
 namespace sloppr.Services;
 
-public class AiProviderService(IUnitOfWork uow,
+public class AiProviderService(ApplicationDbContext db,
                                 IHttpClientFactory httpClientFactory,
                                 IOptions<ProviderTypeSettings> options,
                                 IModelDiscoveryService modelDiscoveryService) : IAiProviderService
 {
-    private readonly IUnitOfWork _uow = uow;
+    private readonly ApplicationDbContext _db = db;
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly ProviderTypeSettings _providerTypeSettings = options.Value;
     private readonly IModelDiscoveryService _modelDiscoveryService = modelDiscoveryService;
@@ -24,30 +25,32 @@ public class AiProviderService(IUnitOfWork uow,
         await CheckHealthAsync(provider);
         if (provider.IsHealthy == true || allowUnhealthy)
         {
-            await _uow.Repository<AiProvider>().AddAsync(provider);
-            await _uow.CompleteAsync();
+            _db.AiProviders.Add(provider);
+            await _db.SaveChangesAsync();
         }
     }
 
 
     public async Task<IEnumerable<AiProvider>> GetFilteredAsync()
     {
-        return await _uow.Repository<AiProvider>().GetFilteredAsync();
+        return await _db.AiProviders.AsNoTracking().ToListAsync();
     }
 
     public async Task<IEnumerable<AiProvider>> GetAllAsync()
     {
-        return await _uow.Repository<AiProvider>().GetAllAsync();
+        return await _db.AiProviders.IgnoreQueryFilters().AsNoTracking().ToListAsync();
     }
 
     public async Task<AiProvider?> GetByIdAsync(int id)
     {
-        return await _uow.Repository<AiProvider>().GetByIdAsync(id);
+        return await _db.AiProviders.FindAsync(id);
     }
 
     public async Task<AiProvider?> GetByIdWithModelsAsync(int id)
     {
-        return await _uow.Repository<AiProvider>().GetByIdAsync(id, x => x.ProviderModels);
+        return await _db.AiProviders
+            .Include(x => x.ProviderModels)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<List<AiModel>> DiscoverModels(int providerId)
@@ -120,8 +123,8 @@ public class AiProviderService(IUnitOfWork uow,
 
     public async Task<AiProvider> UpdateAsync(AiProvider provider)
     {
-        _uow.Repository<AiProvider>().Update(provider);
-        await _uow.CompleteAsync();
+        _db.AiProviders.Update(provider);
+        await _db.SaveChangesAsync();
         return provider;
     }
 }
