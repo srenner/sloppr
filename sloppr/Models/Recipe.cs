@@ -18,4 +18,9 @@ public class Recipe : BaseModel
 
     public int? MealIdeaId { get; set; }
     public MealIdea? MealIdea { get; set; }
+
+    /// <summary>
+    /// Optional per-recipe template override. Falls back to the global default.
+    /// </summary>
+    public string? TemplateName { get; set; }
 }

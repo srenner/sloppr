@@ -10,6 +10,7 @@ public class RecipeRequest
     public int? Difficulty { get; set; }
     public string? Notes { get; set; }
     public int? MealIdeaId { get; set; }
+    public string? TemplateName { get; set; }
     public ICollection<RecipeIngredientRequest> Ingredients { get; set; } = [];
     public ICollection<RecipeStepRequest> Steps { get; set; } = [];
 }

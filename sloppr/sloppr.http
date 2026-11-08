@@ -104,9 +104,106 @@ Accept: application/json
 
 ###
 
-// Omit ?template to use default.md; unknown names also fall back to it.
+// Omit ?template to use the recipe override, then the global default, then "default".
+// An explicitly requested template that does not exist returns 404.
 GET {{sloppr_HostAddress}}/api/Recipes/{id}/markdown?template=default
 Accept: text/markdown
+
+###
+
+// Preview-only markdown for an unsaved recipe (same body as POST /api/Recipes).
+POST {{sloppr_HostAddress}}/api/Recipes/markdown
+Content-Type: application/json
+
+{
+  "name": "string",
+  "description": "string",
+  "servingCount": 4,
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 20,
+  "difficulty": 2,
+  "notes": "string",
+  "templateName": null,
+  "ingredients": [
+    {
+      "order": 1,
+      "quantity": 1,
+      "unit": "cup",
+      "name": "rice",
+      "group": "Main",
+      "note": "string"
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "instruction": "Cook the rice.",
+      "group": "Main"
+    }
+  ]
+}
+
+###
+
+// RecipeTemplates endpoints
+GET {{sloppr_HostAddress}}/api/RecipeTemplates/
+Accept: application/json
+
+###
+
+// Starter markdown used to prefill the "create template" editor.
+GET {{sloppr_HostAddress}}/api/RecipeTemplates/starter
+Accept: text/markdown
+
+###
+
+GET {{sloppr_HostAddress}}/api/RecipeTemplates/{name}
+Accept: application/json
+
+###
+
+// Downloads the template as {name}.mdt
+GET {{sloppr_HostAddress}}/api/RecipeTemplates/{name}/download
+Accept: text/markdown
+
+###
+
+// Imports a .mdt file. Template name defaults to the file name.
+POST {{sloppr_HostAddress}}/api/RecipeTemplates/import?name=my-template
+Content-Type: multipart/form-data; boundary=----slopprBoundary
+
+------slopprBoundary
+Content-Disposition: form-data; name="file"; filename="template.mdt"
+Content-Type: text/markdown
+
+# Recipe title
+
+Description
+------slopprBoundary--
+
+###
+
+POST {{sloppr_HostAddress}}/api/RecipeTemplates/
+Content-Type: application/json
+
+{
+  "name": "my-template",
+  "content": "# Recipe title\n\nDescription"
+}
+
+###
+
+PUT {{sloppr_HostAddress}}/api/RecipeTemplates/{name}
+Content-Type: application/json
+
+{
+  "content": "# Recipe title\n\nDescription"
+}
+
+###
+
+DELETE {{sloppr_HostAddress}}/api/RecipeTemplates/{name}
+
 
 ###
 

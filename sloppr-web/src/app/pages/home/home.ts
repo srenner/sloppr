@@ -3,17 +3,14 @@ import { finalize, forkJoin } from 'rxjs';
 import { AiInferenceService } from '../../api/ai-inference/ai-inference.service';
 import { MealIdeasService } from '../../api/meal-ideas/meal-ideas.service';
 import { RecipesService } from '../../api/recipes/recipes.service';
-import type {
-  MealIdeaDTO,
-  RecipeDTO,
-  RecipeIngredientDTO,
-  RecipeRequest,
-} from '../../api/model';
+import { MarkdownView } from '../../components/markdown-view/markdown-view';
+import type { MealIdeaDTO, RecipeDTO, RecipeRequest } from '../../api/model';
 
 type Phase = 'input' | 'ideas' | 'recipe' | 'done';
 
 @Component({
   selector: 'app-home',
+  imports: [MarkdownView],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -30,6 +27,7 @@ export class Home {
   protected readonly ideas = signal<MealIdeaDTO[]>([]);
   protected readonly activeIdea = signal<MealIdeaDTO | null>(null);
   protected readonly recipe = signal<RecipeDTO | null>(null);
+  protected readonly recipeMarkdown = signal<string | null>(null);
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -96,14 +94,15 @@ export class Home {
     this.error.set(null);
     this.activeIdea.set(idea);
     this.recipe.set(null);
+    this.recipeMarkdown.set(null);
     this.phase.set('recipe');
 
     this.aiInference
       .postApiAiInferenceRecipesMealIdeaId(id, 'application/json')
       .subscribe({
         next: (recipe) => {
-          this.loading.set(false);
           this.recipe.set(recipe);
+          this.loadRecipeMarkdown(recipe);
         },
         error: () => {
           this.loading.set(false);
@@ -122,6 +121,7 @@ export class Home {
     this.error.set(null);
     this.activeIdea.set(null);
     this.recipe.set(null);
+    this.recipeMarkdown.set(null);
     this.phase.set('ideas');
   }
 
@@ -188,12 +188,20 @@ export class Home {
     return id !== null && this.savedIdeaIds().has(id);
   }
 
-  protected ingredientLabel(ingredient: RecipeIngredientDTO): string {
-    const amount = [ingredient.quantity, ingredient.unit]
-      .filter((part) => part !== null && part !== undefined && part !== '')
-      .join(' ');
-    const note = ingredient.note ? ` (${ingredient.note})` : '';
-    return `${amount ? `${amount} ` : ''}${ingredient.name}${note}`;
+  private loadRecipeMarkdown(recipe: RecipeDTO): void {
+    this.recipes.postApiRecipesMarkdown(recipe).subscribe({
+      next: (markdown) => {
+        this.loading.set(false);
+        this.recipeMarkdown.set(markdown);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.activeIdea.set(null);
+        this.recipe.set(null);
+        this.phase.set('ideas');
+        this.error.set("Couldn't format that recipe. Try again or pick another.");
+      },
+    });
   }
 
   private persistRecipe(cookTonight: boolean): void {
@@ -300,6 +308,7 @@ export class Home {
   private returnToIdeas(): void {
     this.activeIdea.set(null);
     this.recipe.set(null);
+    this.recipeMarkdown.set(null);
 
     if (this.ideas().length > 0) {
       this.phase.set('ideas');
@@ -315,6 +324,7 @@ export class Home {
     this.phase.set('input');
     this.activeIdea.set(null);
     this.recipe.set(null);
+    this.recipeMarkdown.set(null);
     this.ideas.set([]);
     this.savedIdeaIds.set(new Set());
     this.restorePrompt();

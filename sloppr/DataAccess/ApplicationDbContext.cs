@@ -10,6 +10,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Cuisine> Cuisines { get; set; }
     public DbSet<MealIdea> MealIdeas { get; set; }
     public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<RecipeTemplate> RecipeTemplates { get; set; }
     public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
     public DbSet<RecipeStep> RecipeSteps { get; set; }
     public DbSet<AiProvider> AiProviders { get; set; }
@@ -59,6 +60,10 @@ public class ApplicationDbContext : DbContext
             .IsUnique();
 
         modelBuilder.Entity<Cuisine>()
+            .HasIndex(x => x.Name)
+            .IsUnique();
+
+        modelBuilder.Entity<RecipeTemplate>()
             .HasIndex(x => x.Name)
             .IsUnique();
 
