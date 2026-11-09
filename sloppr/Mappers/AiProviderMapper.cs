@@ -13,8 +13,10 @@ public partial class AiProviderMapper
 
     public partial AiProviderHealthDTO ToHealthDto(AiProvider provider);
 
+    public partial AiProvider ToEntity(AiProviderRequest request);
+    public partial void UpdateEntity(AiProviderRequest request, AiProvider provider);
+
 #pragma warning disable RMG012 // Source member was not found for target member
-    public partial AiProvider FromDto(AiProviderDTO dto);
     public partial AiProvider FromHealthRequest(AiProviderHealthRequest healthRequest);
 #pragma warning restore RMG012 // Source member was not found for target member
 }

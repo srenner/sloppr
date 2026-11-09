@@ -26,9 +26,9 @@ import {
 
 import type {
   AiModelMinimalDTO,
-  AiProvider,
   AiProviderDTO,
   AiProviderHealthDTO,
+  AiProviderRequest,
   GetApiAiProvidersHealthParams
 } from '../model';
 
@@ -234,16 +234,16 @@ export class AiProvidersService {
 
       });
   }
- postApiAiProviders(aiProvider: AiProvider,
+ postApiAiProviders(aiProviderRequest: AiProviderRequest,
     accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  postApiAiProviders(aiProvider: AiProvider,
+  postApiAiProviders(aiProviderRequest: AiProviderRequest,
     accept: 'application/json', options?: HttpClientOptions): Observable<AiProviderDTO>;
-  postApiAiProviders(aiProvider: AiProvider,
+  postApiAiProviders(aiProviderRequest: AiProviderRequest,
     accept: 'text/json', options?: HttpClientOptions): Observable<AiProviderDTO>;
-  postApiAiProviders(aiProvider: AiProvider,
+  postApiAiProviders(aiProviderRequest: AiProviderRequest,
     accept?: PostApiAiProvidersAccept, options?: HttpClientOptions): Observable<AiProviderDTO | string>;
   postApiAiProviders(
-    aiProvider: AiProvider,
+    aiProviderRequest: AiProviderRequest,
     accept: PostApiAiProvidersAccept = 'application/json',
     options?: HttpClientOptions
   ): Observable<AiProviderDTO | string> {
@@ -252,7 +252,7 @@ export class AiProvidersService {
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<AiProviderDTO>(`/api/AiProviders`, aiProvider, {
+      return this.http.post<AiProviderDTO>(`/api/AiProviders`, aiProviderRequest, {
         ...options,
         responseType: 'json',
         headers,
@@ -260,7 +260,7 @@ export class AiProvidersService {
 
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
-      return this.http.post(`/api/AiProviders`, aiProvider, {
+      return this.http.post(`/api/AiProviders`, aiProviderRequest, {
         ...options,
         responseType: 'text',
         headers,
@@ -269,7 +269,7 @@ export class AiProvidersService {
       }) as Observable<string>;
     }
 
-    return this.http.post<AiProviderDTO>(`/api/AiProviders`, aiProvider, {
+    return this.http.post<AiProviderDTO>(`/api/AiProviders`, aiProviderRequest, {
         ...options,
         responseType: 'json',
         headers,
@@ -359,18 +359,18 @@ export class AiProvidersService {
       });
   }
  putApiAiProvidersId<TData = void>(id: number | string,
-    aiProvider: AiProvider, options?: HttpClientBodyOptions): Observable<TData>;
+    aiProviderRequest: AiProviderRequest, options?: HttpClientBodyOptions): Observable<TData>;
  putApiAiProvidersId<TData = void>(id: number | string,
-    aiProvider: AiProvider, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+    aiProviderRequest: AiProviderRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
  putApiAiProvidersId<TData = void>(id: number | string,
-    aiProvider: AiProvider, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+    aiProviderRequest: AiProviderRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   putApiAiProvidersId<TData = void>(
     id: number | string,
-    aiProvider: AiProvider, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    aiProviderRequest: AiProviderRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
       return this.http.put<TData>(
       `/api/AiProviders/${id}`,
-      aiProvider,{
+      aiProviderRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
       }
@@ -380,7 +380,7 @@ export class AiProvidersService {
     if (options?.observe === 'response') {
       return this.http.put<TData>(
       `/api/AiProviders/${id}`,
-      aiProvider,{
+      aiProviderRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
       }
@@ -389,7 +389,7 @@ export class AiProvidersService {
 
     return this.http.put<TData>(
       `/api/AiProviders/${id}`,
-      aiProvider,{
+      aiProviderRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'body',
       }

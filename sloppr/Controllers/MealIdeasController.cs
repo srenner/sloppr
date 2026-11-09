@@ -39,10 +39,6 @@ namespace sloppr.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> PutMealIdea(int id, MealIdeaUpdateRequest request)
         {
-            if (id != request.Id)
-            {
-                return BadRequest();
-            }
             MealIdea? mealIdea = await svc.GetByIdAsync(id);
             if (mealIdea == null)
             {

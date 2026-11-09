@@ -25,8 +25,8 @@ import {
 } from 'rxjs';
 
 import type {
-  KeyIngredient,
-  KeyIngredientDTO
+  KeyIngredientDTO,
+  KeyIngredientRequest
 } from '../model';
 
 
@@ -137,16 +137,16 @@ export class KeyIngredientsService {
 
       });
   }
- postApiKeyIngredients(keyIngredient: KeyIngredient,
+ postApiKeyIngredients(keyIngredientRequest: KeyIngredientRequest,
     accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  postApiKeyIngredients(keyIngredient: KeyIngredient,
+  postApiKeyIngredients(keyIngredientRequest: KeyIngredientRequest,
     accept: 'application/json', options?: HttpClientOptions): Observable<KeyIngredientDTO>;
-  postApiKeyIngredients(keyIngredient: KeyIngredient,
+  postApiKeyIngredients(keyIngredientRequest: KeyIngredientRequest,
     accept: 'text/json', options?: HttpClientOptions): Observable<KeyIngredientDTO>;
-  postApiKeyIngredients(keyIngredient: KeyIngredient,
+  postApiKeyIngredients(keyIngredientRequest: KeyIngredientRequest,
     accept?: PostApiKeyIngredientsAccept, options?: HttpClientOptions): Observable<KeyIngredientDTO | string>;
   postApiKeyIngredients(
-    keyIngredient: KeyIngredient,
+    keyIngredientRequest: KeyIngredientRequest,
     accept: PostApiKeyIngredientsAccept = 'application/json',
     options?: HttpClientOptions
   ): Observable<KeyIngredientDTO | string> {
@@ -155,7 +155,7 @@ export class KeyIngredientsService {
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<KeyIngredientDTO>(`/api/KeyIngredients`, keyIngredient, {
+      return this.http.post<KeyIngredientDTO>(`/api/KeyIngredients`, keyIngredientRequest, {
         ...options,
         responseType: 'json',
         headers,
@@ -163,7 +163,7 @@ export class KeyIngredientsService {
 
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
-      return this.http.post(`/api/KeyIngredients`, keyIngredient, {
+      return this.http.post(`/api/KeyIngredients`, keyIngredientRequest, {
         ...options,
         responseType: 'text',
         headers,
@@ -172,7 +172,7 @@ export class KeyIngredientsService {
       }) as Observable<string>;
     }
 
-    return this.http.post<KeyIngredientDTO>(`/api/KeyIngredients`, keyIngredient, {
+    return this.http.post<KeyIngredientDTO>(`/api/KeyIngredients`, keyIngredientRequest, {
         ...options,
         responseType: 'json',
         headers,
@@ -224,18 +224,18 @@ export class KeyIngredientsService {
       });
   }
  putApiKeyIngredientsId<TData = void>(id: number | string,
-    keyIngredient: KeyIngredient, options?: HttpClientBodyOptions): Observable<TData>;
+    keyIngredientRequest: KeyIngredientRequest, options?: HttpClientBodyOptions): Observable<TData>;
  putApiKeyIngredientsId<TData = void>(id: number | string,
-    keyIngredient: KeyIngredient, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+    keyIngredientRequest: KeyIngredientRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
  putApiKeyIngredientsId<TData = void>(id: number | string,
-    keyIngredient: KeyIngredient, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+    keyIngredientRequest: KeyIngredientRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   putApiKeyIngredientsId<TData = void>(
     id: number | string,
-    keyIngredient: KeyIngredient, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    keyIngredientRequest: KeyIngredientRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
       return this.http.put<TData>(
       `/api/KeyIngredients/${id}`,
-      keyIngredient,{
+      keyIngredientRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
       }
@@ -245,7 +245,7 @@ export class KeyIngredientsService {
     if (options?.observe === 'response') {
       return this.http.put<TData>(
       `/api/KeyIngredients/${id}`,
-      keyIngredient,{
+      keyIngredientRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
       }
@@ -254,7 +254,7 @@ export class KeyIngredientsService {
 
     return this.http.put<TData>(
       `/api/KeyIngredients/${id}`,
-      keyIngredient,{
+      keyIngredientRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'body',
       }

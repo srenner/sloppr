@@ -25,9 +25,8 @@ import {
 } from 'rxjs';
 
 import type {
-  AiModel,
   AiModelDTO,
-  AiModelMinimalDTO
+  AiModelRequest
 } from '../model';
 
 
@@ -154,16 +153,16 @@ export class AiModelsService {
 
       });
   }
- postApiAiModels(aiModel: AiModel,
+ postApiAiModels(aiModelRequest: AiModelRequest,
     accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  postApiAiModels(aiModel: AiModel,
+  postApiAiModels(aiModelRequest: AiModelRequest,
     accept: 'application/json', options?: HttpClientOptions): Observable<AiModelDTO>;
-  postApiAiModels(aiModel: AiModel,
+  postApiAiModels(aiModelRequest: AiModelRequest,
     accept: 'text/json', options?: HttpClientOptions): Observable<AiModelDTO>;
-  postApiAiModels(aiModel: AiModel,
+  postApiAiModels(aiModelRequest: AiModelRequest,
     accept?: PostApiAiModelsAccept, options?: HttpClientOptions): Observable<AiModelDTO | string>;
   postApiAiModels(
-    aiModel: AiModel,
+    aiModelRequest: AiModelRequest,
     accept: PostApiAiModelsAccept = 'application/json',
     options?: HttpClientOptions
   ): Observable<AiModelDTO | string> {
@@ -172,7 +171,7 @@ export class AiModelsService {
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<AiModelDTO>(`/api/AiModels`, aiModel, {
+      return this.http.post<AiModelDTO>(`/api/AiModels`, aiModelRequest, {
         ...options,
         responseType: 'json',
         headers,
@@ -180,7 +179,7 @@ export class AiModelsService {
 
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
-      return this.http.post(`/api/AiModels`, aiModel, {
+      return this.http.post(`/api/AiModels`, aiModelRequest, {
         ...options,
         responseType: 'text',
         headers,
@@ -189,7 +188,7 @@ export class AiModelsService {
       }) as Observable<string>;
     }
 
-    return this.http.post<AiModelDTO>(`/api/AiModels`, aiModel, {
+    return this.http.post<AiModelDTO>(`/api/AiModels`, aiModelRequest, {
         ...options,
         responseType: 'json',
         headers,
@@ -279,18 +278,18 @@ export class AiModelsService {
       });
   }
  putApiAiModelsId<TData = void>(id: number | string,
-    aiModel: AiModel, options?: HttpClientBodyOptions): Observable<TData>;
+    aiModelRequest: AiModelRequest, options?: HttpClientBodyOptions): Observable<TData>;
  putApiAiModelsId<TData = void>(id: number | string,
-    aiModel: AiModel, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+    aiModelRequest: AiModelRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
  putApiAiModelsId<TData = void>(id: number | string,
-    aiModel: AiModel, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+    aiModelRequest: AiModelRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   putApiAiModelsId<TData = void>(
     id: number | string,
-    aiModel: AiModel, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    aiModelRequest: AiModelRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
       return this.http.put<TData>(
       `/api/AiModels/${id}`,
-      aiModel,{
+      aiModelRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
       }
@@ -300,7 +299,7 @@ export class AiModelsService {
     if (options?.observe === 'response') {
       return this.http.put<TData>(
       `/api/AiModels/${id}`,
-      aiModel,{
+      aiModelRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
       }
@@ -309,7 +308,7 @@ export class AiModelsService {
 
     return this.http.put<TData>(
       `/api/AiModels/${id}`,
-      aiModel,{
+      aiModelRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'body',
       }
@@ -345,16 +344,16 @@ export class AiModelsService {
       }
     );
   }
- postApiAiModelsBatch(aiModelMinimalDTO: AiModelMinimalDTO[],
+ postApiAiModelsBatch(aiModelRequest: AiModelRequest[],
     accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  postApiAiModelsBatch(aiModelMinimalDTO: AiModelMinimalDTO[],
+  postApiAiModelsBatch(aiModelRequest: AiModelRequest[],
     accept: 'application/json', options?: HttpClientOptions): Observable<number | string>;
-  postApiAiModelsBatch(aiModelMinimalDTO: AiModelMinimalDTO[],
+  postApiAiModelsBatch(aiModelRequest: AiModelRequest[],
     accept: 'text/json', options?: HttpClientOptions): Observable<number | string>;
-  postApiAiModelsBatch(aiModelMinimalDTO: AiModelMinimalDTO[],
+  postApiAiModelsBatch(aiModelRequest: AiModelRequest[],
     accept?: PostApiAiModelsBatchAccept, options?: HttpClientOptions): Observable<number | string | string>;
   postApiAiModelsBatch(
-    aiModelMinimalDTO: AiModelMinimalDTO[],
+    aiModelRequest: AiModelRequest[],
     accept: PostApiAiModelsBatchAccept = 'application/json',
     options?: HttpClientOptions
   ): Observable<number | string | string> {
@@ -363,7 +362,7 @@ export class AiModelsService {
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<number | string>(`/api/AiModels/batch`, aiModelMinimalDTO, {
+      return this.http.post<number | string>(`/api/AiModels/batch`, aiModelRequest, {
         ...options,
         responseType: 'json',
         headers,
@@ -371,7 +370,7 @@ export class AiModelsService {
 
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
-      return this.http.post(`/api/AiModels/batch`, aiModelMinimalDTO, {
+      return this.http.post(`/api/AiModels/batch`, aiModelRequest, {
         ...options,
         responseType: 'text',
         headers,
@@ -380,7 +379,7 @@ export class AiModelsService {
       }) as Observable<string>;
     }
 
-    return this.http.post<number | string>(`/api/AiModels/batch`, aiModelMinimalDTO, {
+    return this.http.post<number | string>(`/api/AiModels/batch`, aiModelRequest, {
         ...options,
         responseType: 'json',
         headers,
