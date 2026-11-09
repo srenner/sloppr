@@ -6,4 +6,6 @@ using sloppr.Models;
 public partial class CuisineMapper
 {
     public partial CuisineDTO ToDto(Cuisine cuisine);
+    public partial Cuisine ToEntity(CuisineRequest request);
+    public partial void UpdateEntity(CuisineRequest request, Cuisine cuisine);
 }

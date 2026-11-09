@@ -30,19 +30,24 @@ namespace sloppr.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutCuisine(int id, Cuisine cuisine)
+        public async Task<ActionResult> PutCuisine(int id, CuisineRequest request)
         {
-            if (id != cuisine.Id)
+            Cuisine? cuisine = await svc.GetByIdAsync(id);
+            if (cuisine == null)
             {
-                return BadRequest();
+                return NotFound();
             }
+
+            mapper.UpdateEntity(request, cuisine);
+
             await svc.UpdateAsync(cuisine);
             return NoContent();
         }
 
         [HttpPost]
-        public async Task<ActionResult<CuisineDTO>> PostCuisine(Cuisine cuisine)
+        public async Task<ActionResult<CuisineDTO>> PostCuisine(CuisineRequest request)
         {
+            var cuisine = mapper.ToEntity(request);
             await svc.AddAsync(cuisine);
             return CreatedAtAction("GetCuisine", new { id = cuisine.Id }, mapper.ToDto(cuisine));
         }

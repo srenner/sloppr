@@ -38,7 +38,8 @@ Content-Type: application/json
 {
   "name": "Ollama",
   "providerType": "Ollama",
-  "baseUrl": "http://localhost:11434"
+  "baseUrl": "http://localhost:11434",
+  "isActive": true
 }
 
 ###
@@ -47,10 +48,10 @@ PUT {{sloppr_HostAddress}}/api/AiProviders/{id}
 Content-Type: application/json
 
 {
-  "id": 0,
   "name": "Ollama",
   "providerType": "Ollama",
-  "baseUrl": "http://localhost:11434"
+  "baseUrl": "http://localhost:11434",
+  "isActive": true
 }
 
 ###
@@ -83,7 +84,8 @@ Content-Type: application/json
   "identifier": "granite4.1:8b",
   "aiProviderId": 1,
   "contextWindow": 128000,
-  "capabilities": null
+  "capabilities": null,
+  "isActive": true
 }
 
 ###
@@ -108,12 +110,12 @@ PUT {{sloppr_HostAddress}}/api/AiModels/{id}
 Content-Type: application/json
 
 {
-  "id": 0,
   "name": "Granite 4.1 8B",
   "identifier": "granite4.1:8b",
   "aiProviderId": 1,
   "contextWindow": 128000,
-  "capabilities": null
+  "capabilities": null,
+  "isActive": true
 }
 
 ###
@@ -146,7 +148,6 @@ PUT {{sloppr_HostAddress}}/api/Cuisines/{id}
 Content-Type: application/json
 
 {
-  "id": 0,
   "name": "mexican"
 }
 
@@ -171,7 +172,6 @@ PUT {{sloppr_HostAddress}}/api/KeyIngredients/{id}
 Content-Type: application/json
 
 {
-  "id": 0,
   "name": "chicken"
 }
 
@@ -210,7 +210,6 @@ PUT {{sloppr_HostAddress}}/api/MealIdeas/{id}
 Content-Type: application/json
 
 {
-  "id": 0,
   "name": "string"
 }
 

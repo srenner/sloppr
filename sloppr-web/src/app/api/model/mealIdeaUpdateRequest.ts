@@ -6,7 +6,5 @@
  */
 
 export interface MealIdeaUpdateRequest {
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  id?: number | string;
   name: string;
 }

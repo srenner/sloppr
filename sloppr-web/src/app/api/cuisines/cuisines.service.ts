@@ -25,8 +25,8 @@ import {
 } from 'rxjs';
 
 import type {
-  Cuisine,
-  CuisineDTO
+  CuisineDTO,
+  CuisineRequest
 } from '../model';
 
 
@@ -137,16 +137,16 @@ export class CuisinesService {
 
       });
   }
- postApiCuisines(cuisine: Cuisine,
+ postApiCuisines(cuisineRequest: CuisineRequest,
     accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  postApiCuisines(cuisine: Cuisine,
+  postApiCuisines(cuisineRequest: CuisineRequest,
     accept: 'application/json', options?: HttpClientOptions): Observable<CuisineDTO>;
-  postApiCuisines(cuisine: Cuisine,
+  postApiCuisines(cuisineRequest: CuisineRequest,
     accept: 'text/json', options?: HttpClientOptions): Observable<CuisineDTO>;
-  postApiCuisines(cuisine: Cuisine,
+  postApiCuisines(cuisineRequest: CuisineRequest,
     accept?: PostApiCuisinesAccept, options?: HttpClientOptions): Observable<CuisineDTO | string>;
   postApiCuisines(
-    cuisine: Cuisine,
+    cuisineRequest: CuisineRequest,
     accept: PostApiCuisinesAccept = 'application/json',
     options?: HttpClientOptions
   ): Observable<CuisineDTO | string> {
@@ -155,7 +155,7 @@ export class CuisinesService {
       : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<CuisineDTO>(`/api/Cuisines`, cuisine, {
+      return this.http.post<CuisineDTO>(`/api/Cuisines`, cuisineRequest, {
         ...options,
         responseType: 'json',
         headers,
@@ -163,7 +163,7 @@ export class CuisinesService {
 
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
-      return this.http.post(`/api/Cuisines`, cuisine, {
+      return this.http.post(`/api/Cuisines`, cuisineRequest, {
         ...options,
         responseType: 'text',
         headers,
@@ -172,7 +172,7 @@ export class CuisinesService {
       }) as Observable<string>;
     }
 
-    return this.http.post<CuisineDTO>(`/api/Cuisines`, cuisine, {
+    return this.http.post<CuisineDTO>(`/api/Cuisines`, cuisineRequest, {
         ...options,
         responseType: 'json',
         headers,
@@ -224,18 +224,18 @@ export class CuisinesService {
       });
   }
  putApiCuisinesId<TData = void>(id: number | string,
-    cuisine: Cuisine, options?: HttpClientBodyOptions): Observable<TData>;
+    cuisineRequest: CuisineRequest, options?: HttpClientBodyOptions): Observable<TData>;
  putApiCuisinesId<TData = void>(id: number | string,
-    cuisine: Cuisine, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+    cuisineRequest: CuisineRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
  putApiCuisinesId<TData = void>(id: number | string,
-    cuisine: Cuisine, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+    cuisineRequest: CuisineRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   putApiCuisinesId<TData = void>(
     id: number | string,
-    cuisine: Cuisine, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    cuisineRequest: CuisineRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
       return this.http.put<TData>(
       `/api/Cuisines/${id}`,
-      cuisine,{
+      cuisineRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
       }
@@ -245,7 +245,7 @@ export class CuisinesService {
     if (options?.observe === 'response') {
       return this.http.put<TData>(
       `/api/Cuisines/${id}`,
-      cuisine,{
+      cuisineRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
       }
@@ -254,7 +254,7 @@ export class CuisinesService {
 
     return this.http.put<TData>(
       `/api/Cuisines/${id}`,
-      cuisine,{
+      cuisineRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'body',
       }

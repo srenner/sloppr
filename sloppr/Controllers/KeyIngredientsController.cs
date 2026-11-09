@@ -30,19 +30,24 @@ namespace sloppr.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutKeyIngredient(int id, KeyIngredient keyIngredient)
+        public async Task<ActionResult> PutKeyIngredient(int id, KeyIngredientRequest request)
         {
-            if (id != keyIngredient.Id)
+            KeyIngredient? keyIngredient = await svc.GetByIdAsync(id);
+            if (keyIngredient == null)
             {
-                return BadRequest();
+                return NotFound();
             }
+
+            mapper.UpdateEntity(request, keyIngredient);
+
             await svc.UpdateAsync(keyIngredient);
             return NoContent();
         }
 
         [HttpPost]
-        public async Task<ActionResult<KeyIngredientDTO>> PostKeyIngredient(KeyIngredient keyIngredient)
+        public async Task<ActionResult<KeyIngredientDTO>> PostKeyIngredient(KeyIngredientRequest request)
         {
+            var keyIngredient = mapper.ToEntity(request);
             await svc.AddAsync(keyIngredient);
             return CreatedAtAction("GetKeyIngredient", new { id = keyIngredient.Id },
                 mapper.ToDto(keyIngredient));

@@ -70,20 +70,24 @@ namespace sloppr.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutAiProvider(int id, AiProvider aiProvider)
+        public async Task<ActionResult> PutAiProvider(int id, AiProviderRequest request)
         {
-            // todo: binding the entity lets a client send ProviderModels; use a request DTO or ignore the collection.
-            if (id != aiProvider.Id)
+            AiProvider? aiProvider = await svc.GetByIdAsync(id);
+            if (aiProvider == null)
             {
-                return BadRequest();
+                return NotFound();
             }
+
+            providerMapper.UpdateEntity(request, aiProvider);
+
             await svc.UpdateAsync(aiProvider);
             return NoContent();
         }
 
         [HttpPost]
-        public async Task<ActionResult<AiProviderDTO>> PostAiProvider(AiProvider aiProvider)
+        public async Task<ActionResult<AiProviderDTO>> PostAiProvider(AiProviderRequest request)
         {
+            var aiProvider = providerMapper.ToEntity(request);
             await svc.AddAsync(aiProvider);
             if (aiProvider.IsHealthy == true)
             {

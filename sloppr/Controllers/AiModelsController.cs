@@ -37,28 +37,33 @@ namespace sloppr.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutAiModel(int id, AiModel aiModel)
+        public async Task<ActionResult> PutAiModel(int id, AiModelRequest request)
         {
-            if (id != aiModel.Id)
+            AiModel? aiModel = await svc.GetByIdAsync(id);
+            if (aiModel == null)
             {
-                return BadRequest();
+                return NotFound();
             }
+
+            mapper.UpdateEntity(request, aiModel);
+
             await svc.UpdateAsync(aiModel);
             return NoContent();
         }
 
         [HttpPost]
-        public async Task<ActionResult<AiModelDTO>> PostAiModel(AiModel aiModel)
+        public async Task<ActionResult<AiModelDTO>> PostAiModel(AiModelRequest request)
         {
+            var aiModel = mapper.ToEntity(request);
             await svc.AddAsync(aiModel);
             var created = await svc.GetByIdWithProviderAsync(aiModel.Id);
             return CreatedAtAction("GetAiModel", new { id = aiModel.Id }, mapper.ToDto(created!));
         }
 
         [HttpPost("batch")]
-        public async Task<ActionResult<int>> PostAiModelBatch(ICollection<AiModelMinimalDTO> models)
+        public async Task<ActionResult<int>> PostAiModelBatch(ICollection<AiModelRequest> models)
         {
-            var numInserted = await svc.AddRangeAsync(mapper.FromMinimalDto(models));
+            var numInserted = await svc.AddRangeAsync(models.Select(mapper.ToEntity).ToList());
             return Ok(numInserted);
         }
 
