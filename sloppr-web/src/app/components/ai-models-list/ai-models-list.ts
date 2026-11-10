@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AiModelsService } from '../../api/ai-models/ai-models.service';
-import { AiModel } from '../../api/model';
+import { AiModelDTO } from '../../api/model';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -16,6 +16,6 @@ export class AiModelsListComponent {
 
   models = toSignal(
     this.aiModelsService.getApiAiModels('application/json'),
-    { initialValue: [] as AiModel[] }
+    { initialValue: [] as AiModelDTO[] }
   );
 }
