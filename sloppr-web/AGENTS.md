@@ -6,7 +6,7 @@ Commands are human-run; suggest them: `npm ci`, `npm start` (http://localhost:42
 
 - `src/app/api/` is Orval-generated; don't hand-edit. After contract changes, human runs `npm run codegen` with the API at `http://localhost:5220`.
 - Generated services use relative `/api/...`; dev relies on `proxy.conf.json`; `environment.apiUrl` is unused.
-- Single test (after stale specs are fixed): `npx ng test --watch=false --include src/app/path/to/file.spec.ts`.
+- Full suite: `npm test -- --watch=false`. Single test: `npx ng test --watch=false --include src/app/path/to/file.spec.ts`.
 - No lint script or CI; `.prettierrc` is the formatter source of truth.
 
 ## Conventions
