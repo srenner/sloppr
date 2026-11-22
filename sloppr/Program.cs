@@ -61,6 +61,7 @@ builder.Services.AddScoped<RecipeMapper>();
 builder.Services.AddScoped<IRecipeService, RecipeService>();
 builder.Services.AddScoped<RecipeTemplateMapper>();
 builder.Services.AddScoped<IRecipeTemplateService, RecipeTemplateService>();
+builder.Services.AddScoped<ICookbookService, CookbookService>();
 
 
 
@@ -92,6 +93,10 @@ using (var scope = app.Services.CreateScope())
     var templateService = scope.ServiceProvider
         .GetRequiredService<IRecipeTemplateService>();
     await templateService.SeedDefaultAsync();
+
+    var cookbookService = scope.ServiceProvider
+        .GetRequiredService<ICookbookService>();
+    await cookbookService.EnsureSeededAsync();
 }
 
 if (app.Environment.IsDevelopment())

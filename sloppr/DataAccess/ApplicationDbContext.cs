@@ -11,10 +11,11 @@ public class ApplicationDbContext : DbContext
     public DbSet<MealIdea> MealIdeas { get; set; }
     public DbSet<Recipe> Recipes { get; set; }
     public DbSet<RecipeTemplate> RecipeTemplates { get; set; }
-    public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
-    public DbSet<RecipeStep> RecipeSteps { get; set; }
     public DbSet<AiProvider> AiProviders { get; set; }
     public DbSet<AiModel> AiModels { get; set; }
+    public DbSet<Cookbook> Cookbooks { get; set; }
+    public DbSet<CookbookEntry> CookbookEntries { get; set; }
+    public DbSet<CookbookEntryVersion> CookbookEntryVersions { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
@@ -67,6 +68,20 @@ public class ApplicationDbContext : DbContext
             .HasIndex(x => x.Name)
             .IsUnique();
 
+        modelBuilder.Entity<Cookbook>()
+            .HasIndex(x => x.Name)
+            .IsUnique();
+
+        modelBuilder.Entity<CookbookEntry>()
+            .HasIndex(x => x.CookbookId);
+
+        modelBuilder.Entity<CookbookEntry>()
+            .HasIndex(x => x.SourceRecipeId);
+
+        modelBuilder.Entity<CookbookEntryVersion>()
+            .HasIndex(x => new { x.CookbookEntryId, x.VersionNumber })
+            .IsUnique();
+
         #endregion
 
         #region Relationships
@@ -83,16 +98,22 @@ public class ApplicationDbContext : DbContext
                     j.HasKey(ji => new { ji.MealIdeaId, ji.KeyIngredientId });
                 });
 
-        modelBuilder.Entity<Recipe>()
-            .HasMany(r => r.Ingredients)
-            .WithOne()
-            .HasForeignKey(i => i.RecipeId)
+        modelBuilder.Entity<Cookbook>()
+            .HasMany(c => c.Entries)
+            .WithOne(e => e.Cookbook)
+            .HasForeignKey(e => e.CookbookId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<Recipe>()
-            .HasMany(r => r.Steps)
-            .WithOne()
-            .HasForeignKey(s => s.RecipeId)
+        modelBuilder.Entity<CookbookEntry>()
+            .HasOne(e => e.SourceRecipe)
+            .WithMany()
+            .HasForeignKey(e => e.SourceRecipeId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<CookbookEntry>()
+            .HasMany(e => e.Versions)
+            .WithOne(v => v.CookbookEntry)
+            .HasForeignKey(v => v.CookbookEntryId)
             .OnDelete(DeleteBehavior.Cascade);
 
         #endregion
@@ -103,6 +124,8 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<AiModel>().HasQueryFilter(f => f.IsActive && !f.IsDeleted);
         modelBuilder.Entity<MealIdea>().HasQueryFilter(f => f.IsActive && !f.IsDeleted);
         modelBuilder.Entity<Recipe>().HasQueryFilter(f => f.IsActive && !f.IsDeleted);
+        modelBuilder.Entity<Cookbook>().HasQueryFilter(f => f.IsActive && !f.IsDeleted);
+        modelBuilder.Entity<CookbookEntry>().HasQueryFilter(f => f.IsActive && !f.IsDeleted);
 
         #endregion
 

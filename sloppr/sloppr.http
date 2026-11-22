@@ -267,31 +267,31 @@ POST {{sloppr_HostAddress}}/api/Recipes/markdown
 Content-Type: application/json
 
 {
-  "name": "string",
-  "description": "string",
-  "servingCount": 4,
-  "prepTimeMinutes": 10,
-  "cookTimeMinutes": 20,
-  "difficulty": 2,
-  "notes": "string",
   "templateName": null,
-  "ingredients": [
-    {
-      "order": 1,
-      "quantity": 1,
-      "unit": "cup",
-      "name": "rice",
-      "group": "Main",
-      "note": "string"
-    }
-  ],
-  "steps": [
-    {
-      "order": 1,
-      "instruction": "Cook the rice.",
-      "group": "Main"
-    }
-  ]
+  "content": {
+    "name": "string",
+    "description": "string",
+    "servingCount": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 20,
+    "difficulty": 2,
+    "notes": "string",
+    "ingredients": [
+      {
+        "quantity": 1,
+        "unit": "cup",
+        "name": "rice",
+        "group": "Main",
+        "note": "string"
+      }
+    ],
+    "steps": [
+      {
+        "instruction": "Cook the rice.",
+        "group": "Main"
+      }
+    ]
+  }
 }
 
 ###
@@ -361,32 +361,32 @@ POST {{sloppr_HostAddress}}/api/Recipes/
 Content-Type: application/json
 
 {
-  "name": "string",
-  "description": "string",
-  "servingCount": 4,
-  "prepTimeMinutes": 10,
-  "cookTimeMinutes": 20,
-  "difficulty": 2,
-  "notes": "string",
   "mealIdeaId": null,
   "templateName": null,
-  "ingredients": [
-    {
-      "order": 1,
-      "quantity": 1,
-      "unit": "cup",
-      "name": "rice",
-      "group": "Main",
-      "note": "string"
-    }
-  ],
-  "steps": [
-    {
-      "order": 1,
-      "instruction": "Cook the rice.",
-      "group": "Main"
-    }
-  ]
+  "content": {
+    "name": "string",
+    "description": "string",
+    "servingCount": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 20,
+    "difficulty": 2,
+    "notes": "string",
+    "ingredients": [
+      {
+        "quantity": 1,
+        "unit": "cup",
+        "name": "rice",
+        "group": "Main",
+        "note": "string"
+      }
+    ],
+    "steps": [
+      {
+        "instruction": "Cook the rice.",
+        "group": "Main"
+      }
+    ]
+  }
 }
 
 ###
@@ -395,37 +395,135 @@ PUT {{sloppr_HostAddress}}/api/Recipes/{id}
 Content-Type: application/json
 
 {
-  "name": "string",
-  "description": "string",
-  "servingCount": 4,
-  "prepTimeMinutes": 10,
-  "cookTimeMinutes": 20,
-  "difficulty": 2,
-  "notes": "string",
   "mealIdeaId": null,
   "templateName": null,
-  "ingredients": [
-    {
-      "order": 1,
-      "quantity": 1,
-      "unit": "cup",
-      "name": "rice",
-      "group": "Main",
-      "note": "string"
-    }
-  ],
-  "steps": [
-    {
-      "order": 1,
-      "instruction": "Cook the rice.",
-      "group": "Main"
-    }
-  ]
+  "content": {
+    "name": "string",
+    "description": "string",
+    "servingCount": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 20,
+    "difficulty": 2,
+    "notes": "string",
+    "ingredients": [
+      {
+        "quantity": 1,
+        "unit": "cup",
+        "name": "rice",
+        "group": "Main",
+        "note": "string"
+      }
+    ],
+    "steps": [
+      {
+        "instruction": "Cook the rice.",
+        "group": "Main"
+      }
+    ]
+  }
 }
 
 ###
 
 DELETE {{sloppr_HostAddress}}/api/Recipes/{id}
+
+###
+
+// Cookbooks endpoints. "Family Cookbook" is seeded at startup.
+GET {{sloppr_HostAddress}}/api/Cookbooks/
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/Cookbooks/1/entries
+Accept: application/json
+
+###
+
+GET {{sloppr_HostAddress}}/api/Cookbooks/1/entries/1
+Accept: application/json
+
+###
+
+// Reads a specific version instead of the current one.
+GET {{sloppr_HostAddress}}/api/Cookbooks/1/entries/1?version=1
+Accept: application/json
+
+###
+
+POST {{sloppr_HostAddress}}/api/Cookbooks/1/entries
+Content-Type: application/json
+
+{
+  "content": {
+    "name": "string",
+    "description": "string",
+    "servingCount": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 20,
+    "difficulty": 2,
+    "notes": "string",
+    "ingredients": [
+      {
+        "name": "rice",
+        "quantity": 1,
+        "unit": "cup",
+        "group": "Main",
+        "note": "string"
+      }
+    ],
+    "steps": [
+      {
+        "instruction": "Cook the rice.",
+        "group": "Main"
+      }
+    ]
+  },
+  "changeNote": "string"
+}
+
+###
+
+// Copies the recipe's current content into a new cookbook entry (v1).
+POST {{sloppr_HostAddress}}/api/Cookbooks/1/entries/from-recipe/1
+
+###
+
+// Appends a new version and advances the current version number.
+PUT {{sloppr_HostAddress}}/api/Cookbooks/1/entries/1
+Content-Type: application/json
+
+{
+  "content": {
+    "name": "string",
+    "description": "string",
+    "servingCount": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 20,
+    "difficulty": 2,
+    "notes": "string",
+    "ingredients": [
+      {
+        "name": "rice",
+        "quantity": 1,
+        "unit": "cup",
+        "group": "Main",
+        "note": "string"
+      }
+    ],
+    "steps": [
+      {
+        "instruction": "Cook the rice.",
+        "group": "Main"
+      }
+    ]
+  },
+  "changeNote": "string"
+}
+
+###
+
+DELETE {{sloppr_HostAddress}}/api/Cookbooks/1/entries/1
 
 ###
 

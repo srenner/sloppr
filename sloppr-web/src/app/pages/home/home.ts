@@ -256,27 +256,27 @@ export class Home {
 
   private toRequest(recipe: RecipeDTO, mealIdeaId: string): RecipeRequest {
     return {
-      name: recipe.name,
-      description: recipe.description,
-      servingCount: Number(recipe.servingCount ?? 0),
-      prepTimeMinutes: Number(recipe.prepTimeMinutes ?? 0),
-      cookTimeMinutes: Number(recipe.cookTimeMinutes ?? 0),
-      difficulty: this.toNumberOrNull(recipe.difficulty),
-      notes: recipe.notes ?? null,
       mealIdeaId: Number(mealIdeaId),
-      ingredients: (recipe.ingredients ?? []).map((ingredient) => ({
-        order: Number(ingredient.order ?? 0),
-        quantity: this.toNumberOrNull(ingredient.quantity),
-        unit: ingredient.unit ?? null,
-        name: ingredient.name,
-        group: ingredient.group ?? null,
-        note: ingredient.note ?? null,
-      })),
-      steps: (recipe.steps ?? []).map((step) => ({
-        order: Number(step.order ?? 0),
-        instruction: step.instruction,
-        group: step.group ?? null,
-      })),
+      content: {
+        name: recipe.content.name,
+        description: recipe.content.description,
+        servingCount: Number(recipe.content.servingCount ?? 0),
+        prepTimeMinutes: Number(recipe.content.prepTimeMinutes ?? 0),
+        cookTimeMinutes: Number(recipe.content.cookTimeMinutes ?? 0),
+        difficulty: this.toNumberOrNull(recipe.content.difficulty),
+        notes: recipe.content.notes ?? null,
+        ingredients: (recipe.content.ingredients ?? []).map((ingredient) => ({
+          quantity: this.toNumberOrNull(ingredient.quantity),
+          unit: ingredient.unit ?? null,
+          name: ingredient.name ?? '',
+          group: ingredient.group ?? null,
+          note: ingredient.note ?? null,
+        })),
+        steps: (recipe.content.steps ?? []).map((step) => ({
+          instruction: step.instruction ?? '',
+          group: step.group ?? null,
+        })),
+      },
     };
   }
 
