@@ -160,6 +160,155 @@ namespace sloppr.Migrations
                         });
                 });
 
+            modelBuilder.Entity("sloppr.Models.Cookbook", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Cookbooks");
+                });
+
+            modelBuilder.Entity("sloppr.Models.CookbookEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CookbookId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CurrentVersionNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("SourceRecipeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CookbookId");
+
+                    b.HasIndex("SourceRecipeId");
+
+                    b.ToTable("CookbookEntries");
+                });
+
+            modelBuilder.Entity("sloppr.Models.CookbookEntryVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ChangeNote")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContentJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CookTimeMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CookbookEntryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Difficulty")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PrepTimeMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ServingCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CookbookEntryId", "VersionNumber")
+                        .IsUnique();
+
+                    b.ToTable("CookbookEntryVersions");
+                });
+
             modelBuilder.Entity("sloppr.Models.Cuisine", b =>
                 {
                     b.Property<int>("Id")
@@ -313,8 +462,9 @@ namespace sloppr.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CookTimeMinutes")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ContentJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -326,13 +476,6 @@ namespace sloppr.Migrations
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("Difficulty")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
@@ -342,17 +485,7 @@ namespace sloppr.Migrations
                     b.Property<int?>("MealIdeaId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("PrepTimeMinutes")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ServingCount")
+                    b.Property<int>("SourceType")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("TemplateName")
@@ -367,67 +500,6 @@ namespace sloppr.Migrations
                     b.HasIndex("MealIdeaId");
 
                     b.ToTable("Recipes");
-                });
-
-            modelBuilder.Entity("sloppr.Models.RecipeIngredient", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Group")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double?>("Quantity")
-                        .HasColumnType("REAL");
-
-                    b.Property<int>("RecipeId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Unit")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RecipeId");
-
-                    b.ToTable("RecipeIngredients");
-                });
-
-            modelBuilder.Entity("sloppr.Models.RecipeStep", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Group")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Instruction")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("RecipeId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RecipeId");
-
-                    b.ToTable("RecipeSteps");
                 });
 
             modelBuilder.Entity("sloppr.Models.RecipeTemplate", b =>
@@ -483,6 +555,35 @@ namespace sloppr.Migrations
                     b.Navigation("AiProvider");
                 });
 
+            modelBuilder.Entity("sloppr.Models.CookbookEntry", b =>
+                {
+                    b.HasOne("sloppr.Models.Cookbook", "Cookbook")
+                        .WithMany("Entries")
+                        .HasForeignKey("CookbookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("sloppr.Models.Recipe", "SourceRecipe")
+                        .WithMany()
+                        .HasForeignKey("SourceRecipeId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Cookbook");
+
+                    b.Navigation("SourceRecipe");
+                });
+
+            modelBuilder.Entity("sloppr.Models.CookbookEntryVersion", b =>
+                {
+                    b.HasOne("sloppr.Models.CookbookEntry", "CookbookEntry")
+                        .WithMany("Versions")
+                        .HasForeignKey("CookbookEntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CookbookEntry");
+                });
+
             modelBuilder.Entity("sloppr.Models.MealIdeaKeyIngredient", b =>
                 {
                     b.HasOne("sloppr.Models.KeyIngredient", null)
@@ -507,34 +608,19 @@ namespace sloppr.Migrations
                     b.Navigation("MealIdea");
                 });
 
-            modelBuilder.Entity("sloppr.Models.RecipeIngredient", b =>
-                {
-                    b.HasOne("sloppr.Models.Recipe", null)
-                        .WithMany("Ingredients")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("sloppr.Models.RecipeStep", b =>
-                {
-                    b.HasOne("sloppr.Models.Recipe", null)
-                        .WithMany("Steps")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("sloppr.Models.AiProvider", b =>
                 {
                     b.Navigation("ProviderModels");
                 });
 
-            modelBuilder.Entity("sloppr.Models.Recipe", b =>
+            modelBuilder.Entity("sloppr.Models.Cookbook", b =>
                 {
-                    b.Navigation("Ingredients");
+                    b.Navigation("Entries");
+                });
 
-                    b.Navigation("Steps");
+            modelBuilder.Entity("sloppr.Models.CookbookEntry", b =>
+                {
+                    b.Navigation("Versions");
                 });
 #pragma warning restore 612, 618
         }

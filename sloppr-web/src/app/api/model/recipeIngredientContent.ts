@@ -5,9 +5,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RecipeIngredientRequest {
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  order?: number | string;
+export interface RecipeIngredientContent {
+  name?: string;
   /**
      * @nullable
      * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
@@ -15,7 +14,6 @@ export interface RecipeIngredientRequest {
   quantity?: number | string | null;
   /** @nullable */
   unit?: string | null;
-  name: string;
   /** @nullable */
   group?: string | null;
   /** @nullable */

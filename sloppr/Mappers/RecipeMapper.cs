@@ -1,16 +1,47 @@
-using Riok.Mapperly.Abstractions;
+using sloppr.Content;
 using sloppr.DTOs;
+using sloppr.Enums;
 using sloppr.Models;
 
-[Mapper]
-public partial class RecipeMapper
+namespace sloppr.Mappers;
+
+public class RecipeMapper
 {
-    public partial RecipeDTO ToDto(Recipe recipe);
-    public partial Recipe ToEntity(RecipeRequest request);
+    public RecipeDTO ToDto(Recipe recipe)
+    {
+        return new RecipeDTO
+        {
+            Id = recipe.Id,
+            DateCreated = recipe.DateCreated,
+            DateUpdated = recipe.DateUpdated,
+            IsActive = recipe.IsActive,
+            IsDeleted = recipe.IsDeleted,
+            CreatedBy = recipe.CreatedBy,
+            UpdatedBy = recipe.UpdatedBy,
+            MealIdeaId = recipe.MealIdeaId,
+            TemplateName = recipe.TemplateName,
+            SourceType = recipe.SourceType,
+            Content = RecipeContentJson.Deserialize(recipe.ContentJson)
+        };
+    }
 
-    [MapperIgnoreTarget(nameof(Recipe.TemplateName))]
-    public partial Recipe ToEntity(RecipeGenerationResponse response);
+    public Recipe ToEntity(RecipeRequest request)
+    {
+        return new Recipe
+        {
+            ContentJson = RecipeContentJson.Serialize(request.Content),
+            SourceType = request.MealIdeaId.HasValue ? RecipeSourceType.Llm : RecipeSourceType.Manual,
+            MealIdeaId = request.MealIdeaId,
+            TemplateName = request.TemplateName
+        };
+    }
 
-    public partial RecipeIngredient ToEntity(RecipeIngredientRequest request);
-    public partial RecipeStep ToEntity(RecipeStepRequest request);
+    public Recipe ToEntity(RecipeContent content)
+    {
+        return new Recipe
+        {
+            ContentJson = RecipeContentJson.Serialize(content),
+            SourceType = RecipeSourceType.Llm
+        };
+    }
 }

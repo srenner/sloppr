@@ -193,14 +193,14 @@ public class RecipeTemplateService : IRecipeTemplateService
     {
         return new
         {
-            name = recipe.Name,
-            description = recipe.Description,
-            serving_count = recipe.ServingCount,
-            prep_time_minutes = recipe.PrepTimeMinutes,
-            cook_time_minutes = recipe.CookTimeMinutes,
-            difficulty = recipe.Difficulty,
-            notes = recipe.Notes,
-            ingredients = (recipe.Ingredients ?? []).Select(i => new
+            name = recipe.Content.Name,
+            description = recipe.Content.Description,
+            serving_count = recipe.Content.ServingCount,
+            prep_time_minutes = recipe.Content.PrepTimeMinutes,
+            cook_time_minutes = recipe.Content.CookTimeMinutes,
+            difficulty = recipe.Content.Difficulty,
+            notes = recipe.Content.Notes,
+            ingredients = (recipe.Content.Ingredients ?? []).Select(i => new
             {
                 quantity = i.Quantity,
                 unit = i.Unit,
@@ -208,7 +208,7 @@ public class RecipeTemplateService : IRecipeTemplateService
                 group = i.Group,
                 note = i.Note,
             }),
-            steps = (recipe.Steps ?? []).Select(s => new
+            steps = (recipe.Content.Steps ?? []).Select(s => new
             {
                 instruction = s.Instruction,
                 group = s.Group,

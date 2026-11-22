@@ -15,14 +15,16 @@ function mealIdea(id: number, name: string): MealIdeaDTO {
 function recipe(mealIdeaId: number): RecipeDTO {
   return {
     id: 0,
-    name: 'Chicken Rice Bowl',
-    description: 'A quick bowl.',
-    servingCount: 2,
-    prepTimeMinutes: 10,
-    cookTimeMinutes: 20,
     mealIdeaId,
-    ingredients: [{ order: 1, quantity: 1, unit: 'cup', name: 'rice' }],
-    steps: [{ order: 1, instruction: 'Cook the rice.' }],
+    content: {
+      name: 'Chicken Rice Bowl',
+      description: 'A quick bowl.',
+      servingCount: 2,
+      prepTimeMinutes: 10,
+      cookTimeMinutes: 20,
+      ingredients: [{ quantity: 1, unit: 'cup', name: 'rice' }],
+      steps: [{ instruction: 'Cook the rice.' }],
+    },
   };
 }
 
@@ -84,7 +86,9 @@ describe('Home', () => {
 
     const markdown = http.expectOne('/api/Recipes/markdown');
     expect(markdown.request.method).toBe('POST');
-    markdown.flush(`# ${preview.name}\n\n${preview.description}\n\n1. Cook the rice.`);
+    markdown.flush(
+      `# ${preview.content.name}\n\n${preview.content.description}\n\n1. Cook the rice.`,
+    );
     fixture.detectChanges();
     return preview;
   }
@@ -141,7 +145,7 @@ describe('Home', () => {
 
     const save = http.expectOne('/api/Recipes');
     expect(save.request.method).toBe('POST');
-    expect(save.request.body.name).toBe('Chicken Rice Bowl');
+    expect(save.request.body.content.name).toBe('Chicken Rice Bowl');
     expect(save.request.body.mealIdeaId).toBe(1);
     save.flush({ ...recipe(1), id: 9 });
 

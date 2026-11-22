@@ -4,25 +4,10 @@
  * sloppr | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { RecipeIngredientRequest } from './recipeIngredientRequest';
-import type { RecipeStepRequest } from './recipeStepRequest';
+import type { RecipeContent } from './recipeContent';
 
 export interface RecipeRequest {
-  name: string;
-  description: string;
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  servingCount?: number | string;
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  prepTimeMinutes?: number | string;
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  cookTimeMinutes?: number | string;
-  /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)$
-     */
-  difficulty?: number | string | null;
-  /** @nullable */
-  notes?: string | null;
+  content?: RecipeContent;
   /**
      * @nullable
      * @pattern ^-?(?:0|[1-9]\d*)$
@@ -30,6 +15,4 @@ export interface RecipeRequest {
   mealIdeaId?: number | string | null;
   /** @nullable */
   templateName?: string | null;
-  ingredients?: RecipeIngredientRequest[];
-  steps?: RecipeStepRequest[];
 }

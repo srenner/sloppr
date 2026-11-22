@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using sloppr.Content;
 using sloppr.DTOs;
 using sloppr.Mappers;
 using sloppr.Models;
@@ -35,6 +36,17 @@ namespace sloppr.Controllers
         [HttpPost]
         public async Task<ActionResult<RecipeDTO>> PostRecipe(RecipeRequest request)
         {
+            if (request.Content == null)
+            {
+                return BadRequest("Content is required.");
+            }
+
+            var errors = RecipeContentJson.Validate(request.Content);
+            if (errors.Count > 0)
+            {
+                return ValidationProblemWith(errors);
+            }
+
             var recipe = mapper.ToEntity(request);
             await svc.AddAsync(recipe);
             return CreatedAtAction(nameof(GetRecipe), new { id = recipe.Id }, mapper.ToDto(recipe));
@@ -47,6 +59,17 @@ namespace sloppr.Controllers
             if (recipe == null)
             {
                 return NotFound();
+            }
+
+            if (request.Content == null)
+            {
+                return BadRequest("Content is required.");
+            }
+
+            var errors = RecipeContentJson.Validate(request.Content);
+            if (errors.Count > 0)
+            {
+                return ValidationProblemWith(errors);
             }
 
             ApplyRequest(request, recipe);
@@ -124,27 +147,19 @@ namespace sloppr.Controllers
 
         private void ApplyRequest(RecipeRequest request, Recipe recipe)
         {
-            recipe.Name = request.Name;
-            recipe.Description = request.Description;
-            recipe.ServingCount = request.ServingCount;
-            recipe.PrepTimeMinutes = request.PrepTimeMinutes;
-            recipe.CookTimeMinutes = request.CookTimeMinutes;
-            recipe.Difficulty = request.Difficulty;
-            recipe.Notes = request.Notes;
+            recipe.ContentJson = RecipeContentJson.Serialize(request.Content);
             recipe.MealIdeaId = request.MealIdeaId;
             recipe.TemplateName = request.TemplateName;
+        }
 
-            recipe.Ingredients.Clear();
-            foreach (var ingredient in request.Ingredients ?? [])
+        private ActionResult ValidationProblemWith(List<string> errors)
+        {
+            foreach (var error in errors)
             {
-                recipe.Ingredients.Add(mapper.ToEntity(ingredient));
+                ModelState.AddModelError("content", error);
             }
 
-            recipe.Steps.Clear();
-            foreach (var step in request.Steps ?? [])
-            {
-                recipe.Steps.Add(mapper.ToEntity(step));
-            }
+            return ValidationProblem(ModelState);
         }
     }
 }

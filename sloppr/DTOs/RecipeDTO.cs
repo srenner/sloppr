@@ -1,3 +1,6 @@
+using sloppr.Content;
+using sloppr.Enums;
+
 namespace sloppr.DTOs;
 
 public class RecipeDTO
@@ -10,16 +13,8 @@ public class RecipeDTO
     public string CreatedBy { get; set; } = "system";
     public string UpdatedBy { get; set; } = "system";
 
-    public required string Name { get; set; }
-    public required string Description { get; set; }
-    public int ServingCount { get; set; }
-    public int PrepTimeMinutes { get; set; }
-    public int CookTimeMinutes { get; set; }
-    public int? Difficulty { get; set; }
-    public string? Notes { get; set; }
-
     public int? MealIdeaId { get; set; }
     public string? TemplateName { get; set; }
-    public ICollection<RecipeIngredientDTO> Ingredients { get; set; } = [];
-    public ICollection<RecipeStepDTO> Steps { get; set; } = [];
+    public RecipeSourceType SourceType { get; set; }
+    public required RecipeContent Content { get; set; } = new();
 }

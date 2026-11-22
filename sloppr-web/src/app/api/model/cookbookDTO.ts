@@ -5,12 +5,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RecipeStepDTO {
+export interface CookbookDTO {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   id?: number | string;
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  order?: number | string;
-  instruction: string;
-  /** @nullable */
-  group?: string | null;
+  name: string;
+  dateCreated?: string;
+  dateUpdated?: string;
 }

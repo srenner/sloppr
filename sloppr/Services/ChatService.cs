@@ -4,8 +4,10 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using sloppr.AI;
 using sloppr.AI.DTOs;
+using sloppr.Content;
 using sloppr.DTOs;
 using sloppr.Enums;
+using sloppr.Mappers;
 using sloppr.Models;
 using sloppr.Settings;
 
@@ -179,32 +181,18 @@ public class ChatService
             ChatResponse response = await client.GetResponseAsync(
                 messages, new ChatOptions
                 {
-                    ResponseFormat = ChatResponseFormat.ForJsonSchema<RecipeGenerationResponse>(
+                    ResponseFormat = ChatResponseFormat.ForJsonSchema<RecipeContent>(
                         JsonOptions, "recipe", "A complete recipe")
                 });
 
-            var generated = JsonSerializer.Deserialize<RecipeGenerationResponse>(
+            var generated = JsonSerializer.Deserialize<RecipeContent>(
                 response.Text, JsonOptions);
             if (generated == null)
             {
                 return null;
             }
 
-            var recipe = _recipeMapper.ToEntity(generated);
-
-            var ingredientOrder = 1;
-            foreach (var ingredient in recipe.Ingredients)
-            {
-                ingredient.Order = ingredientOrder++;
-            }
-
-            var stepOrder = 1;
-            foreach (var step in recipe.Steps)
-            {
-                step.Order = stepOrder++;
-            }
-
-            return recipe;
+            return _recipeMapper.ToEntity(generated);
         }
         catch (Exception)
         {

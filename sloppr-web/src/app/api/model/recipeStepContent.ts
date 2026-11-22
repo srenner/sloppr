@@ -5,10 +5,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RecipeStepRequest {
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  order?: number | string;
-  instruction: string;
+export interface RecipeStepContent {
+  instruction?: string;
   /** @nullable */
   group?: string | null;
 }

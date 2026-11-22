@@ -4,8 +4,8 @@
  * sloppr | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { RecipeIngredientDTO } from './recipeIngredientDTO';
-import type { RecipeStepDTO } from './recipeStepDTO';
+import type { RecipeContent } from './recipeContent';
+import type { RecipeSourceType } from './recipeSourceType';
 
 export interface RecipeDTO {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
@@ -16,21 +16,6 @@ export interface RecipeDTO {
   isDeleted?: boolean;
   createdBy?: string;
   updatedBy?: string;
-  name: string;
-  description: string;
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  servingCount?: number | string;
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  prepTimeMinutes?: number | string;
-  /** @pattern ^-?(?:0|[1-9]\d*)$ */
-  cookTimeMinutes?: number | string;
-  /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)$
-     */
-  difficulty?: number | string | null;
-  /** @nullable */
-  notes?: string | null;
   /**
      * @nullable
      * @pattern ^-?(?:0|[1-9]\d*)$
@@ -38,6 +23,6 @@ export interface RecipeDTO {
   mealIdeaId?: number | string | null;
   /** @nullable */
   templateName?: string | null;
-  ingredients?: RecipeIngredientDTO[];
-  steps?: RecipeStepDTO[];
+  sourceType?: RecipeSourceType;
+  content: RecipeContent;
 }

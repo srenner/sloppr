@@ -1,20 +1,14 @@
+using sloppr.Enums;
+
 namespace sloppr.Models;
 
 /// <summary>
-/// Full meal recipe
+/// Full meal recipe. Content is stored as JSON in <see cref="ContentJson"/>.
 /// </summary>
 public class Recipe : BaseModel
 {
-    public required string Name { get; set; }
-    public required string Description { get; set; }
-    public int ServingCount { get; set; }
-    public int PrepTimeMinutes { get; set; }
-    public int CookTimeMinutes { get; set; }
-    public int? Difficulty { get; set; }
-    public string? Notes { get; set; }
-
-    public ICollection<RecipeIngredient> Ingredients { get; set; } = [];
-    public ICollection<RecipeStep> Steps { get; set; } = [];
+    public string ContentJson { get; set; } = string.Empty;
+    public RecipeSourceType SourceType { get; set; } = RecipeSourceType.Manual;
 
     public int? MealIdeaId { get; set; }
     public MealIdea? MealIdea { get; set; }
