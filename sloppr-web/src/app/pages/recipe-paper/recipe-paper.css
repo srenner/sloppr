@@ -1,0 +1,10 @@
+.recipe-paper {
+  font-family: Georgia, 'Times New Roman', serif;
+  min-height: 40rem;
+}
+
+@media print {
+  .recipe-paper {
+    min-height: 0;
+  }
+}

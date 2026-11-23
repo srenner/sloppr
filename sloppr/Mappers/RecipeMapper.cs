@@ -25,6 +25,24 @@ public class RecipeMapper
         };
     }
 
+    public RecipeSummaryDTO ToSummaryDto(Recipe recipe)
+    {
+        var content = RecipeContentJson.Deserialize(recipe.ContentJson);
+
+        return new RecipeSummaryDTO
+        {
+            Id = recipe.Id,
+            Name = content.Name,
+            Description = content.Description,
+            SourceType = recipe.SourceType,
+            ServingCount = content.ServingCount,
+            PrepTimeMinutes = content.PrepTimeMinutes,
+            CookTimeMinutes = content.CookTimeMinutes,
+            Difficulty = content.Difficulty,
+            DateUpdated = recipe.DateUpdated
+        };
+    }
+
     public Recipe ToEntity(RecipeRequest request)
     {
         return new Recipe

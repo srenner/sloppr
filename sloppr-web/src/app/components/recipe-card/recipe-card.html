@@ -1,0 +1,36 @@
+<a
+  [routerLink]="['/recipes', recipe().id]"
+  data-testid="recipe-card"
+  class="group flex h-full flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2"
+>
+  <p class="text-xs font-medium tracking-widest text-gray-400 uppercase">Recipe</p>
+
+  <h2 class="mt-2 font-serif text-2xl font-semibold text-gray-800">
+    {{ recipe().name || 'Untitled recipe' }}
+  </h2>
+
+  @if (recipe().description) {
+    <p class="mt-2 line-clamp-3 text-sm text-gray-600">{{ recipe().description }}</p>
+  }
+
+  <dl class="mt-auto flex flex-wrap gap-x-4 gap-y-1 pt-5 text-xs text-gray-500">
+    <div>
+      <dt class="sr-only">Servings</dt>
+      <dd>Serves {{ recipe().servingCount }}</dd>
+    </div>
+    <div>
+      <dt class="sr-only">Prep time</dt>
+      <dd>{{ recipe().prepTimeMinutes }} min prep</dd>
+    </div>
+    <div>
+      <dt class="sr-only">Cook time</dt>
+      <dd>{{ recipe().cookTimeMinutes }} min cook</dd>
+    </div>
+    @if (difficultyLabel(recipe().difficulty); as label) {
+      <div>
+        <dt class="sr-only">Difficulty</dt>
+        <dd>{{ label }}</dd>
+      </div>
+    }
+  </dl>
+</a>

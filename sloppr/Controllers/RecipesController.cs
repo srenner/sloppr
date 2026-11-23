@@ -22,6 +22,14 @@ namespace sloppr.Controllers
             return Ok(recipes.Select(mapper.ToDto).ToList());
         }
 
+        [HttpGet("paged")]
+        public async Task<ActionResult<RecipePageDTO>> GetRecipesPagedAsync(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 24)
+        {
+            return Ok(await svc.GetPagedAsync(page, pageSize));
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<RecipeDTO>> GetRecipe(int id)
         {
