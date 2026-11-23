@@ -1,0 +1,68 @@
+<section class="mx-auto w-full max-w-6xl px-4 py-8">
+  <header class="mb-6 flex flex-wrap items-end justify-between gap-2">
+    <div>
+      <h1 class="text-3xl font-semibold text-gray-800">Recipes</h1>
+      @if (total() > 0) {
+        <p class="mt-1 text-sm text-gray-500">
+          {{ items().length }} of {{ total() }}
+        </p>
+      }
+    </div>
+  </header>
+
+  @if (error(); as message) {
+    <div
+      role="alert"
+      class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+    >
+      <p>{{ message }}</p>
+      <button
+        type="button"
+        data-testid="retry"
+        class="mt-3 rounded-lg border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50"
+        (click)="loadNext()"
+      >
+        Try again
+      </button>
+    </div>
+  }
+
+  @if (items().length === 0) {
+    @if (loading()) {
+      <p class="mt-6 text-sm text-gray-500" aria-live="polite">Loading recipes…</p>
+    } @else if (!error()) {
+      <p class="mt-6 text-sm text-gray-500">No recipes yet.</p>
+    }
+  } @else {
+    <ul
+      class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      [attr.aria-busy]="loading()"
+    >
+      @for (item of items(); track item.id) {
+        <li>
+          <app-recipe-card [recipe]="item" />
+        </li>
+      }
+    </ul>
+  }
+
+  <div #sentinel aria-hidden="true" class="h-px"></div>
+
+  @if (items().length > 0) {
+    @if (!done()) {
+      <div class="mt-6 flex justify-center">
+        <button
+          type="button"
+          data-testid="load-more"
+          class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+          [disabled]="loading()"
+          (click)="loadNext()"
+        >
+          {{ loading() ? 'Loading…' : 'Load more' }}
+        </button>
+      </div>
+    } @else {
+      <p class="mt-6 text-center text-sm text-gray-400">You've reached the end.</p>
+    }
+  }
+</section>

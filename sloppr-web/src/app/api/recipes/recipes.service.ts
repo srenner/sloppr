@@ -26,8 +26,10 @@ import {
 
 import type {
   GetApiRecipesIdMarkdownParams,
+  GetApiRecipesPagedParams,
   PostApiRecipesMarkdownParams,
   RecipeDTO,
+  RecipePageDTO,
   RecipeRequest
 } from '../model';
 
@@ -152,6 +154,14 @@ export const PostApiRecipesAccept = {
   text_json: 'text/json',
 } as const;
 
+export type GetApiRecipesPagedAccept = typeof GetApiRecipesPagedAccept[keyof typeof GetApiRecipesPagedAccept];
+
+export const GetApiRecipesPagedAccept = {
+  text_plain: 'text/plain',
+  application_json: 'application/json',
+  text_json: 'text/json',
+} as const;
+
 export type GetApiRecipesIdAccept = typeof GetApiRecipesIdAccept[keyof typeof GetApiRecipesIdAccept];
 
 export const GetApiRecipesIdAccept = {
@@ -241,6 +251,51 @@ export class RecipesService {
         responseType: 'json',
         headers,
 
+
+      });
+  }
+ getApiRecipesPaged(accept: 'text/plain',
+    params?: GetApiRecipesPagedParams, options?: HttpClientOptions): Observable<string>;
+  getApiRecipesPaged(accept: 'application/json',
+    params?: GetApiRecipesPagedParams, options?: HttpClientOptions): Observable<RecipePageDTO>;
+  getApiRecipesPaged(accept: 'text/json',
+    params?: GetApiRecipesPagedParams, options?: HttpClientOptions): Observable<RecipePageDTO>;
+  getApiRecipesPaged(accept?: GetApiRecipesPagedAccept,
+    params?: GetApiRecipesPagedParams, options?: HttpClientOptions): Observable<RecipePageDTO | string>;
+  getApiRecipesPaged(
+    accept: GetApiRecipesPagedAccept = 'application/json',
+    params?: GetApiRecipesPagedParams,
+    options?: HttpClientOptions
+  ): Observable<RecipePageDTO | string> {
+    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
+
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
+
+    if (accept.includes('json') || accept.includes('+json')) {
+      return this.http.get<RecipePageDTO>(`/api/Recipes/paged`, {
+        ...options,
+        responseType: 'json',
+        headers,
+        params: filteredParams,
+
+      });
+    } else if (accept.startsWith('text/') || accept.includes('xml')) {
+      return this.http.get(`/api/Recipes/paged`, {
+        ...options,
+        responseType: 'text',
+        headers,
+        params: filteredParams,
+
+      }) as Observable<string>;
+    }
+
+    return this.http.get<RecipePageDTO>(`/api/Recipes/paged`, {
+        ...options,
+        responseType: 'json',
+        headers,
+        params: filteredParams,
 
       });
   }
