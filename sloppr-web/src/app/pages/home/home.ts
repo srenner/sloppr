@@ -41,6 +41,10 @@ export class Home {
     this.ideas().some((idea) => !this.isSaved(idea)),
   );
 
+  protected readonly recipeTitle = computed(
+    () => this.recipe()?.content?.name?.trim() || this.activeIdea()?.name?.trim() || null,
+  );
+
   protected onInput(event: Event): void {
     this.prompt.set((event.target as HTMLTextAreaElement).value);
   }
