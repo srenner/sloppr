@@ -29,6 +29,7 @@ public class ApplicationSettingService(IServiceScopeFactory scopeFactory)
         settings.ExtractionModelId = request.ExtractionModelId;
         settings.IdeaModelId = request.IdeaModelId;
         settings.RecipeModelId = request.RecipeModelId;
+        settings.OCRModelId = request.OCRModelId;
         await db.SaveChangesAsync();
 
         Settings = settings;

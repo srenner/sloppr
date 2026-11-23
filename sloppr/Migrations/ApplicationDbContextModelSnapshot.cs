@@ -141,6 +141,9 @@ namespace sloppr.Migrations
                     b.Property<int?>("IdeaModelId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("OCRModelId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("RecipeModelId")
                         .HasColumnType("INTEGER");
 

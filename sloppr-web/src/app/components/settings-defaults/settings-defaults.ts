@@ -17,6 +17,7 @@ export class SettingsDefaults {
   protected readonly extractionModelId = signal('');
   protected readonly ideaModelId = signal('');
   protected readonly recipeModelId = signal('');
+  protected readonly ocrModelId = signal('');
 
   protected readonly loading = signal(true);
   protected readonly saving = signal(false);
@@ -24,7 +25,11 @@ export class SettingsDefaults {
   protected readonly notice = signal<string | null>(null);
 
   protected readonly hasSelection = computed(
-    () => this.extractionModelId() !== '' || this.ideaModelId() !== '' || this.recipeModelId() !== '',
+    () =>
+      this.extractionModelId() !== '' ||
+      this.ideaModelId() !== '' ||
+      this.recipeModelId() !== '' ||
+      this.ocrModelId() !== '',
   );
 
   constructor() {
@@ -44,6 +49,7 @@ export class SettingsDefaults {
         this.extractionModelId.set(this.stringId(settings.extractionModelId));
         this.ideaModelId.set(this.stringId(settings.ideaModelId));
         this.recipeModelId.set(this.stringId(settings.recipeModelId));
+        this.ocrModelId.set(this.stringId(settings.ocrModelId));
         this.loading.set(false);
       },
       error: () => {
@@ -65,6 +71,10 @@ export class SettingsDefaults {
     this.recipeModelId.set((event.target as HTMLSelectElement).value);
   }
 
+  protected onOcrChange(event: Event): void {
+    this.ocrModelId.set((event.target as HTMLSelectElement).value);
+  }
+
   protected save(): void {
     if (this.saving() || !this.hasSelection()) {
       return;
@@ -80,6 +90,7 @@ export class SettingsDefaults {
           extractionModelId: this.toId(this.extractionModelId()),
           ideaModelId: this.toId(this.ideaModelId()),
           recipeModelId: this.toId(this.recipeModelId()),
+          ocrModelId: this.toId(this.ocrModelId()),
         },
         'application/json',
       )
@@ -88,6 +99,7 @@ export class SettingsDefaults {
           this.extractionModelId.set(this.stringId(settings.extractionModelId));
           this.ideaModelId.set(this.stringId(settings.ideaModelId));
           this.recipeModelId.set(this.stringId(settings.recipeModelId));
+          this.ocrModelId.set(this.stringId(settings.ocrModelId));
           this.saving.set(false);
           this.notice.set('Default models saved.');
         },

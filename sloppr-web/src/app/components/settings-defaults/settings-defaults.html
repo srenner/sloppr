@@ -34,7 +34,7 @@
   } @else {
     <div class="space-y-4 rounded-xl border border-gray-200 p-4">
       <label class="block text-sm">
-        <span class="mb-1 block font-medium text-gray-700">Ingredient extraction</span>
+        <span class="mb-1 block font-medium text-gray-700">Ingredient Extraction</span>
         <select
           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800"
           [disabled]="saving()"
@@ -53,7 +53,7 @@
       </label>
 
       <label class="block text-sm">
-        <span class="mb-1 block font-medium text-gray-700">Meal idea generation</span>
+        <span class="mb-1 block font-medium text-gray-700">Idea Generator</span>
         <select
           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800"
           [disabled]="saving()"
@@ -72,7 +72,7 @@
       </label>
 
       <label class="block text-sm">
-        <span class="mb-1 block font-medium text-gray-700">Recipe generation</span>
+        <span class="mb-1 block font-medium text-gray-700">Recipe Generator</span>
         <select
           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800"
           [disabled]="saving()"
@@ -83,6 +83,25 @@
             <option
               [value]="model.id"
               [selected]="stringId(model.id) === recipeModelId()"
+            >
+              {{ model.name }} — {{ model.identifier }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="mb-1 block font-medium text-gray-700">Recipe Image Scanner</span>
+        <select
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800"
+          [disabled]="saving()"
+          (change)="onOcrChange($event)"
+        >
+          <option value="" [selected]="ocrModelId() === ''">Not selected</option>
+          @for (model of models(); track model.id) {
+            <option
+              [value]="model.id"
+              [selected]="stringId(model.id) === ocrModelId()"
             >
               {{ model.name }} — {{ model.identifier }}
             </option>

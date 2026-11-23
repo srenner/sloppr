@@ -540,7 +540,8 @@ Content-Type: application/json
 {
   "extractionModelId": 1,
   "ideaModelId": 1,
-  "recipeModelId": 1
+  "recipeModelId": 1,
+  "ocrModelId": 1
 }
 
 ###

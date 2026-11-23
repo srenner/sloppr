@@ -70,12 +70,13 @@ describe('SettingsDefaults', () => {
   }
 
   it('should load the current defaults', async () => {
-    initialise({ extractionModelId: 2, ideaModelId: 1, recipeModelId: 1 });
+    initialise({ extractionModelId: 2, ideaModelId: 1, recipeModelId: 1, ocrModelId: 2 });
     await fixture.whenStable();
 
     expect(select(0).value).toBe('2');
     expect(select(1).value).toBe('1');
     expect(select(2).value).toBe('1');
+    expect(select(3).value).toBe('2');
     expect(fixture.nativeElement.textContent).toContain('Granite 4.1 8B');
   });
 
@@ -93,6 +94,7 @@ describe('SettingsDefaults', () => {
 
     choose(0, '2');
     choose(2, '1');
+    choose(3, '2');
     button('Save defaults').click();
 
     const request = http.expectOne('/api/ApplicationSettings');
@@ -101,9 +103,10 @@ describe('SettingsDefaults', () => {
       extractionModelId: 2,
       ideaModelId: null,
       recipeModelId: 1,
+      ocrModelId: 2,
     });
 
-    request.flush({ extractionModelId: 2, ideaModelId: null, recipeModelId: 1 });
+    request.flush({ extractionModelId: 2, ideaModelId: null, recipeModelId: 1, ocrModelId: 2 });
     fixture.detectChanges();
     await fixture.whenStable();
 
