@@ -18,6 +18,7 @@
           [value]="prompt()"
           [disabled]="loading() || saving()"
           (input)="onInput($event)"
+          (keydown)="onKeydown($event)"
         ></textarea>
 
         <div class="flex items-center justify-end gap-3">

@@ -45,6 +45,17 @@ export class Home {
     this.prompt.set((event.target as HTMLTextAreaElement).value);
   }
 
+  protected onKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Enter' || event.shiftKey || event.isComposing) {
+      return;
+    }
+
+    event.preventDefault();
+    if (this.canSend()) {
+      this.send();
+    }
+  }
+
   protected send(): void {
     const text = this.prompt().trim();
     if (!text || this.loading() || this.saving()) {
