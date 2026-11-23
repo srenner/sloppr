@@ -50,12 +50,12 @@ public class ChatService
 
     public async Task<(string[] Ingredients, string[] Cuisines)> ExtractIngredientsAndCuisines(string prompt)
     {
-        if (_appSettingService.Settings.ExtractionModelId is not int extractionModelId)
+        if (!_appSettingService.Settings.ExtractionModelId.HasValue)
         {
             return ([], []);
         }
 
-        var model = await _modelService.GetByIdWithProviderAsync(extractionModelId);
+        var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.ExtractionModelId.Value);
         if (model is null)
         {
             return ([], []);
@@ -236,3 +236,5 @@ public class ChatService
         return normalized;
     }
 }
+
+
