@@ -1,0 +1,113 @@
+<section class="space-y-6">
+  <div>
+    <h3 class="text-base font-semibold text-gray-800">Default models</h3>
+    <p class="mt-1 text-sm text-gray-500">
+      Choose which active model the app uses for each step. Only models from the Models tab are
+      listed.
+    </p>
+  </div>
+
+  @if (error(); as message) {
+    <p
+      role="alert"
+      class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+    >
+      {{ message }}
+    </p>
+  }
+
+  @if (notice(); as message) {
+    <p
+      role="status"
+      class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700"
+    >
+      {{ message }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p class="text-sm text-gray-500">Loading models…</p>
+  } @else if (models().length === 0) {
+    <p class="text-sm text-gray-500">
+      No models are in use yet. Add some in the Models tab before picking defaults.
+    </p>
+  } @else {
+    <div class="space-y-4 rounded-xl border border-gray-200 p-4">
+      <label class="block text-sm">
+        <span class="mb-1 block font-medium text-gray-700">Ingredient extraction</span>
+        <select
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800"
+          [disabled]="saving()"
+          (change)="onExtractionChange($event)"
+        >
+          <option value="" [selected]="extractionModelId() === ''">Not selected</option>
+          @for (model of models(); track model.id) {
+            <option
+              [value]="model.id"
+              [selected]="stringId(model.id) === extractionModelId()"
+            >
+              {{ model.name }} — {{ model.identifier }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="mb-1 block font-medium text-gray-700">Meal idea generation</span>
+        <select
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800"
+          [disabled]="saving()"
+          (change)="onIdeaChange($event)"
+        >
+          <option value="" [selected]="ideaModelId() === ''">Not selected</option>
+          @for (model of models(); track model.id) {
+            <option
+              [value]="model.id"
+              [selected]="stringId(model.id) === ideaModelId()"
+            >
+              {{ model.name }} — {{ model.identifier }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <label class="block text-sm">
+        <span class="mb-1 block font-medium text-gray-700">Recipe generation</span>
+        <select
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800"
+          [disabled]="saving()"
+          (change)="onRecipeChange($event)"
+        >
+          <option value="" [selected]="recipeModelId() === ''">Not selected</option>
+          @for (model of models(); track model.id) {
+            <option
+              [value]="model.id"
+              [selected]="stringId(model.id) === recipeModelId()"
+            >
+              {{ model.name }} — {{ model.identifier }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          class="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+          [disabled]="saving() || !hasSelection()"
+          (click)="save()"
+        >
+          {{ saving() ? 'Saving…' : 'Save defaults' }}
+        </button>
+        <button
+          type="button"
+          class="text-sm font-medium text-gray-500 hover:text-gray-800 disabled:opacity-40"
+          [disabled]="loading()"
+          (click)="load()"
+        >
+          Reload
+        </button>
+      </div>
+    </div>
+  }
+</section>

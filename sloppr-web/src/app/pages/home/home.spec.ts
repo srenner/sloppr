@@ -23,7 +23,10 @@ function recipe(mealIdeaId: number): RecipeDTO {
       prepTimeMinutes: 10,
       cookTimeMinutes: 20,
       ingredients: [{ quantity: 1, unit: 'cup', name: 'rice' }],
-      steps: [{ instruction: 'Cook the rice.' }],
+      steps: [
+        { instruction: '', group: 'Preparation' },
+        { instruction: 'Cook the rice.' },
+      ],
     },
   };
 }
@@ -146,6 +149,9 @@ describe('Home', () => {
     const save = http.expectOne('/api/Recipes');
     expect(save.request.method).toBe('POST');
     expect(save.request.body.content.name).toBe('Chicken Rice Bowl');
+    expect(save.request.body.content.steps).toEqual([
+      { instruction: 'Cook the rice.', group: null },
+    ]);
     expect(save.request.body.mealIdeaId).toBe(1);
     save.flush({ ...recipe(1), id: 9 });
 

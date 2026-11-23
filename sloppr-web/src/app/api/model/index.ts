@@ -14,6 +14,8 @@ export * from './aiProviderDTO';
 export * from './aiProviderHealthDTO';
 export * from './aiProviderRequest';
 export * from './aiProviderType';
+export * from './applicationSettingDTO';
+export * from './applicationSettingRequest';
 export * from './cookbookDTO';
 export * from './cookbookEntryDTO';
 export * from './cookbookEntryRequest';

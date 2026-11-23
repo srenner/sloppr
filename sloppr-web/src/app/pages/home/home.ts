@@ -272,10 +272,12 @@ export class Home {
           group: ingredient.group ?? null,
           note: ingredient.note ?? null,
         })),
-        steps: (recipe.content.steps ?? []).map((step) => ({
-          instruction: step.instruction ?? '',
-          group: step.group ?? null,
-        })),
+        steps: (recipe.content.steps ?? [])
+          .filter((step) => (step.instruction ?? '').trim().length > 0)
+          .map((step) => ({
+            instruction: step.instruction ?? '',
+            group: step.group ?? null,
+          })),
       },
     };
   }

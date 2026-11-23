@@ -61,7 +61,17 @@ public class AiProviderService(ApplicationDbContext db,
                 var response = await httpClient.GetAsync(discoverUrl);
                 var responseBody = await response.Content.ReadAsStringAsync();
                 var models = _modelDiscoveryService.Parse(provider, responseBody);
-                return models;
+
+                // Parse only compares against active models because of the query filter;
+                // inactive (but not deleted) models must not be offered again.
+                var knownIdentifiers = await _db.AiModels
+                    .IgnoreQueryFilters()
+                    .Where(m => m.AiProviderId == providerId && !m.IsDeleted)
+                    .Select(m => m.Identifier)
+                    .ToListAsync();
+                var known = knownIdentifiers.ToHashSet();
+
+                return models.Where(m => !known.Contains(m.Identifier)).ToList();
             }
             catch (Exception ex)
             {

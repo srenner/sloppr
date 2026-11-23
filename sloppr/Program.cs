@@ -50,6 +50,7 @@ builder.Services.AddScoped<CuisineMapper>();
 
 builder.Services.AddScoped<IAiProviderService, AiProviderService>();
 builder.Services.AddScoped<AiProviderMapper>();
+builder.Services.AddScoped<ApplicationSettingMapper>();
 
 builder.Services.AddScoped<IAiModelService, AiModelService>();
 builder.Services.AddScoped<AiModelMapper>();
