@@ -7,6 +7,7 @@ public class ApplicationSetting
     public int? ExtractionModelId { get; set; }
     public int? IdeaModelId { get; set; }
     public int? RecipeModelId { get; set; }
+    public int? OCRModelId { get; set; }
     public string? DefaultRecipeTemplateName { get; set; }
     public bool HasSeededRecipeTemplates { get; set; }
 }

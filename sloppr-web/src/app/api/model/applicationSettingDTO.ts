@@ -21,4 +21,9 @@ export interface ApplicationSettingDTO {
      * @pattern ^-?(?:0|[1-9]\d*)$
      */
   recipeModelId?: number | string | null;
+  /**
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)$
+     */
+  ocrModelId?: number | string | null;
 }
