@@ -51,13 +51,13 @@
             type="button"
             role="tab"
             class="w-full rounded-lg px-3 py-2 text-left text-sm font-medium"
-            [class.bg-gray-100]="tab() === 'defaults'"
-            [class.text-gray-900]="tab() === 'defaults'"
-            [class.text-gray-600]="tab() !== 'defaults'"
-            [attr.aria-selected]="tab() === 'defaults'"
-            (click)="selectTab('defaults')"
+            [class.bg-gray-100]="tab() === 'capabilities'"
+            [class.text-gray-900]="tab() === 'capabilities'"
+            [class.text-gray-600]="tab() !== 'capabilities'"
+            [attr.aria-selected]="tab() === 'capabilities'"
+            (click)="selectTab('capabilities')"
           >
-            Defaults
+            Capabilities
           </button>
         </nav>
 
@@ -69,8 +69,8 @@
             @case ('models') {
               <app-settings-models />
             }
-            @case ('defaults') {
-              <app-settings-defaults />
+            @case ('capabilities') {
+              <app-settings-capabilities />
             }
           }
         </div>

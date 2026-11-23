@@ -1,13 +1,13 @@
 import { Component, ElementRef, signal, viewChild } from '@angular/core';
-import { SettingsDefaults } from '../settings-defaults/settings-defaults';
+import { SettingsCapabilities } from '../settings-capabilities/settings-capabilities';
 import { SettingsModels } from '../settings-models/settings-models';
 import { SettingsProvider } from '../settings-provider/settings-provider';
 
-type SettingsTab = 'provider' | 'models' | 'defaults';
+type SettingsTab = 'provider' | 'models' | 'capabilities';
 
 @Component({
   selector: 'app-settings-modal',
-  imports: [SettingsProvider, SettingsModels, SettingsDefaults],
+  imports: [SettingsProvider, SettingsModels, SettingsCapabilities],
   templateUrl: './settings-modal.html',
   styleUrl: './settings-modal.css',
 })

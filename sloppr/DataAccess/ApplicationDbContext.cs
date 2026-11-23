@@ -6,6 +6,7 @@ namespace sloppr.DataAccess;
 public class ApplicationDbContext : DbContext
 {
     public DbSet<ApplicationSetting> ApplicationSettings { get; set; }
+    public DbSet<AiCapabilitySetting> AiCapabilitySettings { get; set; }
     public DbSet<KeyIngredient> KeyIngredients { get; set; }
     public DbSet<Cuisine> Cuisines { get; set; }
     public DbSet<MealIdea> MealIdeas { get; set; }
@@ -82,6 +83,10 @@ public class ApplicationDbContext : DbContext
             .HasIndex(x => new { x.CookbookEntryId, x.VersionNumber })
             .IsUnique();
 
+        modelBuilder.Entity<AiCapabilitySetting>()
+            .HasIndex(x => x.Capability)
+            .IsUnique();
+
         #endregion
 
         #region Relationships
@@ -115,6 +120,12 @@ public class ApplicationDbContext : DbContext
             .WithOne(v => v.CookbookEntry)
             .HasForeignKey(v => v.CookbookEntryId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<AiCapabilitySetting>()
+            .HasOne<AiModel>()
+            .WithMany()
+            .HasForeignKey(s => s.ModelId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         #endregion
 

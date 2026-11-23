@@ -68,7 +68,7 @@ describe('SettingsModal', () => {
     expect(fixture.nativeElement.textContent).toContain('Discover models');
   });
 
-  it('should switch to the defaults tab', () => {
+  it('should switch to the capabilities tab', () => {
     const dialog = fixture.nativeElement.querySelector('dialog') as HTMLDialogElement;
     dialog.showModal = vi.fn();
 
@@ -85,10 +85,10 @@ describe('SettingsModal', () => {
     fixture.detectChanges();
 
     http.expectOne('/api/AiModels').flush([]);
-    http.expectOne('/api/ApplicationSettings').flush({});
+    http.expectOne('/api/AiCapabilitySettings').flush([]);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Default models');
+    expect(fixture.nativeElement.textContent).toContain('No models are in use yet.');
   });
 
   it('should close the dialog from the close button', () => {

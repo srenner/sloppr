@@ -16,7 +16,6 @@ namespace sloppr.Services;
 public class ChatService
 {
     private readonly ProviderTypeSettings _providerTypeSettings;
-    private readonly AISettings _aiSettings;
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -25,21 +24,19 @@ public class ChatService
 
     private readonly IAiModelService _modelService;
     private readonly IChatClientFactory _factory;
-    private readonly ApplicationSettingService _appSettingService;
+    private readonly AiCapabilitySettingService _capabilitySettings;
     private readonly RecipeMapper _recipeMapper;
 
     public ChatService(IOptions<ProviderTypeSettings> options,
-                        IOptions<AISettings> aiSettings,
                         IAiModelService modelService,
                         IChatClientFactory factory,
-                        ApplicationSettingService appSettingService,
+                        AiCapabilitySettingService capabilitySettings,
                         RecipeMapper recipeMapper)
     {
         _providerTypeSettings = options.Value; // unwrap the actual settings object
-        _aiSettings = aiSettings.Value;
         _modelService = modelService;
         _factory = factory;
-        _appSettingService = appSettingService;
+        _capabilitySettings = capabilitySettings;
         _recipeMapper = recipeMapper;
     }
 
@@ -50,19 +47,20 @@ public class ChatService
 
     public async Task<(string[] Ingredients, string[] Cuisines)> ExtractIngredientsAndCuisines(string prompt)
     {
-        if (!_appSettingService.Settings.ExtractionModelId.HasValue)
+        var capability = _capabilitySettings.Get(AiCapabilityType.IngredientExtraction);
+        if (capability.ModelId is not int modelId)
         {
             return ([], []);
         }
 
-        var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.ExtractionModelId.Value);
+        var model = await _modelService.GetByIdWithProviderAsync(modelId);
         if (model is null)
         {
             return ([], []);
         }
 
         var extracted = await ExtractResponse<ExtractedIngredientsAndCuisinesResponse>(
-            _aiSettings.DefaultExtractionPrompt, prompt, model);
+            capability.SystemPrompt, prompt, model);
 
         return extracted is null
             ? ([], [])
@@ -99,59 +97,64 @@ public class ChatService
 
     public async Task<string[]> GenerateIdeas(string userPrompt, string[] keyIngredients, string[] cuisines)
     {
-        var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.IdeaModelId.Value);
-        if (model != null)
-        {
-            var config = new ChatClientConfig
-            {
-                ProviderType = model.AiProvider.ProviderType,
-                ModelName = model.Identifier,
-                Endpoint = model.AiProvider.BaseUrl,
-                ApiKey = null // todo
-            };
-
-            IChatClient client = _factory.Create(config);
-
-            StringBuilder refinedPrompt = new StringBuilder("Plan a meal");
-            if (keyIngredients.Length > 0)
-            {
-                refinedPrompt.Append(" based on the following ingredients: ");
-                refinedPrompt.Append(String.Join(", ", keyIngredients));
-
-            }
-            if (cuisines.Length > 0)
-            {
-                refinedPrompt.Append(". User has cuisine preference: ");
-                refinedPrompt.Append(string.Join(", ", cuisines) + ".");
-            }
-            if (userPrompt.Length > 0)
-            {
-                refinedPrompt.Append(" Input from user: ");
-                refinedPrompt.Append(userPrompt);
-            }
-
-            List<ChatMessage> messages = new()
-                {
-                    new ChatMessage(ChatRole.System, _aiSettings.IdeaGenerationPrompt),
-                    new ChatMessage(ChatRole.User, refinedPrompt.ToString()),
-                };
-            ChatResponse response = await client.GetResponseAsync(messages, new ChatOptions
-            {
-                ResponseFormat = ChatResponseFormat.ForJsonSchema<GeneratedIdeasResponse>(JsonOptions)
-            });
-
-            var generated = JsonSerializer.Deserialize<GeneratedIdeasResponse>(response.Text, JsonOptions);
-            return generated is null ? [] : generated.Ideas.ToArray();
-        }
-        else
+        var capability = _capabilitySettings.Get(AiCapabilityType.IdeaGeneration);
+        if (capability.ModelId is not int modelId)
         {
             return [];
         }
+
+        var model = await _modelService.GetByIdWithProviderAsync(modelId);
+        if (model is null)
+        {
+            return [];
+        }
+
+        var config = new ChatClientConfig
+        {
+            ProviderType = model.AiProvider.ProviderType,
+            ModelName = model.Identifier,
+            Endpoint = model.AiProvider.BaseUrl,
+            ApiKey = null // todo
+        };
+
+        IChatClient client = _factory.Create(config);
+
+        StringBuilder refinedPrompt = new StringBuilder("Plan a meal");
+        if (keyIngredients.Length > 0)
+        {
+            refinedPrompt.Append(" based on the following ingredients: ");
+            refinedPrompt.Append(String.Join(", ", keyIngredients));
+
+        }
+        if (cuisines.Length > 0)
+        {
+            refinedPrompt.Append(". User has cuisine preference: ");
+            refinedPrompt.Append(string.Join(", ", cuisines) + ".");
+        }
+        if (userPrompt.Length > 0)
+        {
+            refinedPrompt.Append(" Input from user: ");
+            refinedPrompt.Append(userPrompt);
+        }
+
+        List<ChatMessage> messages = new()
+            {
+                new ChatMessage(ChatRole.System, capability.SystemPrompt),
+                new ChatMessage(ChatRole.User, refinedPrompt.ToString()),
+            };
+        ChatResponse response = await client.GetResponseAsync(messages, new ChatOptions
+        {
+            ResponseFormat = ChatResponseFormat.ForJsonSchema<GeneratedIdeasResponse>(JsonOptions)
+        });
+
+        var generated = JsonSerializer.Deserialize<GeneratedIdeasResponse>(response.Text, JsonOptions);
+        return generated is null ? [] : generated.Ideas.ToArray();
     }
 
     public async Task<Recipe?> GenerateRecipeAsync(MealIdea idea)
     {
-        if (_appSettingService.Settings.RecipeModelId is not int recipeModelId)
+        var capability = _capabilitySettings.Get(AiCapabilityType.RecipeGeneration);
+        if (capability.ModelId is not int recipeModelId)
         {
             return null;
         }
@@ -176,7 +179,7 @@ public class ChatService
 
         List<ChatMessage> messages = new()
         {
-            new ChatMessage(ChatRole.System, _aiSettings.RecipeGenerationPrompt),
+            new ChatMessage(ChatRole.System, capability.SystemPrompt),
             new ChatMessage(ChatRole.User, userPrompt),
         };
 

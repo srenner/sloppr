@@ -534,20 +534,36 @@ DELETE {{sloppr_HostAddress}}/api/Cookbooks/1/entries/1
 ###
 
 
-// ApplicationSettings endpoints (default models used by chat)
-GET {{sloppr_HostAddress}}/api/ApplicationSettings
+// AiCapabilitySettings endpoints (preferred model and system prompt per capability)
+GET {{sloppr_HostAddress}}/api/AiCapabilitySettings
 Accept: application/json
 
 ###
 
-PUT {{sloppr_HostAddress}}/api/ApplicationSettings
+PUT {{sloppr_HostAddress}}/api/AiCapabilitySettings
 Content-Type: application/json
 
-{
-  "extractionModelId": 1,
-  "ideaModelId": 1,
-  "recipeModelId": 1,
-  "ocrModelId": 1
-}
+[
+  {
+    "capability": "IngredientExtraction",
+    "modelId": 1,
+    "systemPrompt": "Extract all grocery/food ingredients and cuisine types mentioned in the user prompt."
+  },
+  {
+    "capability": "IdeaGeneration",
+    "modelId": 1,
+    "systemPrompt": "You are a family meal planner."
+  },
+  {
+    "capability": "RecipeGeneration",
+    "modelId": 1,
+    "systemPrompt": "You are a chef."
+  },
+  {
+    "capability": "OcrScanning",
+    "modelId": 1,
+    "systemPrompt": "Extract the recipe from the image."
+  }
+]
 
 ###

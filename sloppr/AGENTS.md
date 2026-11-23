@@ -9,6 +9,6 @@ Commands are human-run; suggest them: `dotnet build`, `dotnet run --launch-profi
 - Data access: services inject `ApplicationDbContext` (no repository layer). Reads: `_db.<Set>`; `GetFilteredAsync()` keeps global filters, `GetAllAsync()` uses `IgnoreQueryFilters()`; `AsNoTracking()` for lists. Writes: `Add`/`Update`/`Remove` + `SaveChangesAsync()`. Includes, projections, and raw SQL allowed.
 - DTOs live in `DTOs/` as `ModelNameDTO.cs`; don't modify models for DTO work; Mapperly source-gen mapping.
 - Keep `sloppr/sloppr.http` in sync with controller endpoints.
-- Only Ollama/OpenAI are supported (Anthropic throws `NotSupportedException`); prompts/provider URLs are in `appsettings.json`; DB-backed settings load once at startup.
+- Only Ollama/OpenAI are supported (Anthropic throws `NotSupportedException`); provider URLs and default prompts are in `appsettings.json`; capability settings are DB-backed and load once at startup.
 - Enums serialize as strings globally.
 - No backend test project.

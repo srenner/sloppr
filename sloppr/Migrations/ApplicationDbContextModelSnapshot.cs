@@ -17,6 +17,32 @@ namespace sloppr.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
 
+            modelBuilder.Entity("sloppr.Models.AiCapabilitySetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Capability")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ModelId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SystemPrompt")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Capability")
+                        .IsUnique();
+
+                    b.HasIndex("ModelId");
+
+                    b.ToTable("AiCapabilitySettings");
+                });
+
             modelBuilder.Entity("sloppr.Models.AiModel", b =>
                 {
                     b.Property<int>("Id")
@@ -125,26 +151,10 @@ namespace sloppr.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ApplicationName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("DefaultRecipeTemplateName")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ExtractionModelId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("HasSeededRecipeTemplates")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("IdeaModelId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("OCRModelId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("RecipeModelId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -158,7 +168,6 @@ namespace sloppr.Migrations
                         new
                         {
                             Id = 1,
-                            ApplicationName = "sloppr",
                             HasSeededRecipeTemplates = false
                         });
                 });
@@ -545,6 +554,14 @@ namespace sloppr.Migrations
                         .IsUnique();
 
                     b.ToTable("RecipeTemplates");
+                });
+
+            modelBuilder.Entity("sloppr.Models.AiCapabilitySetting", b =>
+                {
+                    b.HasOne("sloppr.Models.AiModel", null)
+                        .WithMany()
+                        .HasForeignKey("ModelId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("sloppr.Models.AiModel", b =>
