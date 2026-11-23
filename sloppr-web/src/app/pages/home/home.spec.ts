@@ -141,6 +141,33 @@ describe('Home', () => {
     expect(text).toContain('Save and cook tonight');
   });
 
+  it('shows the idea name while the recipe is generating', () => {
+    generateIdeas();
+
+    const card = fixture.nativeElement.querySelector(
+      '[data-testid="idea-card"]',
+    ) as HTMLButtonElement;
+    card.click();
+    fixture.detectChanges();
+
+    const request = http.expectOne('/api/AiInference/recipes/1');
+    expect(request.request.method).toBe('POST');
+
+    const text = fixture.nativeElement.textContent as string;
+    expect(text).toContain('Idea One');
+    expect(text).toContain('Writing the recipe…');
+
+    request.flush(recipe(1));
+    fixture.detectChanges();
+
+    const generated = fixture.nativeElement.textContent as string;
+    expect(generated).toContain('Chicken Rice Bowl');
+    expect(generated).toContain('Writing the recipe…');
+
+    http.expectOne('/api/Recipes/markdown').flush('# Chicken Rice Bowl');
+    fixture.detectChanges();
+  });
+
   it('saves and marks the recipe for tonight', () => {
     generateIdeas();
     openFirstIdea();
