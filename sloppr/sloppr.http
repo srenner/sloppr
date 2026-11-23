@@ -527,3 +527,20 @@ DELETE {{sloppr_HostAddress}}/api/Cookbooks/1/entries/1
 
 ###
 
+
+// ApplicationSettings endpoints (default models used by chat)
+GET {{sloppr_HostAddress}}/api/ApplicationSettings
+Accept: application/json
+
+###
+
+PUT {{sloppr_HostAddress}}/api/ApplicationSettings
+Content-Type: application/json
+
+{
+  "extractionModelId": 1,
+  "ideaModelId": 1,
+  "recipeModelId": 1
+}
+
+###

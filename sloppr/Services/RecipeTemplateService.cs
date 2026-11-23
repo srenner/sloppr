@@ -208,11 +208,13 @@ public class RecipeTemplateService : IRecipeTemplateService
                 group = i.Group,
                 note = i.Note,
             }),
-            steps = (recipe.Content.Steps ?? []).Select(s => new
-            {
-                instruction = s.Instruction,
-                group = s.Group,
-            }),
+            steps = (recipe.Content.Steps ?? [])
+                .Where(s => !string.IsNullOrWhiteSpace(s.Instruction))
+                .Select(s => new
+                {
+                    instruction = s.Instruction,
+                    group = s.Group,
+                }),
         };
     }
 

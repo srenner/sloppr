@@ -50,7 +50,12 @@ public class ChatService
 
     public async Task<(string[] Ingredients, string[] Cuisines)> ExtractIngredientsAndCuisines(string prompt)
     {
-        var model = await _modelService.GetByIdWithProviderAsync(_appSettingService.Settings.ExtractionModelId.Value);
+        if (_appSettingService.Settings.ExtractionModelId is not int extractionModelId)
+        {
+            return ([], []);
+        }
+
+        var model = await _modelService.GetByIdWithProviderAsync(extractionModelId);
         if (model is null)
         {
             return ([], []);
@@ -192,11 +197,42 @@ public class ChatService
                 return null;
             }
 
+            generated.Steps = NormalizeSteps(generated.Steps);
+
             return _recipeMapper.ToEntity(generated);
         }
         catch (Exception)
         {
             return null;
         }
+    }
+
+    /// <summary>
+    /// Some models emit a step whose only content is a section label. Treat that as
+    /// the group for the steps that follow and drop the empty step so the rendered
+    /// recipe does not contain blank numbered entries.
+    /// </summary>
+    private static List<RecipeStepContent> NormalizeSteps(List<RecipeStepContent>? steps)
+    {
+        var normalized = new List<RecipeStepContent>();
+        string? group = null;
+
+        foreach (var step in steps ?? [])
+        {
+            if (string.IsNullOrWhiteSpace(step.Instruction))
+            {
+                if (!string.IsNullOrWhiteSpace(step.Group))
+                {
+                    group = step.Group.Trim();
+                }
+                continue;
+            }
+
+            step.Instruction = step.Instruction.Trim();
+            step.Group = string.IsNullOrWhiteSpace(step.Group) ? group : step.Group.Trim();
+            normalized.Add(step);
+        }
+
+        return normalized;
     }
 }

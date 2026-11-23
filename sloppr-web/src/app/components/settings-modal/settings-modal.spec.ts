@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SettingsModal } from './settings-modal';
@@ -5,16 +7,23 @@ import { SettingsModal } from './settings-modal';
 describe('SettingsModal', () => {
   let component: SettingsModal;
   let fixture: ComponentFixture<SettingsModal>;
+  let http: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SettingsModal],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SettingsModal);
     component = fixture.componentInstance;
+    http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
     await fixture.whenStable();
+  });
+
+  afterEach(() => {
+    http.verify();
   });
 
   it('should create', () => {
@@ -27,8 +36,59 @@ describe('SettingsModal', () => {
     dialog.showModal = showModal;
 
     component.open();
+    fixture.detectChanges();
+
+    http.expectOne('/api/AiProviders').flush([]);
 
     expect(showModal).toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent).toContain('Ollama provider');
+  });
+
+  it('should switch to the models tab', () => {
+    const dialog = fixture.nativeElement.querySelector('dialog') as HTMLDialogElement;
+    dialog.showModal = vi.fn();
+
+    component.open();
+    fixture.detectChanges();
+
+    http.expectOne('/api/AiProviders').flush([]);
+    fixture.detectChanges();
+
+    const tabs = fixture.nativeElement.querySelectorAll(
+      'button[role="tab"]',
+    ) as NodeListOf<HTMLButtonElement>;
+    tabs[1].click();
+    fixture.detectChanges();
+
+    http.expectOne('/api/AiProviders').flush([]);
+    http.expectOne('/api/AiModels').flush([]);
+    http.expectOne('/api/AiModels/inactive').flush([]);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Discover models');
+  });
+
+  it('should switch to the defaults tab', () => {
+    const dialog = fixture.nativeElement.querySelector('dialog') as HTMLDialogElement;
+    dialog.showModal = vi.fn();
+
+    component.open();
+    fixture.detectChanges();
+
+    http.expectOne('/api/AiProviders').flush([]);
+    fixture.detectChanges();
+
+    const tabs = fixture.nativeElement.querySelectorAll(
+      'button[role="tab"]',
+    ) as NodeListOf<HTMLButtonElement>;
+    tabs[2].click();
+    fixture.detectChanges();
+
+    http.expectOne('/api/AiModels').flush([]);
+    http.expectOne('/api/ApplicationSettings').flush({});
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Default models');
   });
 
   it('should close the dialog from the close button', () => {

@@ -16,7 +16,7 @@
 ## Steps
 
 {% for step in steps %}
-1. {{ step.instruction }}
+1. {% if step.group %}**{{ step.group }}:** {% endif %}{{ step.instruction }}
 {% endfor %}
 
 {% if notes %}## Notes
