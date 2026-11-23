@@ -178,5 +178,3 @@ export class AiInferenceService {
   }
 };
 
-export type PostApiAiInferenceMealIdeasClientResult = NonNullable<string | MealIdeaDTO[]>
-export type PostApiAiInferenceRecipesMealIdeaIdClientResult = NonNullable<string | RecipeDTO>

@@ -37,7 +37,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddScoped<ChatService>();
 
-builder.Services.AddSingleton<ApplicationSettingService>();
+builder.Services.AddSingleton<AiCapabilitySettingService>();
 builder.Services.AddSingleton<IChatClientFactory, ChatClientFactory>();
 
 builder.Services.AddScoped<IModelDiscoveryService, ModelDiscoveryService>();
@@ -50,7 +50,7 @@ builder.Services.AddScoped<CuisineMapper>();
 
 builder.Services.AddScoped<IAiProviderService, AiProviderService>();
 builder.Services.AddScoped<AiProviderMapper>();
-builder.Services.AddScoped<ApplicationSettingMapper>();
+builder.Services.AddScoped<AiCapabilitySettingMapper>();
 
 builder.Services.AddScoped<IAiModelService, AiModelService>();
 builder.Services.AddScoped<AiModelMapper>();
@@ -87,9 +87,9 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var settingsService = scope.ServiceProvider
-        .GetRequiredService<ApplicationSettingService>();
-    await settingsService.Load();
+    var capabilitySettingsService = scope.ServiceProvider
+        .GetRequiredService<AiCapabilitySettingService>();
+    await capabilitySettingsService.Load();
 
     var templateService = scope.ServiceProvider
         .GetRequiredService<IRecipeTemplateService>();

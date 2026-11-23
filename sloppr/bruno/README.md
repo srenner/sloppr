@@ -9,16 +9,10 @@ preview → save → markdown.
   `https://localhost:7187`; the `Local` environment points at the HTTP port.
 - Database migrated (`dotnet ef database update`).
 - Ollama running with a JSON-capable model pulled.
-- An active provider, at least one active model (`isActive: true`), and the three
-  `ApplicationSettings` model ids set to that model. Settings load once at startup, so
-  restart the API after changing them:
-
-  ```bash
-  cd sloppr
-  sqlite3 sloppr.db "UPDATE ApplicationSettings
-    SET ExtractionModelId = <id>, IdeaModelId = <id>, RecipeModelId = <id>
-    WHERE Id = 1;"
-  ```
+- An active provider, at least one active model (`isActive: true`), and a model selected for
+  the Ingredient Extraction, Idea Generation, and Recipe Generation capabilities. Use
+  Settings → Capabilities in the app, or `PUT /api/AiCapabilitySettings`. Settings are
+  DB-backed and refresh without an API restart.
 
 ## Run
 
