@@ -101,9 +101,7 @@ describe('Cookbook', () => {
   });
 
   it('shows an error with a retry that reloads the cookbook', () => {
-    http
-      .expectOne('/api/Cookbooks')
-      .flush(null, { status: 500, statusText: 'Server Error' });
+    http.expectOne('/api/Cookbooks').flush(null, { status: 500, statusText: 'Server Error' });
     fixture.detectChanges();
 
     const alert = fixture.nativeElement.querySelector('[role="alert"]') as HTMLElement;

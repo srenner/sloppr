@@ -24,9 +24,7 @@ describe('NavBar', () => {
   });
 
   it('links to the cookbook', () => {
-    const link = fixture.nativeElement.querySelector(
-      'a[href="/cookbook"]',
-    ) as HTMLAnchorElement;
+    const link = fixture.nativeElement.querySelector('a[href="/cookbook"]') as HTMLAnchorElement;
     expect(link).toBeTruthy();
     expect(link.textContent).toContain('Cookbook');
   });

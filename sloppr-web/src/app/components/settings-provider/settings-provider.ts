@@ -164,7 +164,9 @@ export class SettingsProvider {
       .subscribe({
         next: () => {
           this.providers.update((providers) =>
-            providers.map((item) => (String(item.id) === String(id) ? { ...item, name, baseUrl } : item)),
+            providers.map((item) =>
+              String(item.id) === String(id) ? { ...item, name, baseUrl } : item,
+            ),
           );
           this.editSaving.set(false);
           this.editingId.set(null);
@@ -182,7 +184,9 @@ export class SettingsProvider {
       return;
     }
 
-    if (!confirm(`Remove ${provider.name || 'this provider'}? Models from it will stop being used.`)) {
+    if (
+      !confirm(`Remove ${provider.name || 'this provider'}? Models from it will stop being used.`)
+    ) {
       return;
     }
 

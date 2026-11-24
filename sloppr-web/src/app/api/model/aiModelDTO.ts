@@ -20,9 +20,9 @@ export interface AiModelDTO {
   aiProviderId?: number | string;
   aiProvider: AiProviderDTO;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
   contextWindow?: number | string | null;
   /** @nullable */
   capabilities?: string | null;

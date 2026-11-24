@@ -1,8 +1,8 @@
-<nav class="bg-gray-800 p-4">
+<nav class="bg-nav p-4">
   <div class="container mx-auto flex items-center justify-between">
     <a
       routerLink="/"
-      class="flex items-center gap-2 text-white font-bold text-xl"
+      class="flex items-center gap-2 text-on-strong font-bold text-xl"
       aria-label="sloppr home"
     >
       <img src="favicon.svg" alt="" aria-hidden="true" class="h-7 w-7" />
@@ -11,19 +11,20 @@
     <div class="flex items-center space-x-4">
       <a
         routerLink="/recipes"
-        class="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+        class="rounded-lg px-3 py-1.5 text-sm font-medium text-nav-fg hover:bg-nav-hover hover:text-on-strong"
       >
         Recipes
       </a>
       <a
         routerLink="/cookbook"
-        class="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+        class="rounded-lg px-3 py-1.5 text-sm font-medium text-nav-fg hover:bg-nav-hover hover:text-on-strong"
       >
         Cookbook
       </a>
+      <app-theme-toggle />
       <button
         type="button"
-        class="rounded-lg p-1.5 text-gray-300 hover:bg-gray-700 hover:text-white"
+        class="rounded-lg p-1.5 text-nav-fg hover:bg-nav-hover hover:text-on-strong"
         aria-label="Settings"
         title="Settings"
         (click)="settingsClick.emit()"

@@ -88,9 +88,7 @@ describe('RecipePaper', () => {
   });
 
   it('shows an error when the recipe cannot be loaded', () => {
-    http
-      .expectOne('/api/Recipes/7/markdown')
-      .flush(null, { status: 404, statusText: 'Not Found' });
+    http.expectOne('/api/Recipes/7/markdown').flush(null, { status: 404, statusText: 'Not Found' });
     fixture.detectChanges();
 
     const alert = fixture.nativeElement.querySelector('[role="alert"]') as HTMLElement;
@@ -134,9 +132,11 @@ describe('RecipePaper', () => {
     flushMarkdown();
     flushCookbook([cookbookEntrySummary(10, 7)]);
 
-    (fixture.nativeElement.querySelector(
-      '[data-testid="remove-from-cookbook"]',
-    ) as HTMLButtonElement).click();
+    (
+      fixture.nativeElement.querySelector(
+        '[data-testid="remove-from-cookbook"]',
+      ) as HTMLButtonElement
+    ).click();
 
     const request = http.expectOne(
       (req) => req.method === 'DELETE' && req.url === '/api/Cookbooks/1/entries/10',
@@ -152,9 +152,9 @@ describe('RecipePaper', () => {
     flushMarkdown();
     flushCookbook([]);
 
-    (fixture.nativeElement.querySelector(
-      '[data-testid="add-to-cookbook"]',
-    ) as HTMLButtonElement).click();
+    (
+      fixture.nativeElement.querySelector('[data-testid="add-to-cookbook"]') as HTMLButtonElement
+    ).click();
 
     http
       .expectOne('/api/Cookbooks/1/entries/from-recipe/7')

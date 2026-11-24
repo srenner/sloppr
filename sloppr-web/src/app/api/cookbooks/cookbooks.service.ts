@@ -4,42 +4,26 @@
  * sloppr | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpResponse as AngularHttpResponse
-} from '@angular/common/http';
-import type {
-  HttpContext,
-  HttpEvent,
-  HttpParams
-} from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse as AngularHttpResponse } from '@angular/common/http';
+import type { HttpContext, HttpEvent, HttpParams } from '@angular/common/http';
 
-import {
-  Injectable,
-  inject
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
-import {
-  Observable
-} from 'rxjs';
+import { Observable } from 'rxjs';
 
 import type {
   CookbookDTO,
   CookbookEntryDTO,
   CookbookEntryRequest,
   CookbookEntrySummaryDTO,
-  GetApiCookbooksCookbookIdEntriesEntryIdParams
+  GetApiCookbooksCookbookIdEntriesEntryIdParams,
 } from '../model';
-
-
 
 interface HttpClientOptions {
   readonly headers?: HttpHeaders | Record<string, string | string[]>;
   readonly context?: HttpContext;
   readonly params?:
-        | HttpParams
-      | Record<string, string | number | boolean | Array<string | number | boolean>>;
+    HttpParams | Record<string, string | number | boolean | Array<string | number | boolean>>;
   readonly reportProgress?: boolean;
   readonly withCredentials?: boolean;
   readonly credentials?: RequestCredentials;
@@ -51,7 +35,7 @@ interface HttpClientOptions {
   readonly referrer?: string;
   readonly integrity?: string;
   readonly referrerPolicy?: ReferrerPolicy;
-  readonly transferCache?: {includeHeaders?: string[]} | boolean;
+  readonly transferCache?: { includeHeaders?: string[] } | boolean;
   readonly timeout?: number;
 }
 
@@ -110,9 +94,7 @@ function filterParams(
       const filtered = value.filter(
         (item) =>
           item != null &&
-          (typeof item === 'string' ||
-            typeof item === 'number' ||
-            typeof item === 'boolean'),
+          (typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean'),
       ) as Array<string | number | boolean>;
       if (filtered.length) {
         filteredParams[key] = filtered;
@@ -125,9 +107,7 @@ function filterParams(
       filteredParams[key] = preserveRequiredNullables ? null : '';
     } else if (
       value != null &&
-      (typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean')
+      (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
     ) {
       filteredParams[key] = value;
     }
@@ -135,9 +115,8 @@ function filterParams(
   return filteredParams;
 }
 
-
-
-export type GetApiCookbooksAccept = typeof GetApiCookbooksAccept[keyof typeof GetApiCookbooksAccept];
+export type GetApiCookbooksAccept =
+  (typeof GetApiCookbooksAccept)[keyof typeof GetApiCookbooksAccept];
 
 export const GetApiCookbooksAccept = {
   text_plain: 'text/plain',
@@ -145,7 +124,8 @@ export const GetApiCookbooksAccept = {
   text_json: 'text/json',
 } as const;
 
-export type GetApiCookbooksCookbookIdEntriesAccept = typeof GetApiCookbooksCookbookIdEntriesAccept[keyof typeof GetApiCookbooksCookbookIdEntriesAccept];
+export type GetApiCookbooksCookbookIdEntriesAccept =
+  (typeof GetApiCookbooksCookbookIdEntriesAccept)[keyof typeof GetApiCookbooksCookbookIdEntriesAccept];
 
 export const GetApiCookbooksCookbookIdEntriesAccept = {
   text_plain: 'text/plain',
@@ -153,7 +133,8 @@ export const GetApiCookbooksCookbookIdEntriesAccept = {
   text_json: 'text/json',
 } as const;
 
-export type PostApiCookbooksCookbookIdEntriesAccept = typeof PostApiCookbooksCookbookIdEntriesAccept[keyof typeof PostApiCookbooksCookbookIdEntriesAccept];
+export type PostApiCookbooksCookbookIdEntriesAccept =
+  (typeof PostApiCookbooksCookbookIdEntriesAccept)[keyof typeof PostApiCookbooksCookbookIdEntriesAccept];
 
 export const PostApiCookbooksCookbookIdEntriesAccept = {
   text_plain: 'text/plain',
@@ -161,7 +142,8 @@ export const PostApiCookbooksCookbookIdEntriesAccept = {
   text_json: 'text/json',
 } as const;
 
-export type GetApiCookbooksCookbookIdEntriesEntryIdAccept = typeof GetApiCookbooksCookbookIdEntriesEntryIdAccept[keyof typeof GetApiCookbooksCookbookIdEntriesEntryIdAccept];
+export type GetApiCookbooksCookbookIdEntriesEntryIdAccept =
+  (typeof GetApiCookbooksCookbookIdEntriesEntryIdAccept)[keyof typeof GetApiCookbooksCookbookIdEntriesEntryIdAccept];
 
 export const GetApiCookbooksCookbookIdEntriesEntryIdAccept = {
   text_plain: 'text/plain',
@@ -169,7 +151,8 @@ export const GetApiCookbooksCookbookIdEntriesEntryIdAccept = {
   text_json: 'text/json',
 } as const;
 
-export type PutApiCookbooksCookbookIdEntriesEntryIdAccept = typeof PutApiCookbooksCookbookIdEntriesEntryIdAccept[keyof typeof PutApiCookbooksCookbookIdEntriesEntryIdAccept];
+export type PutApiCookbooksCookbookIdEntriesEntryIdAccept =
+  (typeof PutApiCookbooksCookbookIdEntriesEntryIdAccept)[keyof typeof PutApiCookbooksCookbookIdEntriesEntryIdAccept];
 
 export const PutApiCookbooksCookbookIdEntriesEntryIdAccept = {
   text_plain: 'text/plain',
@@ -177,7 +160,8 @@ export const PutApiCookbooksCookbookIdEntriesEntryIdAccept = {
   text_json: 'text/json',
 } as const;
 
-export type PostApiCookbooksCookbookIdEntriesFromRecipeRecipeIdAccept = typeof PostApiCookbooksCookbookIdEntriesFromRecipeRecipeIdAccept[keyof typeof PostApiCookbooksCookbookIdEntriesFromRecipeRecipeIdAccept];
+export type PostApiCookbooksCookbookIdEntriesFromRecipeRecipeIdAccept =
+  (typeof PostApiCookbooksCookbookIdEntriesFromRecipeRecipeIdAccept)[keyof typeof PostApiCookbooksCookbookIdEntriesFromRecipeRecipeIdAccept];
 
 export const PostApiCookbooksCookbookIdEntriesFromRecipeRecipeIdAccept = {
   text_plain: 'text/plain',
@@ -188,163 +172,199 @@ export const PostApiCookbooksCookbookIdEntriesFromRecipeRecipeIdAccept = {
 @Injectable({ providedIn: 'root' })
 export class CookbooksService {
   private readonly http = inject(HttpClient);
- getApiCookbooks(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiCookbooks(accept: 'application/json', options?: HttpClientOptions): Observable<CookbookDTO[]>;
+  getApiCookbooks(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiCookbooks(
+    accept: 'application/json',
+    options?: HttpClientOptions,
+  ): Observable<CookbookDTO[]>;
   getApiCookbooks(accept: 'text/json', options?: HttpClientOptions): Observable<CookbookDTO[]>;
-  getApiCookbooks(accept?: GetApiCookbooksAccept, options?: HttpClientOptions): Observable<CookbookDTO[] | string>;
+  getApiCookbooks(
+    accept?: GetApiCookbooksAccept,
+    options?: HttpClientOptions,
+  ): Observable<CookbookDTO[] | string>;
   getApiCookbooks(
     accept: GetApiCookbooksAccept = 'application/json',
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<CookbookDTO[] | string> {
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<CookbookDTO[]>(`/api/Cookbooks`, {
         ...options,
         responseType: 'json',
         headers,
-
-
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/Cookbooks`, {
         ...options,
         responseType: 'text',
         headers,
-
-
       }) as Observable<string>;
     }
 
     return this.http.get<CookbookDTO[]>(`/api/Cookbooks`, {
-        ...options,
-        responseType: 'json',
-        headers,
-
-
-      });
+      ...options,
+      responseType: 'json',
+      headers,
+    });
   }
- getApiCookbooksCookbookIdEntries(cookbookId: number,
-    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiCookbooksCookbookIdEntries(cookbookId: number,
-    accept: 'application/json', options?: HttpClientOptions): Observable<CookbookEntrySummaryDTO[]>;
-  getApiCookbooksCookbookIdEntries(cookbookId: number,
-    accept: 'text/json', options?: HttpClientOptions): Observable<CookbookEntrySummaryDTO[]>;
-  getApiCookbooksCookbookIdEntries(cookbookId: number,
-    accept?: GetApiCookbooksCookbookIdEntriesAccept, options?: HttpClientOptions): Observable<CookbookEntrySummaryDTO[] | string>;
+  getApiCookbooksCookbookIdEntries(
+    cookbookId: number,
+    accept: 'text/plain',
+    options?: HttpClientOptions,
+  ): Observable<string>;
+  getApiCookbooksCookbookIdEntries(
+    cookbookId: number,
+    accept: 'application/json',
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntrySummaryDTO[]>;
+  getApiCookbooksCookbookIdEntries(
+    cookbookId: number,
+    accept: 'text/json',
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntrySummaryDTO[]>;
+  getApiCookbooksCookbookIdEntries(
+    cookbookId: number,
+    accept?: GetApiCookbooksCookbookIdEntriesAccept,
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntrySummaryDTO[] | string>;
   getApiCookbooksCookbookIdEntries(
     cookbookId: number,
     accept: GetApiCookbooksCookbookIdEntriesAccept = 'application/json',
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<CookbookEntrySummaryDTO[] | string> {
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<CookbookEntrySummaryDTO[]>(`/api/Cookbooks/${cookbookId}/entries`, {
         ...options,
         responseType: 'json',
         headers,
-
-
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/Cookbooks/${cookbookId}/entries`, {
         ...options,
         responseType: 'text',
         headers,
-
-
       }) as Observable<string>;
     }
 
     return this.http.get<CookbookEntrySummaryDTO[]>(`/api/Cookbooks/${cookbookId}/entries`, {
-        ...options,
-        responseType: 'json',
-        headers,
-
-
-      });
+      ...options,
+      responseType: 'json',
+      headers,
+    });
   }
- postApiCookbooksCookbookIdEntries(cookbookId: number,
+  postApiCookbooksCookbookIdEntries(
+    cookbookId: number,
     cookbookEntryRequest: CookbookEntryRequest,
-    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  postApiCookbooksCookbookIdEntries(cookbookId: number,
+    accept: 'text/plain',
+    options?: HttpClientOptions,
+  ): Observable<string>;
+  postApiCookbooksCookbookIdEntries(
+    cookbookId: number,
     cookbookEntryRequest: CookbookEntryRequest,
-    accept: 'application/json', options?: HttpClientOptions): Observable<CookbookEntryDTO>;
-  postApiCookbooksCookbookIdEntries(cookbookId: number,
+    accept: 'application/json',
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO>;
+  postApiCookbooksCookbookIdEntries(
+    cookbookId: number,
     cookbookEntryRequest: CookbookEntryRequest,
-    accept: 'text/json', options?: HttpClientOptions): Observable<CookbookEntryDTO>;
-  postApiCookbooksCookbookIdEntries(cookbookId: number,
+    accept: 'text/json',
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO>;
+  postApiCookbooksCookbookIdEntries(
+    cookbookId: number,
     cookbookEntryRequest: CookbookEntryRequest,
-    accept?: PostApiCookbooksCookbookIdEntriesAccept, options?: HttpClientOptions): Observable<CookbookEntryDTO | string>;
+    accept?: PostApiCookbooksCookbookIdEntriesAccept,
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO | string>;
   postApiCookbooksCookbookIdEntries(
     cookbookId: number,
     cookbookEntryRequest: CookbookEntryRequest,
     accept: PostApiCookbooksCookbookIdEntriesAccept = 'application/json',
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<CookbookEntryDTO | string> {
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<CookbookEntryDTO>(`/api/Cookbooks/${cookbookId}/entries`, cookbookEntryRequest, {
-        ...options,
-        responseType: 'json',
-        headers,
-
-
-      });
+      return this.http.post<CookbookEntryDTO>(
+        `/api/Cookbooks/${cookbookId}/entries`,
+        cookbookEntryRequest,
+        {
+          ...options,
+          responseType: 'json',
+          headers,
+        },
+      );
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.post(`/api/Cookbooks/${cookbookId}/entries`, cookbookEntryRequest, {
         ...options,
         responseType: 'text',
         headers,
-
-
       }) as Observable<string>;
     }
 
-    return this.http.post<CookbookEntryDTO>(`/api/Cookbooks/${cookbookId}/entries`, cookbookEntryRequest, {
+    return this.http.post<CookbookEntryDTO>(
+      `/api/Cookbooks/${cookbookId}/entries`,
+      cookbookEntryRequest,
+      {
         ...options,
         responseType: 'json',
         headers,
-
-
-      });
+      },
+    );
   }
- getApiCookbooksCookbookIdEntriesEntryId(cookbookId: number,
+  getApiCookbooksCookbookIdEntriesEntryId(
+    cookbookId: number,
     entryId: number,
     accept: 'text/plain',
-    params?: GetApiCookbooksCookbookIdEntriesEntryIdParams, options?: HttpClientOptions): Observable<string>;
-  getApiCookbooksCookbookIdEntriesEntryId(cookbookId: number,
+    params?: GetApiCookbooksCookbookIdEntriesEntryIdParams,
+    options?: HttpClientOptions,
+  ): Observable<string>;
+  getApiCookbooksCookbookIdEntriesEntryId(
+    cookbookId: number,
     entryId: number,
     accept: 'application/json',
-    params?: GetApiCookbooksCookbookIdEntriesEntryIdParams, options?: HttpClientOptions): Observable<CookbookEntryDTO>;
-  getApiCookbooksCookbookIdEntriesEntryId(cookbookId: number,
+    params?: GetApiCookbooksCookbookIdEntriesEntryIdParams,
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO>;
+  getApiCookbooksCookbookIdEntriesEntryId(
+    cookbookId: number,
     entryId: number,
     accept: 'text/json',
-    params?: GetApiCookbooksCookbookIdEntriesEntryIdParams, options?: HttpClientOptions): Observable<CookbookEntryDTO>;
-  getApiCookbooksCookbookIdEntriesEntryId(cookbookId: number,
+    params?: GetApiCookbooksCookbookIdEntriesEntryIdParams,
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO>;
+  getApiCookbooksCookbookIdEntriesEntryId(
+    cookbookId: number,
     entryId: number,
     accept?: GetApiCookbooksCookbookIdEntriesEntryIdAccept,
-    params?: GetApiCookbooksCookbookIdEntriesEntryIdParams, options?: HttpClientOptions): Observable<CookbookEntryDTO | string>;
+    params?: GetApiCookbooksCookbookIdEntriesEntryIdParams,
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO | string>;
   getApiCookbooksCookbookIdEntriesEntryId(
     cookbookId: number,
     entryId: number,
     accept: GetApiCookbooksCookbookIdEntriesEntryIdAccept = 'application/json',
     params?: GetApiCookbooksCookbookIdEntriesEntryIdParams,
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<CookbookEntryDTO | string> {
-    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
+    const filteredParams = filterParams({ ...params, ...options?.params }, new Set<string>([]));
 
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<CookbookEntryDTO>(`/api/Cookbooks/${cookbookId}/entries/${entryId}`, {
@@ -352,7 +372,6 @@ export class CookbooksService {
         responseType: 'json',
         headers,
         params: filteredParams,
-
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/Cookbooks/${cookbookId}/entries/${entryId}`, {
@@ -360,152 +379,192 @@ export class CookbooksService {
         responseType: 'text',
         headers,
         params: filteredParams,
-
       }) as Observable<string>;
     }
 
     return this.http.get<CookbookEntryDTO>(`/api/Cookbooks/${cookbookId}/entries/${entryId}`, {
-        ...options,
-        responseType: 'json',
-        headers,
-        params: filteredParams,
-
-      });
+      ...options,
+      responseType: 'json',
+      headers,
+      params: filteredParams,
+    });
   }
- putApiCookbooksCookbookIdEntriesEntryId(cookbookId: number,
+  putApiCookbooksCookbookIdEntriesEntryId(
+    cookbookId: number,
     entryId: number,
     cookbookEntryRequest: CookbookEntryRequest,
-    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  putApiCookbooksCookbookIdEntriesEntryId(cookbookId: number,
+    accept: 'text/plain',
+    options?: HttpClientOptions,
+  ): Observable<string>;
+  putApiCookbooksCookbookIdEntriesEntryId(
+    cookbookId: number,
     entryId: number,
     cookbookEntryRequest: CookbookEntryRequest,
-    accept: 'application/json', options?: HttpClientOptions): Observable<CookbookEntryDTO>;
-  putApiCookbooksCookbookIdEntriesEntryId(cookbookId: number,
+    accept: 'application/json',
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO>;
+  putApiCookbooksCookbookIdEntriesEntryId(
+    cookbookId: number,
     entryId: number,
     cookbookEntryRequest: CookbookEntryRequest,
-    accept: 'text/json', options?: HttpClientOptions): Observable<CookbookEntryDTO>;
-  putApiCookbooksCookbookIdEntriesEntryId(cookbookId: number,
+    accept: 'text/json',
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO>;
+  putApiCookbooksCookbookIdEntriesEntryId(
+    cookbookId: number,
     entryId: number,
     cookbookEntryRequest: CookbookEntryRequest,
-    accept?: PutApiCookbooksCookbookIdEntriesEntryIdAccept, options?: HttpClientOptions): Observable<CookbookEntryDTO | string>;
+    accept?: PutApiCookbooksCookbookIdEntriesEntryIdAccept,
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO | string>;
   putApiCookbooksCookbookIdEntriesEntryId(
     cookbookId: number,
     entryId: number,
     cookbookEntryRequest: CookbookEntryRequest,
     accept: PutApiCookbooksCookbookIdEntriesEntryIdAccept = 'application/json',
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<CookbookEntryDTO | string> {
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.put<CookbookEntryDTO>(`/api/Cookbooks/${cookbookId}/entries/${entryId}`, cookbookEntryRequest, {
-        ...options,
-        responseType: 'json',
-        headers,
-
-
-      });
+      return this.http.put<CookbookEntryDTO>(
+        `/api/Cookbooks/${cookbookId}/entries/${entryId}`,
+        cookbookEntryRequest,
+        {
+          ...options,
+          responseType: 'json',
+          headers,
+        },
+      );
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
-      return this.http.put(`/api/Cookbooks/${cookbookId}/entries/${entryId}`, cookbookEntryRequest, {
-        ...options,
-        responseType: 'text',
-        headers,
-
-
-      }) as Observable<string>;
+      return this.http.put(
+        `/api/Cookbooks/${cookbookId}/entries/${entryId}`,
+        cookbookEntryRequest,
+        {
+          ...options,
+          responseType: 'text',
+          headers,
+        },
+      ) as Observable<string>;
     }
 
-    return this.http.put<CookbookEntryDTO>(`/api/Cookbooks/${cookbookId}/entries/${entryId}`, cookbookEntryRequest, {
+    return this.http.put<CookbookEntryDTO>(
+      `/api/Cookbooks/${cookbookId}/entries/${entryId}`,
+      cookbookEntryRequest,
+      {
         ...options,
         responseType: 'json',
         headers,
-
-
-      });
+      },
+    );
   }
- deleteApiCookbooksCookbookIdEntriesEntryId<TData = void>(cookbookId: number,
-    entryId: number, options?: HttpClientBodyOptions): Observable<TData>;
- deleteApiCookbooksCookbookIdEntriesEntryId<TData = void>(cookbookId: number,
-    entryId: number, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
- deleteApiCookbooksCookbookIdEntriesEntryId<TData = void>(cookbookId: number,
-    entryId: number, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   deleteApiCookbooksCookbookIdEntriesEntryId<TData = void>(
     cookbookId: number,
-    entryId: number, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    entryId: number,
+    options?: HttpClientBodyOptions,
+  ): Observable<TData>;
+  deleteApiCookbooksCookbookIdEntriesEntryId<TData = void>(
+    cookbookId: number,
+    entryId: number,
+    options?: HttpClientEventOptions,
+  ): Observable<HttpEvent<TData>>;
+  deleteApiCookbooksCookbookIdEntriesEntryId<TData = void>(
+    cookbookId: number,
+    entryId: number,
+    options?: HttpClientResponseOptions,
+  ): Observable<AngularHttpResponse<TData>>;
+  deleteApiCookbooksCookbookIdEntriesEntryId<TData = void>(
+    cookbookId: number,
+    entryId: number,
+    options?: HttpClientObserveOptions,
+  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
-      return this.http.delete<TData>(
-      `/api/Cookbooks/${cookbookId}/entries/${entryId}`,{
+      return this.http.delete<TData>(`/api/Cookbooks/${cookbookId}/entries/${entryId}`, {
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-      }
-    );
+      });
     }
 
     if (options?.observe === 'response') {
-      return this.http.delete<TData>(
-      `/api/Cookbooks/${cookbookId}/entries/${entryId}`,{
+      return this.http.delete<TData>(`/api/Cookbooks/${cookbookId}/entries/${entryId}`, {
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-      }
-    );
+      });
     }
 
-    return this.http.delete<TData>(
-      `/api/Cookbooks/${cookbookId}/entries/${entryId}`,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'body',
-      }
-    );
+    return this.http.delete<TData>(`/api/Cookbooks/${cookbookId}/entries/${entryId}`, {
+      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+      observe: 'body',
+    });
   }
- postApiCookbooksCookbookIdEntriesFromRecipeRecipeId(cookbookId: number,
+  postApiCookbooksCookbookIdEntriesFromRecipeRecipeId(
+    cookbookId: number,
     recipeId: number,
-    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  postApiCookbooksCookbookIdEntriesFromRecipeRecipeId(cookbookId: number,
+    accept: 'text/plain',
+    options?: HttpClientOptions,
+  ): Observable<string>;
+  postApiCookbooksCookbookIdEntriesFromRecipeRecipeId(
+    cookbookId: number,
     recipeId: number,
-    accept: 'application/json', options?: HttpClientOptions): Observable<CookbookEntryDTO>;
-  postApiCookbooksCookbookIdEntriesFromRecipeRecipeId(cookbookId: number,
+    accept: 'application/json',
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO>;
+  postApiCookbooksCookbookIdEntriesFromRecipeRecipeId(
+    cookbookId: number,
     recipeId: number,
-    accept: 'text/json', options?: HttpClientOptions): Observable<CookbookEntryDTO>;
-  postApiCookbooksCookbookIdEntriesFromRecipeRecipeId(cookbookId: number,
+    accept: 'text/json',
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO>;
+  postApiCookbooksCookbookIdEntriesFromRecipeRecipeId(
+    cookbookId: number,
     recipeId: number,
-    accept?: PostApiCookbooksCookbookIdEntriesFromRecipeRecipeIdAccept, options?: HttpClientOptions): Observable<CookbookEntryDTO | string>;
+    accept?: PostApiCookbooksCookbookIdEntriesFromRecipeRecipeIdAccept,
+    options?: HttpClientOptions,
+  ): Observable<CookbookEntryDTO | string>;
   postApiCookbooksCookbookIdEntriesFromRecipeRecipeId(
     cookbookId: number,
     recipeId: number,
     accept: PostApiCookbooksCookbookIdEntriesFromRecipeRecipeIdAccept = 'application/json',
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<CookbookEntryDTO | string> {
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<CookbookEntryDTO>(`/api/Cookbooks/${cookbookId}/entries/from-recipe/${recipeId}`, undefined, {
-        ...options,
-        responseType: 'json',
-        headers,
-
-
-      });
+      return this.http.post<CookbookEntryDTO>(
+        `/api/Cookbooks/${cookbookId}/entries/from-recipe/${recipeId}`,
+        undefined,
+        {
+          ...options,
+          responseType: 'json',
+          headers,
+        },
+      );
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
-      return this.http.post(`/api/Cookbooks/${cookbookId}/entries/from-recipe/${recipeId}`, undefined, {
-        ...options,
-        responseType: 'text',
-        headers,
-
-
-      }) as Observable<string>;
+      return this.http.post(
+        `/api/Cookbooks/${cookbookId}/entries/from-recipe/${recipeId}`,
+        undefined,
+        {
+          ...options,
+          responseType: 'text',
+          headers,
+        },
+      ) as Observable<string>;
     }
 
-    return this.http.post<CookbookEntryDTO>(`/api/Cookbooks/${cookbookId}/entries/from-recipe/${recipeId}`, undefined, {
+    return this.http.post<CookbookEntryDTO>(
+      `/api/Cookbooks/${cookbookId}/entries/from-recipe/${recipeId}`,
+      undefined,
+      {
         ...options,
         responseType: 'json',
         headers,
-
-
-      });
+      },
+    );
   }
-};
-
+}

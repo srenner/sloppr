@@ -8,9 +8,9 @@
 export interface RecipeIngredientContent {
   name?: string;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
+   */
   quantity?: number | string | null;
   /** @nullable */
   unit?: string | null;

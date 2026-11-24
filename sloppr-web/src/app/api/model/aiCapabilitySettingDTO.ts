@@ -9,9 +9,9 @@ import type { AiCapabilityType } from './aiCapabilityType';
 export interface AiCapabilitySettingDTO {
   capability: AiCapabilityType;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
   modelId?: number | string | null;
   systemPrompt: string;
 }

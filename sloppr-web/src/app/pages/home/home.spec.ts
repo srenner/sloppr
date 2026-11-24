@@ -23,10 +23,7 @@ function recipe(mealIdeaId: number): RecipeDTO {
       prepTimeMinutes: 10,
       cookTimeMinutes: 20,
       ingredients: [{ quantity: 1, unit: 'cup', name: 'rice' }],
-      steps: [
-        { instruction: '', group: 'Preparation' },
-        { instruction: 'Cook the rice.' },
-      ],
+      steps: [{ instruction: '', group: 'Preparation' }, { instruction: 'Cook the rice.' }],
     },
   };
 }

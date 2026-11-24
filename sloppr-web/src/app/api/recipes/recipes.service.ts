@@ -4,25 +4,12 @@
  * sloppr | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpResponse as AngularHttpResponse
-} from '@angular/common/http';
-import type {
-  HttpContext,
-  HttpEvent,
-  HttpParams
-} from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse as AngularHttpResponse } from '@angular/common/http';
+import type { HttpContext, HttpEvent, HttpParams } from '@angular/common/http';
 
-import {
-  Injectable,
-  inject
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
-import {
-  Observable
-} from 'rxjs';
+import { Observable } from 'rxjs';
 
 import type {
   GetApiRecipesIdMarkdownParams,
@@ -30,17 +17,14 @@ import type {
   PostApiRecipesMarkdownParams,
   RecipeDTO,
   RecipePageDTO,
-  RecipeRequest
+  RecipeRequest,
 } from '../model';
-
-
 
 interface HttpClientOptions {
   readonly headers?: HttpHeaders | Record<string, string | string[]>;
   readonly context?: HttpContext;
   readonly params?:
-        | HttpParams
-      | Record<string, string | number | boolean | Array<string | number | boolean>>;
+    HttpParams | Record<string, string | number | boolean | Array<string | number | boolean>>;
   readonly reportProgress?: boolean;
   readonly withCredentials?: boolean;
   readonly credentials?: RequestCredentials;
@@ -52,7 +36,7 @@ interface HttpClientOptions {
   readonly referrer?: string;
   readonly integrity?: string;
   readonly referrerPolicy?: ReferrerPolicy;
-  readonly transferCache?: {includeHeaders?: string[]} | boolean;
+  readonly transferCache?: { includeHeaders?: string[] } | boolean;
   readonly timeout?: number;
 }
 
@@ -111,9 +95,7 @@ function filterParams(
       const filtered = value.filter(
         (item) =>
           item != null &&
-          (typeof item === 'string' ||
-            typeof item === 'number' ||
-            typeof item === 'boolean'),
+          (typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean'),
       ) as Array<string | number | boolean>;
       if (filtered.length) {
         filteredParams[key] = filtered;
@@ -126,9 +108,7 @@ function filterParams(
       filteredParams[key] = preserveRequiredNullables ? null : '';
     } else if (
       value != null &&
-      (typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean')
+      (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
     ) {
       filteredParams[key] = value;
     }
@@ -136,9 +116,7 @@ function filterParams(
   return filteredParams;
 }
 
-
-
-export type GetApiRecipesAccept = typeof GetApiRecipesAccept[keyof typeof GetApiRecipesAccept];
+export type GetApiRecipesAccept = (typeof GetApiRecipesAccept)[keyof typeof GetApiRecipesAccept];
 
 export const GetApiRecipesAccept = {
   text_plain: 'text/plain',
@@ -146,7 +124,7 @@ export const GetApiRecipesAccept = {
   text_json: 'text/json',
 } as const;
 
-export type PostApiRecipesAccept = typeof PostApiRecipesAccept[keyof typeof PostApiRecipesAccept];
+export type PostApiRecipesAccept = (typeof PostApiRecipesAccept)[keyof typeof PostApiRecipesAccept];
 
 export const PostApiRecipesAccept = {
   text_plain: 'text/plain',
@@ -154,7 +132,8 @@ export const PostApiRecipesAccept = {
   text_json: 'text/json',
 } as const;
 
-export type GetApiRecipesPagedAccept = typeof GetApiRecipesPagedAccept[keyof typeof GetApiRecipesPagedAccept];
+export type GetApiRecipesPagedAccept =
+  (typeof GetApiRecipesPagedAccept)[keyof typeof GetApiRecipesPagedAccept];
 
 export const GetApiRecipesPagedAccept = {
   text_plain: 'text/plain',
@@ -162,7 +141,8 @@ export const GetApiRecipesPagedAccept = {
   text_json: 'text/json',
 } as const;
 
-export type GetApiRecipesIdAccept = typeof GetApiRecipesIdAccept[keyof typeof GetApiRecipesIdAccept];
+export type GetApiRecipesIdAccept =
+  (typeof GetApiRecipesIdAccept)[keyof typeof GetApiRecipesIdAccept];
 
 export const GetApiRecipesIdAccept = {
   text_plain: 'text/plain',
@@ -173,105 +153,123 @@ export const GetApiRecipesIdAccept = {
 @Injectable({ providedIn: 'root' })
 export class RecipesService {
   private readonly http = inject(HttpClient);
- getApiRecipes(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiRecipes(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
   getApiRecipes(accept: 'application/json', options?: HttpClientOptions): Observable<RecipeDTO[]>;
   getApiRecipes(accept: 'text/json', options?: HttpClientOptions): Observable<RecipeDTO[]>;
-  getApiRecipes(accept?: GetApiRecipesAccept, options?: HttpClientOptions): Observable<RecipeDTO[] | string>;
+  getApiRecipes(
+    accept?: GetApiRecipesAccept,
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO[] | string>;
   getApiRecipes(
     accept: GetApiRecipesAccept = 'application/json',
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<RecipeDTO[] | string> {
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<RecipeDTO[]>(`/api/Recipes`, {
         ...options,
         responseType: 'json',
         headers,
-
-
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/Recipes`, {
         ...options,
         responseType: 'text',
         headers,
-
-
       }) as Observable<string>;
     }
 
     return this.http.get<RecipeDTO[]>(`/api/Recipes`, {
-        ...options,
-        responseType: 'json',
-        headers,
-
-
-      });
+      ...options,
+      responseType: 'json',
+      headers,
+    });
   }
- postApiRecipes(recipeRequest: RecipeRequest,
-    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  postApiRecipes(recipeRequest: RecipeRequest,
-    accept: 'application/json', options?: HttpClientOptions): Observable<RecipeDTO>;
-  postApiRecipes(recipeRequest: RecipeRequest,
-    accept: 'text/json', options?: HttpClientOptions): Observable<RecipeDTO>;
-  postApiRecipes(recipeRequest: RecipeRequest,
-    accept?: PostApiRecipesAccept, options?: HttpClientOptions): Observable<RecipeDTO | string>;
+  postApiRecipes(
+    recipeRequest: RecipeRequest,
+    accept: 'text/plain',
+    options?: HttpClientOptions,
+  ): Observable<string>;
+  postApiRecipes(
+    recipeRequest: RecipeRequest,
+    accept: 'application/json',
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO>;
+  postApiRecipes(
+    recipeRequest: RecipeRequest,
+    accept: 'text/json',
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO>;
+  postApiRecipes(
+    recipeRequest: RecipeRequest,
+    accept?: PostApiRecipesAccept,
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO | string>;
   postApiRecipes(
     recipeRequest: RecipeRequest,
     accept: PostApiRecipesAccept = 'application/json',
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<RecipeDTO | string> {
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.post<RecipeDTO>(`/api/Recipes`, recipeRequest, {
         ...options,
         responseType: 'json',
         headers,
-
-
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.post(`/api/Recipes`, recipeRequest, {
         ...options,
         responseType: 'text',
         headers,
-
-
       }) as Observable<string>;
     }
 
     return this.http.post<RecipeDTO>(`/api/Recipes`, recipeRequest, {
-        ...options,
-        responseType: 'json',
-        headers,
-
-
-      });
+      ...options,
+      responseType: 'json',
+      headers,
+    });
   }
- getApiRecipesPaged(accept: 'text/plain',
-    params?: GetApiRecipesPagedParams, options?: HttpClientOptions): Observable<string>;
-  getApiRecipesPaged(accept: 'application/json',
-    params?: GetApiRecipesPagedParams, options?: HttpClientOptions): Observable<RecipePageDTO>;
-  getApiRecipesPaged(accept: 'text/json',
-    params?: GetApiRecipesPagedParams, options?: HttpClientOptions): Observable<RecipePageDTO>;
-  getApiRecipesPaged(accept?: GetApiRecipesPagedAccept,
-    params?: GetApiRecipesPagedParams, options?: HttpClientOptions): Observable<RecipePageDTO | string>;
+  getApiRecipesPaged(
+    accept: 'text/plain',
+    params?: GetApiRecipesPagedParams,
+    options?: HttpClientOptions,
+  ): Observable<string>;
+  getApiRecipesPaged(
+    accept: 'application/json',
+    params?: GetApiRecipesPagedParams,
+    options?: HttpClientOptions,
+  ): Observable<RecipePageDTO>;
+  getApiRecipesPaged(
+    accept: 'text/json',
+    params?: GetApiRecipesPagedParams,
+    options?: HttpClientOptions,
+  ): Observable<RecipePageDTO>;
+  getApiRecipesPaged(
+    accept?: GetApiRecipesPagedAccept,
+    params?: GetApiRecipesPagedParams,
+    options?: HttpClientOptions,
+  ): Observable<RecipePageDTO | string>;
   getApiRecipesPaged(
     accept: GetApiRecipesPagedAccept = 'application/json',
     params?: GetApiRecipesPagedParams,
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<RecipePageDTO | string> {
-    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
+    const filteredParams = filterParams({ ...params, ...options?.params }, new Set<string>([]));
 
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<RecipePageDTO>(`/api/Recipes/paged`, {
@@ -279,7 +277,6 @@ export class RecipesService {
         responseType: 'json',
         headers,
         params: filteredParams,
-
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/Recipes/paged`, {
@@ -287,208 +284,232 @@ export class RecipesService {
         responseType: 'text',
         headers,
         params: filteredParams,
-
       }) as Observable<string>;
     }
 
     return this.http.get<RecipePageDTO>(`/api/Recipes/paged`, {
-        ...options,
-        responseType: 'json',
-        headers,
-        params: filteredParams,
-
-      });
+      ...options,
+      responseType: 'json',
+      headers,
+      params: filteredParams,
+    });
   }
- getApiRecipesId(id: number | string,
-    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiRecipesId(id: number | string,
-    accept: 'application/json', options?: HttpClientOptions): Observable<RecipeDTO>;
-  getApiRecipesId(id: number | string,
-    accept: 'text/json', options?: HttpClientOptions): Observable<RecipeDTO>;
-  getApiRecipesId(id: number | string,
-    accept?: GetApiRecipesIdAccept, options?: HttpClientOptions): Observable<RecipeDTO | string>;
+  getApiRecipesId(
+    id: number | string,
+    accept: 'text/plain',
+    options?: HttpClientOptions,
+  ): Observable<string>;
+  getApiRecipesId(
+    id: number | string,
+    accept: 'application/json',
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO>;
+  getApiRecipesId(
+    id: number | string,
+    accept: 'text/json',
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO>;
+  getApiRecipesId(
+    id: number | string,
+    accept?: GetApiRecipesIdAccept,
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO | string>;
   getApiRecipesId(
     id: number | string,
     accept: GetApiRecipesIdAccept = 'application/json',
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<RecipeDTO | string> {
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<RecipeDTO>(`/api/Recipes/${id}`, {
         ...options,
         responseType: 'json',
         headers,
-
-
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/Recipes/${id}`, {
         ...options,
         responseType: 'text',
         headers,
-
-
       }) as Observable<string>;
     }
 
     return this.http.get<RecipeDTO>(`/api/Recipes/${id}`, {
-        ...options,
-        responseType: 'json',
-        headers,
-
-
-      });
+      ...options,
+      responseType: 'json',
+      headers,
+    });
   }
- putApiRecipesId<TData = void>(id: number | string,
-    recipeRequest: RecipeRequest, options?: HttpClientBodyOptions): Observable<TData>;
- putApiRecipesId<TData = void>(id: number | string,
-    recipeRequest: RecipeRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
- putApiRecipesId<TData = void>(id: number | string,
-    recipeRequest: RecipeRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   putApiRecipesId<TData = void>(
     id: number | string,
-    recipeRequest: RecipeRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    recipeRequest: RecipeRequest,
+    options?: HttpClientBodyOptions,
+  ): Observable<TData>;
+  putApiRecipesId<TData = void>(
+    id: number | string,
+    recipeRequest: RecipeRequest,
+    options?: HttpClientEventOptions,
+  ): Observable<HttpEvent<TData>>;
+  putApiRecipesId<TData = void>(
+    id: number | string,
+    recipeRequest: RecipeRequest,
+    options?: HttpClientResponseOptions,
+  ): Observable<AngularHttpResponse<TData>>;
+  putApiRecipesId<TData = void>(
+    id: number | string,
+    recipeRequest: RecipeRequest,
+    options?: HttpClientObserveOptions,
+  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
-      return this.http.put<TData>(
-      `/api/Recipes/${id}`,
-      recipeRequest,{
+      return this.http.put<TData>(`/api/Recipes/${id}`, recipeRequest, {
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-      }
-    );
+      });
     }
 
     if (options?.observe === 'response') {
-      return this.http.put<TData>(
-      `/api/Recipes/${id}`,
-      recipeRequest,{
+      return this.http.put<TData>(`/api/Recipes/${id}`, recipeRequest, {
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-      }
-    );
+      });
     }
 
-    return this.http.put<TData>(
-      `/api/Recipes/${id}`,
-      recipeRequest,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'body',
-      }
-    );
+    return this.http.put<TData>(`/api/Recipes/${id}`, recipeRequest, {
+      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+      observe: 'body',
+    });
   }
- deleteApiRecipesId<TData = void>(id: number | string, options?: HttpClientBodyOptions): Observable<TData>;
- deleteApiRecipesId<TData = void>(id: number | string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
- deleteApiRecipesId<TData = void>(id: number | string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   deleteApiRecipesId<TData = void>(
-    id: number | string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    id: number | string,
+    options?: HttpClientBodyOptions,
+  ): Observable<TData>;
+  deleteApiRecipesId<TData = void>(
+    id: number | string,
+    options?: HttpClientEventOptions,
+  ): Observable<HttpEvent<TData>>;
+  deleteApiRecipesId<TData = void>(
+    id: number | string,
+    options?: HttpClientResponseOptions,
+  ): Observable<AngularHttpResponse<TData>>;
+  deleteApiRecipesId<TData = void>(
+    id: number | string,
+    options?: HttpClientObserveOptions,
+  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
-      return this.http.delete<TData>(
-      `/api/Recipes/${id}`,{
+      return this.http.delete<TData>(`/api/Recipes/${id}`, {
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-      }
-    );
+      });
     }
 
     if (options?.observe === 'response') {
-      return this.http.delete<TData>(
-      `/api/Recipes/${id}`,{
+      return this.http.delete<TData>(`/api/Recipes/${id}`, {
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-      }
-    );
+      });
     }
 
-    return this.http.delete<TData>(
-      `/api/Recipes/${id}`,{
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'body',
-      }
-    );
+    return this.http.delete<TData>(`/api/Recipes/${id}`, {
+      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+      observe: 'body',
+    });
   }
- getApiRecipesIdMarkdown(id: number | string,
-    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientBodyOptions): Observable<string>;
- getApiRecipesIdMarkdown(id: number | string,
-    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientEventOptions): Observable<HttpEvent<string>>;
- getApiRecipesIdMarkdown(id: number | string,
-    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<string>>;
   getApiRecipesIdMarkdown(
     id: number | string,
-    params?: GetApiRecipesIdMarkdownParams, options?: HttpClientObserveOptions): Observable<string | HttpEvent<string> | AngularHttpResponse<string>> {
-    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
+    params?: GetApiRecipesIdMarkdownParams,
+    options?: HttpClientBodyOptions,
+  ): Observable<string>;
+  getApiRecipesIdMarkdown(
+    id: number | string,
+    params?: GetApiRecipesIdMarkdownParams,
+    options?: HttpClientEventOptions,
+  ): Observable<HttpEvent<string>>;
+  getApiRecipesIdMarkdown(
+    id: number | string,
+    params?: GetApiRecipesIdMarkdownParams,
+    options?: HttpClientResponseOptions,
+  ): Observable<AngularHttpResponse<string>>;
+  getApiRecipesIdMarkdown(
+    id: number | string,
+    params?: GetApiRecipesIdMarkdownParams,
+    options?: HttpClientObserveOptions,
+  ): Observable<string | HttpEvent<string> | AngularHttpResponse<string>> {
+    const filteredParams = filterParams({ ...params, ...options?.params }, new Set<string>([]));
 
     if (options?.observe === 'events') {
-      return this.http.get(
-      `/api/Recipes/${id}/markdown`,{
+      return this.http.get(`/api/Recipes/${id}/markdown`, {
         responseType: 'text',
-    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-        params: filteredParams,}
-    ) as Observable<HttpEvent<string>>;
+        params: filteredParams,
+      }) as Observable<HttpEvent<string>>;
     }
 
     if (options?.observe === 'response') {
-      return this.http.get(
-      `/api/Recipes/${id}/markdown`,{
+      return this.http.get(`/api/Recipes/${id}/markdown`, {
         responseType: 'text',
-    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-        params: filteredParams,}
-    ) as Observable<AngularHttpResponse<string>>;
+        params: filteredParams,
+      }) as Observable<AngularHttpResponse<string>>;
     }
 
-    return this.http.get(
-      `/api/Recipes/${id}/markdown`,{
-        responseType: 'text',
-    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'body',
-        params: filteredParams,}
-    ) as Observable<string>;
+    return this.http.get(`/api/Recipes/${id}/markdown`, {
+      responseType: 'text',
+      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+      observe: 'body',
+      params: filteredParams,
+    }) as Observable<string>;
   }
- postApiRecipesMarkdown(recipeDTO: RecipeDTO,
-    params?: PostApiRecipesMarkdownParams, options?: HttpClientBodyOptions): Observable<string>;
- postApiRecipesMarkdown(recipeDTO: RecipeDTO,
-    params?: PostApiRecipesMarkdownParams, options?: HttpClientEventOptions): Observable<HttpEvent<string>>;
- postApiRecipesMarkdown(recipeDTO: RecipeDTO,
-    params?: PostApiRecipesMarkdownParams, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<string>>;
   postApiRecipesMarkdown(
     recipeDTO: RecipeDTO,
-    params?: PostApiRecipesMarkdownParams, options?: HttpClientObserveOptions): Observable<string | HttpEvent<string> | AngularHttpResponse<string>> {
-    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
+    params?: PostApiRecipesMarkdownParams,
+    options?: HttpClientBodyOptions,
+  ): Observable<string>;
+  postApiRecipesMarkdown(
+    recipeDTO: RecipeDTO,
+    params?: PostApiRecipesMarkdownParams,
+    options?: HttpClientEventOptions,
+  ): Observable<HttpEvent<string>>;
+  postApiRecipesMarkdown(
+    recipeDTO: RecipeDTO,
+    params?: PostApiRecipesMarkdownParams,
+    options?: HttpClientResponseOptions,
+  ): Observable<AngularHttpResponse<string>>;
+  postApiRecipesMarkdown(
+    recipeDTO: RecipeDTO,
+    params?: PostApiRecipesMarkdownParams,
+    options?: HttpClientObserveOptions,
+  ): Observable<string | HttpEvent<string> | AngularHttpResponse<string>> {
+    const filteredParams = filterParams({ ...params, ...options?.params }, new Set<string>([]));
 
     if (options?.observe === 'events') {
-      return this.http.post(
-      `/api/Recipes/markdown`,
-      recipeDTO,{
+      return this.http.post(`/api/Recipes/markdown`, recipeDTO, {
         responseType: 'text',
-    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-        params: filteredParams,}
-    ) as Observable<HttpEvent<string>>;
+        params: filteredParams,
+      }) as Observable<HttpEvent<string>>;
     }
 
     if (options?.observe === 'response') {
-      return this.http.post(
-      `/api/Recipes/markdown`,
-      recipeDTO,{
+      return this.http.post(`/api/Recipes/markdown`, recipeDTO, {
         responseType: 'text',
-    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-        params: filteredParams,}
-    ) as Observable<AngularHttpResponse<string>>;
+        params: filteredParams,
+      }) as Observable<AngularHttpResponse<string>>;
     }
 
-    return this.http.post(
-      `/api/Recipes/markdown`,
-      recipeDTO,{
-        responseType: 'text',
-    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'body',
-        params: filteredParams,}
-    ) as Observable<string>;
+    return this.http.post(`/api/Recipes/markdown`, recipeDTO, {
+      responseType: 'text',
+      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+      observe: 'body',
+      params: filteredParams,
+    }) as Observable<string>;
   }
-};
-
+}

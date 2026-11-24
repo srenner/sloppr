@@ -14,9 +14,9 @@ export interface AiModelMinimalDTO {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   aiProviderId?: number | string;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
   contextWindow?: number | string | null;
   /** @nullable */
   capabilities?: string | null;
