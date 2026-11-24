@@ -60,10 +60,16 @@ public class CookbooksController(ICookbookService svc) : ControllerBase
     [HttpPost("{cookbookId:int}/entries/from-recipe/{recipeId:int}")]
     public async Task<ActionResult<CookbookEntryDTO>> CopyFromRecipeAsync(int cookbookId, int recipeId)
     {
-        var entry = await svc.CopyFromRecipeAsync(cookbookId, recipeId);
-        if (entry == null)
+        var result = await svc.CopyFromRecipeAsync(cookbookId, recipeId);
+        if (result == null)
         {
             return NotFound();
+        }
+
+        var (entry, created) = result.Value;
+        if (!created)
+        {
+            return Ok(entry);
         }
 
         return CreatedAtAction(nameof(GetEntry), new { cookbookId, entryId = entry.Id }, entry);

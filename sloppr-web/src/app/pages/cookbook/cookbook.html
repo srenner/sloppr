@@ -1,0 +1,100 @@
+<section class="mx-auto w-full max-w-6xl px-4 py-8">
+  <header class="mb-6 flex flex-wrap items-end justify-between gap-2">
+    <div>
+      <h1 class="text-3xl font-semibold text-gray-800">
+        {{ cookbook()?.name || 'Family Cookbook' }}
+      </h1>
+      @if (entries().length > 0) {
+        <p class="mt-1 text-sm text-gray-500">
+          {{ entries().length }} {{ entries().length === 1 ? 'recipe' : 'recipes' }}
+        </p>
+      }
+    </div>
+  </header>
+
+  @if (loading()) {
+    <p class="mt-6 text-sm text-gray-500" aria-live="polite">Loading cookbook…</p>
+  } @else if (error(); as message) {
+    <div
+      role="alert"
+      class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+    >
+      <p>{{ message }}</p>
+      <button
+        type="button"
+        data-testid="retry"
+        class="mt-3 rounded-lg border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50"
+        (click)="load()"
+      >
+        Try again
+      </button>
+    </div>
+  } @else if (entries().length === 0) {
+    <p class="mt-6 text-sm text-gray-500">
+      No recipes in your cookbook yet. Add one from a recipe page.
+    </p>
+  } @else {
+    @if (removeError(); as message) {
+      <p
+        role="alert"
+        class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+      >
+        {{ message }}
+      </p>
+    }
+
+    <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (entry of entries(); track entry.id) {
+        <li
+          data-testid="cookbook-entry"
+          class="relative flex h-full flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md"
+        >
+          @if (entryLink(entry); as link) {
+            <a
+              [routerLink]="link"
+              [attr.aria-label]="'Open ' + entry.name"
+              class="absolute inset-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2"
+            ></a>
+          }
+
+          <p class="text-xs font-medium tracking-widest text-gray-400 uppercase">Family recipe</p>
+
+          <h2 class="mt-2 font-serif text-2xl font-semibold text-gray-800">
+            {{ entry.name || 'Untitled recipe' }}
+          </h2>
+
+          @if (entry.description) {
+            <p class="mt-2 line-clamp-3 text-sm text-gray-600">{{ entry.description }}</p>
+          }
+
+          <dl class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+            <div>
+              <dt class="sr-only">Servings</dt>
+              <dd>Serves {{ entry.servingCount }}</dd>
+            </div>
+            <div>
+              <dt class="sr-only">Prep time</dt>
+              <dd>{{ entry.prepTimeMinutes }} min prep</dd>
+            </div>
+            <div>
+              <dt class="sr-only">Cook time</dt>
+              <dd>{{ entry.cookTimeMinutes }} min cook</dd>
+            </div>
+          </dl>
+
+          <div class="relative z-10 mt-auto pt-5">
+            <button
+              type="button"
+              data-testid="remove-entry"
+              class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+              [disabled]="removingId() !== null"
+              (click)="remove(entry)"
+            >
+              {{ isRemoving(entry) ? 'Removing…' : 'Remove from cookbook' }}
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

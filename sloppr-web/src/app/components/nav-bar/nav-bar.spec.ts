@@ -23,6 +23,14 @@ describe('NavBar', () => {
     expect(component).toBeTruthy();
   });
 
+  it('links to the cookbook', () => {
+    const link = fixture.nativeElement.querySelector(
+      'a[href="/cookbook"]',
+    ) as HTMLAnchorElement;
+    expect(link).toBeTruthy();
+    expect(link.textContent).toContain('Cookbook');
+  });
+
   it('should emit settingsClick when settings is clicked', () => {
     let emitted = 0;
     component.settingsClick.subscribe(() => emitted++);

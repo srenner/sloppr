@@ -1,20 +1,57 @@
 <section class="min-h-[calc(100vh-64px)] bg-gray-100 px-4 py-8 print:min-h-0 print:bg-white print:p-0">
   <div class="mx-auto w-full max-w-3xl">
-    <div class="mb-4 flex items-center justify-between print:hidden">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-2 print:hidden">
       <a
         routerLink="/recipes"
         class="text-sm font-medium text-gray-500 hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2"
       >
         ← All recipes
       </a>
-      <button
-        type="button"
-        class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2"
-        (click)="print()"
-      >
-        Print / Save as PDF
-      </button>
+
+      <div class="flex flex-wrap items-center gap-2">
+        @if (cookbookLoading()) {
+          <span class="text-sm text-gray-500" aria-live="polite">Checking cookbook…</span>
+        } @else if (cookbookEntryId() !== null) {
+          <span class="text-sm font-medium text-green-700">In your family cookbook</span>
+          <button
+            type="button"
+            data-testid="remove-from-cookbook"
+            class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+            [disabled]="cookbookSaving()"
+            (click)="removeFromCookbook()"
+          >
+            {{ cookbookSaving() ? 'Removing…' : 'Remove' }}
+          </button>
+        } @else if (cookbookId() !== null && !cookbookError()) {
+          <button
+            type="button"
+            data-testid="add-to-cookbook"
+            class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+            [disabled]="cookbookSaving()"
+            (click)="addToCookbook()"
+          >
+            {{ cookbookSaving() ? 'Adding…' : 'Add to family cookbook' }}
+          </button>
+        }
+
+        <button
+          type="button"
+          class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2"
+          (click)="print()"
+        >
+          Print / Save as PDF
+        </button>
+      </div>
     </div>
+
+    @if (cookbookError(); as message) {
+      <p
+        role="alert"
+        class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 print:hidden"
+      >
+        {{ message }}
+      </p>
+    }
 
     @if (loading()) {
       <p class="text-sm text-gray-500" aria-live="polite">Loading recipe…</p>

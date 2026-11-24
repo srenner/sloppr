@@ -110,7 +110,7 @@ public class CookbookService : ICookbookService
         return ToDto(entry, entry.Versions.First());
     }
 
-    public async Task<CookbookEntryDTO?> CopyFromRecipeAsync(int cookbookId, int recipeId)
+    public async Task<(CookbookEntryDTO Entry, bool Created)?> CopyFromRecipeAsync(int cookbookId, int recipeId)
     {
         if (!await _db.Cookbooks.AnyAsync(c => c.Id == cookbookId))
         {
@@ -126,6 +126,22 @@ public class CookbookService : ICookbookService
             return null;
         }
 
+        var existing = await _db.CookbookEntries
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.CookbookId == cookbookId && e.SourceRecipeId == recipeId);
+
+        if (existing != null)
+        {
+            var existingVersion = await _db.CookbookEntryVersions
+                .AsNoTracking()
+                .FirstOrDefaultAsync(v => v.CookbookEntryId == existing.Id && v.VersionNumber == existing.CurrentVersionNumber);
+
+            if (existingVersion != null)
+            {
+                return (ToDto(existing, existingVersion), false);
+            }
+        }
+
         var content = RecipeContentJson.Deserialize(recipe.ContentJson);
 
         var entry = new CookbookEntry
@@ -139,7 +155,7 @@ public class CookbookService : ICookbookService
         _db.CookbookEntries.Add(entry);
         await _db.SaveChangesAsync();
 
-        return ToDto(entry, entry.Versions.First());
+        return (ToDto(entry, entry.Versions.First()), true);
     }
 
     public async Task<CookbookEntryDTO?> UpdateEntryAsync(int cookbookId, int entryId, CookbookEntryRequest request)
