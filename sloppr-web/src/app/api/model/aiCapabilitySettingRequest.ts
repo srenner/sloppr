@@ -9,9 +9,9 @@ import type { AiCapabilityType } from './aiCapabilityType';
 export interface AiCapabilitySettingRequest {
   capability: AiCapabilityType;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
   modelId?: number | string | null;
   /** @maxLength 100000 */
   systemPrompt: string;

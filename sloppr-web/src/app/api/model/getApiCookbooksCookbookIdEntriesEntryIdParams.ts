@@ -6,8 +6,8 @@
  */
 
 export type GetApiCookbooksCookbookIdEntriesEntryIdParams = {
-/**
- * @pattern ^-?(?:0|[1-9]\d*)$
- */
-version?: number | string;
+  /**
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
+  version?: number | string;
 };

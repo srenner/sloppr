@@ -1,16 +1,16 @@
 <section class="space-y-6">
   <div>
-    <h3 class="text-base font-semibold text-gray-800">Capabilities</h3>
-    <p class="mt-1 text-sm text-gray-500">
-      Choose the preferred model and system prompt for each capability. Only models from the
-      Models tab are listed.
+    <h3 class="text-base font-semibold text-fg">Capabilities</h3>
+    <p class="mt-1 text-sm text-fg-subtle">
+      Choose the preferred model and system prompt for each capability. Only models from the Models
+      tab are listed.
     </p>
   </div>
 
   @if (error(); as message) {
     <p
       role="alert"
-      class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+      class="rounded-lg border border-danger-border bg-danger-surface px-4 py-3 text-sm text-danger"
     >
       {{ message }}
     </p>
@@ -19,38 +19,35 @@
   @if (notice(); as message) {
     <p
       role="status"
-      class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700"
+      class="rounded-lg border border-success-border bg-success-surface px-4 py-3 text-sm text-success"
     >
       {{ message }}
     </p>
   }
 
   @if (loading()) {
-    <p class="text-sm text-gray-500">Loading capabilities…</p>
+    <p class="text-sm text-fg-subtle">Loading capabilities…</p>
   } @else {
     @if (models().length === 0) {
-      <p class="text-sm text-gray-500">
+      <p class="text-sm text-fg-subtle">
         No models are in use yet. Add some in the Models tab before picking a model; prompts can
         still be edited now.
       </p>
     }
 
-    <div class="space-y-5 rounded-xl border border-gray-200 p-4">
+    <div class="space-y-5 rounded-xl border border-border p-4">
       @for (capability of capabilities(); track capability.capability) {
-        <div class="space-y-3 border-b border-gray-100 pb-5 last:border-b-0 last:pb-0">
+        <div class="space-y-3 border-b border-border pb-5 last:border-b-0 last:pb-0">
           <label class="block text-sm">
-            <span class="mb-1 block font-medium text-gray-700">{{ capability.label }}</span>
+            <span class="mb-1 block font-medium text-fg-muted">{{ capability.label }}</span>
             <select
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800"
+              class="w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
               [disabled]="saving()"
               (change)="onModelChange(capability.capability, $event)"
             >
               <option value="" [selected]="capability.modelId === ''">Not selected</option>
               @for (model of models(); track model.id) {
-                <option
-                  [value]="model.id"
-                  [selected]="stringId(model.id) === capability.modelId"
-                >
+                <option [value]="model.id" [selected]="stringId(model.id) === capability.modelId">
                   {{ model.name }} — {{ model.identifier }}
                 </option>
               }
@@ -58,10 +55,10 @@
           </label>
 
           <label class="block text-sm">
-            <span class="mb-1 block font-medium text-gray-700">System prompt</span>
+            <span class="mb-1 block font-medium text-fg-muted">System prompt</span>
             <textarea
               rows="6"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800"
+              class="w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
               [disabled]="saving()"
               [value]="capability.systemPrompt"
               (input)="onPromptChange(capability.capability, $event)"
@@ -73,7 +70,7 @@
       <div class="flex items-center gap-3">
         <button
           type="button"
-          class="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+          class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
           [disabled]="saving() || !canSave()"
           (click)="save()"
         >
@@ -81,7 +78,7 @@
         </button>
         <button
           type="button"
-          class="text-sm font-medium text-gray-500 hover:text-gray-800 disabled:opacity-40"
+          class="text-sm font-medium text-fg-subtle hover:text-fg disabled:opacity-40"
           [disabled]="loading()"
           (click)="load()"
         >

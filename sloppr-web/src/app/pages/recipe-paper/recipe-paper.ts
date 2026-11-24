@@ -57,11 +57,7 @@ export class RecipePaper {
     this.cookbookError.set(null);
 
     this.cookbooks
-      .postApiCookbooksCookbookIdEntriesFromRecipeRecipeId(
-        cookbookId,
-        recipeId,
-        'application/json',
-      )
+      .postApiCookbooksCookbookIdEntriesFromRecipeRecipeId(cookbookId, recipeId, 'application/json')
       .subscribe({
         next: (entry) => {
           this.cookbookEntryId.set(this.numericId(entry.id));

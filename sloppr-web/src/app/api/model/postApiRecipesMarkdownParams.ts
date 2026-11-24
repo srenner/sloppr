@@ -6,5 +6,5 @@
  */
 
 export type PostApiRecipesMarkdownParams = {
-template?: string;
+  template?: string;
 };

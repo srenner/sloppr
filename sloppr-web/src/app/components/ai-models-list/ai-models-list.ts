@@ -9,13 +9,12 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './ai-models-list.html',
-  styleUrls: ['./ai-models-list.css']
+  styleUrls: ['./ai-models-list.css'],
 })
 export class AiModelsListComponent {
   private readonly aiModelsService = inject(AiModelsService);
 
-  models = toSignal(
-    this.aiModelsService.getApiAiModels('application/json'),
-    { initialValue: [] as AiModelDTO[] }
-  );
+  models = toSignal(this.aiModelsService.getApiAiModels('application/json'), {
+    initialValue: [] as AiModelDTO[],
+  });
 }

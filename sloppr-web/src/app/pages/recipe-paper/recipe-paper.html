@@ -1,22 +1,24 @@
-<section class="min-h-[calc(100vh-64px)] bg-gray-100 px-4 py-8 print:min-h-0 print:bg-white print:p-0">
+<section
+  class="min-h-[calc(100vh-64px)] bg-canvas px-4 py-8 print:min-h-0 print:bg-white print:p-0"
+>
   <div class="mx-auto w-full max-w-3xl">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-2 print:hidden">
       <a
         routerLink="/recipes"
-        class="text-sm font-medium text-gray-500 hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2"
+        class="text-sm font-medium text-fg-subtle hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
       >
         ← All recipes
       </a>
 
       <div class="flex flex-wrap items-center gap-2">
         @if (cookbookLoading()) {
-          <span class="text-sm text-gray-500" aria-live="polite">Checking cookbook…</span>
+          <span class="text-sm text-fg-subtle" aria-live="polite">Checking cookbook…</span>
         } @else if (cookbookEntryId() !== null) {
-          <span class="text-sm font-medium text-green-700">In your family cookbook</span>
+          <span class="text-sm font-medium text-success">In your family cookbook</span>
           <button
             type="button"
             data-testid="remove-from-cookbook"
-            class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+            class="rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
             [disabled]="cookbookSaving()"
             (click)="removeFromCookbook()"
           >
@@ -26,7 +28,7 @@
           <button
             type="button"
             data-testid="add-to-cookbook"
-            class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+            class="rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-40"
             [disabled]="cookbookSaving()"
             (click)="addToCookbook()"
           >
@@ -36,7 +38,7 @@
 
         <button
           type="button"
-          class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2"
+          class="rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
           (click)="print()"
         >
           Print / Save as PDF
@@ -47,21 +49,24 @@
     @if (cookbookError(); as message) {
       <p
         role="alert"
-        class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 print:hidden"
+        class="mb-4 rounded-lg border border-danger-border bg-danger-surface px-4 py-3 text-sm text-danger print:hidden"
       >
         {{ message }}
       </p>
     }
 
     @if (loading()) {
-      <p class="text-sm text-gray-500" aria-live="polite">Loading recipe…</p>
+      <p class="text-sm text-fg-subtle" aria-live="polite">Loading recipe…</p>
     } @else if (error(); as message) {
-      <p role="alert" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      <p
+        role="alert"
+        class="rounded-lg border border-danger-border bg-danger-surface px-4 py-3 text-sm text-danger"
+      >
         {{ message }}
       </p>
     } @else if (markdown(); as content) {
       <article
-        class="recipe-paper mx-auto bg-white px-8 py-10 shadow-xl sm:px-12 sm:py-14 print:px-0 print:py-0 print:shadow-none"
+        class="recipe-paper mx-auto bg-surface px-8 py-10 shadow-xl sm:px-12 sm:py-14 print:px-0 print:py-0 print:shadow-none"
       >
         <app-markdown-view [markdown]="content" />
       </article>

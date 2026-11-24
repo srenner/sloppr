@@ -11,7 +11,7 @@ export default defineConfig({
       override: {
         angular: {
           provideIn: 'root',
-        }
+        },
       },
     },
   },

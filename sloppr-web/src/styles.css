@@ -1,22 +1,147 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
 
+/* Class-based dark mode: ThemeService toggles `.dark` on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Semantic UI tokens. Actual colors live here; templates use the matching
+ * Tailwind utilities (bg-surface, text-fg, border-border, ...).
+ */
+:root {
+  color-scheme: light;
+
+  --app-page: #ffffff;
+  --app-canvas: #f3f4f6;
+  --app-surface: #ffffff;
+  --app-surface-muted: #f9fafb;
+  --app-fg: #1f2937;
+  --app-fg-muted: #4b5563;
+  --app-fg-subtle: #6b7280;
+  --app-fg-faint: #9ca3af;
+  --app-on-strong: #ffffff;
+  --app-border: #e5e7eb;
+  --app-border-strong: #d1d5db;
+  --app-border-emphasis: #9ca3af;
+  --app-accent: #1f2937;
+  --app-accent-hover: #374151;
+  --app-on-accent: #ffffff;
+  --app-focus: #1f2937;
+  --app-danger: #b91c1c;
+  --app-danger-surface: #fef2f2;
+  --app-danger-muted: #fee2e2;
+  --app-danger-border: #fecaca;
+  --app-success: #15803d;
+  --app-success-surface: #f0fdf4;
+  --app-success-muted: #dcfce7;
+  --app-success-border: #bbf7d0;
+  --app-nav: #1f2937;
+  --app-nav-hover: #374151;
+  --app-nav-fg: #d1d5db;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --app-page: #030712;
+  --app-canvas: #030712;
+  --app-surface: #111827;
+  --app-surface-muted: #1f2937;
+  --app-fg: #f3f4f6;
+  --app-fg-muted: #d1d5db;
+  --app-fg-subtle: #9ca3af;
+  --app-fg-faint: #6b7280;
+  --app-on-strong: #f9fafb;
+  --app-border: #1f2937;
+  --app-border-strong: #374151;
+  --app-border-emphasis: #4b5563;
+  --app-accent: #f3f4f6;
+  --app-accent-hover: #e5e7eb;
+  --app-on-accent: #111827;
+  --app-focus: #f3f4f6;
+  --app-danger: #fca5a5;
+  --app-danger-surface: #450a0a;
+  --app-danger-muted: #7f1d1d;
+  --app-danger-border: #7f1d1d;
+  --app-success: #86efac;
+  --app-success-surface: #052e16;
+  --app-success-muted: #14532d;
+  --app-success-border: #14532d;
+  --app-nav: #111827;
+  --app-nav-hover: #1f2937;
+  --app-nav-fg: #9ca3af;
+}
+
+@theme inline {
+  --color-canvas: var(--app-canvas);
+  --color-surface: var(--app-surface);
+  --color-surface-muted: var(--app-surface-muted);
+  --color-fg: var(--app-fg);
+  --color-fg-muted: var(--app-fg-muted);
+  --color-fg-subtle: var(--app-fg-subtle);
+  --color-fg-faint: var(--app-fg-faint);
+  --color-on-strong: var(--app-on-strong);
+  --color-border: var(--app-border);
+  --color-border-strong: var(--app-border-strong);
+  --color-border-emphasis: var(--app-border-emphasis);
+  --color-accent: var(--app-accent);
+  --color-accent-hover: var(--app-accent-hover);
+  --color-on-accent: var(--app-on-accent);
+  --color-focus: var(--app-focus);
+  --color-danger: var(--app-danger);
+  --color-danger-surface: var(--app-danger-surface);
+  --color-danger-muted: var(--app-danger-muted);
+  --color-danger-border: var(--app-danger-border);
+  --color-success: var(--app-success);
+  --color-success-surface: var(--app-success-surface);
+  --color-success-muted: var(--app-success-muted);
+  --color-success-border: var(--app-success-border);
+  --color-nav: var(--app-nav);
+  --color-nav-hover: var(--app-nav-hover);
+  --color-nav-fg: var(--app-nav-fg);
+}
 
 @layer base {
+  html,
+  body {
+    background-color: var(--app-page);
+  }
+
+  body {
+    color: var(--app-fg);
+  }
+
   table {
     @apply w-full border-collapse text-sm;
   }
 
   th {
-    @apply text-left font-semibold px-4 py-2 border-b border-gray-200 bg-gray-50;
+    @apply text-left font-semibold px-4 py-2 border-b border-border bg-surface-muted;
   }
 
   td {
-    @apply px-4 py-2 border-b border-gray-100;
+    @apply px-4 py-2 border-b border-border;
   }
 
   tbody tr:hover {
-    @apply bg-gray-50;
+    @apply bg-surface-muted;
+  }
+}
+
+/* Printed recipes stay black on white regardless of the active theme. */
+@media print {
+  :root,
+  .dark {
+    color-scheme: light;
+
+    --app-page: #ffffff;
+    --app-canvas: #ffffff;
+    --app-surface: #ffffff;
+    --app-surface-muted: #f9fafb;
+    --app-fg: #1f2937;
+    --app-fg-muted: #4b5563;
+    --app-fg-subtle: #6b7280;
+    --app-fg-faint: #9ca3af;
+    --app-border: #e5e7eb;
+    --app-border-strong: #d1d5db;
   }
 }

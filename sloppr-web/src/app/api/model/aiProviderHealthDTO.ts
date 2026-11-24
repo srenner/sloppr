@@ -11,9 +11,9 @@ export interface AiProviderHealthDTO {
   /** @nullable */
   isHealthy?: boolean | null;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
   lastHealthStatusCode?: number | string | null;
   /** @nullable */
   lastHealthResponse?: string | null;

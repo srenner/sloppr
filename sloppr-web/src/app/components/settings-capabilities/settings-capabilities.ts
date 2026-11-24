@@ -68,9 +68,7 @@ export class SettingsCapabilities {
       },
       error: () => {
         this.loading.set(false);
-        this.error.set(
-          "Couldn't load the capability defaults. Check that the API is running.",
-        );
+        this.error.set("Couldn't load the capability defaults. Check that the API is running.");
       },
     });
   }

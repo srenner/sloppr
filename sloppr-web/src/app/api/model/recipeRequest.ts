@@ -9,9 +9,9 @@ import type { RecipeContent } from './recipeContent';
 export interface RecipeRequest {
   content?: RecipeContent;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
   mealIdeaId?: number | string | null;
   /** @nullable */
   templateName?: string | null;

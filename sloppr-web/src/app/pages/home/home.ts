@@ -69,34 +69,32 @@ export class Home {
     this.loading.set(true);
     this.error.set(null);
 
-    this.aiInference
-      .postApiAiInferenceMealIdeas({ prompt: text }, 'application/json')
-      .subscribe({
-        next: (ideas) => {
-          this.loading.set(false);
-          const usable = ideas.filter((idea) => this.ideaKey(idea) !== null);
-          if (usable.length === 0) {
-            this.error.set(
-              'No meal ideas came back. Check that the AI provider is running, then try again.',
-            );
-            return;
-          }
-
-          this.lastPrompt.set(text);
-          this.prompt.set('');
-          this.ideas.set(usable);
-          this.savedIdeaIds.set(new Set());
-          this.activeIdea.set(null);
-          this.recipe.set(null);
-          this.phase.set('ideas');
-        },
-        error: () => {
-          this.loading.set(false);
+    this.aiInference.postApiAiInferenceMealIdeas({ prompt: text }, 'application/json').subscribe({
+      next: (ideas) => {
+        this.loading.set(false);
+        const usable = ideas.filter((idea) => this.ideaKey(idea) !== null);
+        if (usable.length === 0) {
           this.error.set(
-            "Couldn't generate meal ideas. Check that the API and AI provider are running, then try again.",
+            'No meal ideas came back. Check that the AI provider is running, then try again.',
           );
-        },
-      });
+          return;
+        }
+
+        this.lastPrompt.set(text);
+        this.prompt.set('');
+        this.ideas.set(usable);
+        this.savedIdeaIds.set(new Set());
+        this.activeIdea.set(null);
+        this.recipe.set(null);
+        this.phase.set('ideas');
+      },
+      error: () => {
+        this.loading.set(false);
+        this.error.set(
+          "Couldn't generate meal ideas. Check that the API and AI provider are running, then try again.",
+        );
+      },
+    });
   }
 
   protected openRecipe(idea: MealIdeaDTO): void {
@@ -112,20 +110,18 @@ export class Home {
     this.recipeMarkdown.set(null);
     this.phase.set('recipe');
 
-    this.aiInference
-      .postApiAiInferenceRecipesMealIdeaId(id, 'application/json')
-      .subscribe({
-        next: (recipe) => {
-          this.recipe.set(recipe);
-          this.loadRecipeMarkdown(recipe);
-        },
-        error: () => {
-          this.loading.set(false);
-          this.activeIdea.set(null);
-          this.phase.set('ideas');
-          this.error.set("Couldn't generate a recipe for that idea. Try again or pick another.");
-        },
-      });
+    this.aiInference.postApiAiInferenceRecipesMealIdeaId(id, 'application/json').subscribe({
+      next: (recipe) => {
+        this.recipe.set(recipe);
+        this.loadRecipeMarkdown(recipe);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.activeIdea.set(null);
+        this.phase.set('ideas');
+        this.error.set("Couldn't generate a recipe for that idea. Try again or pick another.");
+      },
+    });
   }
 
   protected backToIdeas(): void {
@@ -186,8 +182,7 @@ export class Home {
     )
       .pipe(finalize(() => this.saving.set(false)))
       .subscribe({
-        error: () =>
-          this.error.set('Ideas cleared, but the rejections were not all recorded.'),
+        error: () => this.error.set('Ideas cleared, but the rejections were not all recorded.'),
       });
   }
 
@@ -239,20 +234,16 @@ export class Home {
         return;
       }
 
-      this.mealIdeas
-        .putApiMealIdeasIdApproval(id, { isUserApproved: true })
-        .subscribe({
-          next: () => {
-            this.saving.set(false);
-            this.phase.set('done');
-          },
-          error: () => {
-            this.saving.set(false);
-            this.error.set(
-              'Recipe saved, but it could not be marked for tonight. Try again.',
-            );
-          },
-        });
+      this.mealIdeas.putApiMealIdeasIdApproval(id, { isUserApproved: true }).subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.phase.set('done');
+        },
+        error: () => {
+          this.saving.set(false);
+          this.error.set('Recipe saved, but it could not be marked for tonight. Try again.');
+        },
+      });
     };
 
     if (this.isSaved(idea)) {

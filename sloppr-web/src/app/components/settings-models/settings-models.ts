@@ -2,12 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { AiModelsService } from '../../api/ai-models/ai-models.service';
 import { AiProvidersService } from '../../api/ai-providers/ai-providers.service';
-import type {
-  AiModelDTO,
-  AiModelMinimalDTO,
-  AiModelRequest,
-  AiProviderDTO,
-} from '../../api/model';
+import type { AiModelDTO, AiModelMinimalDTO, AiModelRequest, AiProviderDTO } from '../../api/model';
 
 @Component({
   selector: 'app-settings-models',
@@ -100,7 +95,9 @@ export class SettingsModels {
           this.discovered.set(models);
           this.selectedIdentifiers.set(new Set());
           if (models.length === 0) {
-            this.notice.set('No new models found. Everything installed in Ollama is already configured.');
+            this.notice.set(
+              'No new models found. Everything installed in Ollama is already configured.',
+            );
           }
         },
         error: () => {

@@ -1,11 +1,9 @@
 <section class="mx-auto w-full max-w-6xl px-4 py-8">
   <header class="mb-6 flex flex-wrap items-end justify-between gap-2">
     <div>
-      <h1 class="text-3xl font-semibold text-gray-800">Recipes</h1>
+      <h1 class="text-3xl font-semibold text-fg">Recipes</h1>
       @if (total() > 0) {
-        <p class="mt-1 text-sm text-gray-500">
-          {{ items().length }} of {{ total() }}
-        </p>
+        <p class="mt-1 text-sm text-fg-subtle">{{ items().length }} of {{ total() }}</p>
       }
     </div>
   </header>
@@ -13,13 +11,13 @@
   @if (error(); as message) {
     <div
       role="alert"
-      class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+      class="mt-4 rounded-lg border border-danger-border bg-danger-surface px-4 py-3 text-sm text-danger"
     >
       <p>{{ message }}</p>
       <button
         type="button"
         data-testid="retry"
-        class="mt-3 rounded-lg border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50"
+        class="mt-3 rounded-lg border border-danger-border bg-surface px-3 py-1.5 text-sm font-medium text-danger hover:bg-danger-surface"
         (click)="loadNext()"
       >
         Try again
@@ -29,15 +27,12 @@
 
   @if (items().length === 0) {
     @if (loading()) {
-      <p class="mt-6 text-sm text-gray-500" aria-live="polite">Loading recipes…</p>
+      <p class="mt-6 text-sm text-fg-subtle" aria-live="polite">Loading recipes…</p>
     } @else if (!error()) {
-      <p class="mt-6 text-sm text-gray-500">No recipes yet.</p>
+      <p class="mt-6 text-sm text-fg-subtle">No recipes yet.</p>
     }
   } @else {
-    <ul
-      class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
-      [attr.aria-busy]="loading()"
-    >
+    <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" [attr.aria-busy]="loading()">
       @for (item of items(); track item.id) {
         <li>
           <app-recipe-card [recipe]="item" />
@@ -54,7 +49,7 @@
         <button
           type="button"
           data-testid="load-more"
-          class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+          class="rounded-lg border border-border-strong bg-surface px-4 py-2 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
           [disabled]="loading()"
           (click)="loadNext()"
         >
@@ -62,7 +57,7 @@
         </button>
       </div>
     } @else {
-      <p class="mt-6 text-center text-sm text-gray-400">You've reached the end.</p>
+      <p class="mt-6 text-center text-sm text-fg-faint">You've reached the end.</p>
     }
   }
 </section>

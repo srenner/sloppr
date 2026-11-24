@@ -1,31 +1,31 @@
 <section class="space-y-6">
   <div>
-    <h3 class="text-base font-semibold text-gray-800">Ollama provider</h3>
-    <p class="mt-1 text-sm text-gray-500">
+    <h3 class="text-base font-semibold text-fg">Ollama provider</h3>
+    <p class="mt-1 text-sm text-fg-subtle">
       Point the app at a running Ollama instance. The provider is only saved when Ollama answers.
     </p>
   </div>
 
   <form
-    class="space-y-3 rounded-xl border border-gray-200 p-4"
+    class="space-y-3 rounded-xl border border-border p-4"
     (submit)="save(); $event.preventDefault()"
   >
     <div class="grid gap-3 sm:grid-cols-2">
       <label class="block text-sm">
-        <span class="mb-1 block font-medium text-gray-700">Name</span>
+        <span class="mb-1 block font-medium text-fg-muted">Name</span>
         <input
           type="text"
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 disabled:opacity-60"
+          class="w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-60"
           [value]="name()"
           [disabled]="saving()"
           (input)="onNameInput($event)"
         />
       </label>
       <label class="block text-sm">
-        <span class="mb-1 block font-medium text-gray-700">Base URL</span>
+        <span class="mb-1 block font-medium text-fg-muted">Base URL</span>
         <input
           type="url"
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 disabled:opacity-60"
+          class="w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-60"
           placeholder="http://localhost:11434"
           [value]="baseUrl()"
           [disabled]="saving()"
@@ -37,19 +37,19 @@
     <div class="flex items-center gap-3">
       <button
         type="submit"
-        class="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+        class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
         [disabled]="!canSave()"
       >
         {{ saving() ? 'Checking…' : 'Add provider' }}
       </button>
-      <span class="text-xs text-gray-500">Provider type: Ollama</span>
+      <span class="text-xs text-fg-subtle">Provider type: Ollama</span>
     </div>
   </form>
 
   @if (error(); as message) {
     <p
       role="alert"
-      class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+      class="rounded-lg border border-danger-border bg-danger-surface px-4 py-3 text-sm text-danger"
     >
       {{ message }}
     </p>
@@ -58,7 +58,7 @@
   @if (notice(); as message) {
     <p
       role="status"
-      class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700"
+      class="rounded-lg border border-success-border bg-success-surface px-4 py-3 text-sm text-success"
     >
       {{ message }}
     </p>
@@ -66,10 +66,10 @@
 
   <div>
     <div class="flex items-center justify-between">
-      <h4 class="text-sm font-semibold text-gray-700">Configured providers</h4>
+      <h4 class="text-sm font-semibold text-fg-muted">Configured providers</h4>
       <button
         type="button"
-        class="text-sm font-medium text-gray-500 hover:text-gray-800 disabled:opacity-40"
+        class="text-sm font-medium text-fg-subtle hover:text-fg disabled:opacity-40"
         [disabled]="loading()"
         (click)="load()"
       >
@@ -78,30 +78,30 @@
     </div>
 
     @if (loading()) {
-      <p class="mt-2 text-sm text-gray-500">Loading providers…</p>
+      <p class="mt-2 text-sm text-fg-subtle">Loading providers…</p>
     } @else if (providers().length === 0) {
-      <p class="mt-2 text-sm text-gray-500">No providers configured yet.</p>
+      <p class="mt-2 text-sm text-fg-subtle">No providers configured yet.</p>
     } @else {
-      <ul class="mt-2 divide-y divide-gray-100 rounded-xl border border-gray-200">
+      <ul class="mt-2 divide-y divide-border rounded-xl border border-border">
         @for (provider of providers(); track provider.id) {
           <li class="px-4 py-3">
             @if (editingId() === stringId(provider.id)) {
               <form class="space-y-3" (submit)="saveEdit(provider); $event.preventDefault()">
                 <div class="grid gap-3 sm:grid-cols-2">
                   <label class="block text-sm">
-                    <span class="mb-1 block font-medium text-gray-700">Name</span>
+                    <span class="mb-1 block font-medium text-fg-muted">Name</span>
                     <input
                       type="text"
-                      class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800"
+                      class="w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                       [value]="editName()"
                       (input)="onEditNameInput($event)"
                     />
                   </label>
                   <label class="block text-sm">
-                    <span class="mb-1 block font-medium text-gray-700">Base URL</span>
+                    <span class="mb-1 block font-medium text-fg-muted">Base URL</span>
                     <input
                       type="url"
-                      class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800"
+                      class="w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                       [value]="editBaseUrl()"
                       (input)="onEditBaseUrlInput($event)"
                     />
@@ -110,14 +110,14 @@
                 <div class="flex items-center gap-2">
                   <button
                     type="submit"
-                    class="rounded-lg bg-gray-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-40"
+                    class="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-on-accent hover:bg-accent-hover disabled:opacity-40"
                     [disabled]="editSaving()"
                   >
                     Save
                   </button>
                   <button
                     type="button"
-                    class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50"
+                    class="rounded-lg border border-border-strong px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted"
                     (click)="cancelEdit()"
                   >
                     Cancel
@@ -128,35 +128,35 @@
               <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="min-w-0">
                   <div class="flex flex-wrap items-center gap-2">
-                    <span class="font-medium text-gray-800">{{ provider.name }}</span>
+                    <span class="font-medium text-fg">{{ provider.name }}</span>
                     @if (provider.isHealthy === true) {
                       <span
-                        class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
+                        class="rounded-full bg-success-muted px-2 py-0.5 text-xs font-medium text-success"
                         >Healthy</span
                       >
                     } @else if (provider.isHealthy === false) {
                       <span
-                        class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700"
+                        class="rounded-full bg-danger-muted px-2 py-0.5 text-xs font-medium text-danger"
                         >Unreachable</span
                       >
                     } @else {
                       <span
-                        class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600"
+                        class="rounded-full bg-surface-muted px-2 py-0.5 text-xs font-medium text-fg-muted"
                         >Unknown</span
                       >
                     }
-                    <span class="text-xs text-gray-500">{{ provider.providerType }}</span>
+                    <span class="text-xs text-fg-subtle">{{ provider.providerType }}</span>
                   </div>
-                  <p class="mt-0.5 truncate text-sm text-gray-500">{{ provider.baseUrl }}</p>
+                  <p class="mt-0.5 truncate text-sm text-fg-subtle">{{ provider.baseUrl }}</p>
                   @if (provider.isHealthy === false && provider.lastHealthResponse) {
-                    <p class="mt-1 text-xs text-red-600">{{ provider.lastHealthResponse }}</p>
+                    <p class="mt-1 text-xs text-danger">{{ provider.lastHealthResponse }}</p>
                   }
                 </div>
 
                 <div class="flex shrink-0 items-center gap-2">
                   <button
                     type="button"
-                    class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+                    class="rounded-lg border border-border-strong px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted disabled:opacity-40"
                     [disabled]="checkingId() !== null"
                     (click)="recheck(provider)"
                   >
@@ -164,14 +164,14 @@
                   </button>
                   <button
                     type="button"
-                    class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50"
+                    class="rounded-lg border border-border-strong px-3 py-1.5 text-sm font-medium text-fg-muted hover:bg-surface-muted"
                     (click)="startEdit(provider)"
                   >
                     Edit
                   </button>
                   <button
                     type="button"
-                    class="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
+                    class="rounded-lg border border-danger-border px-3 py-1.5 text-sm font-medium text-danger hover:bg-danger-surface"
                     (click)="remove(provider)"
                   >
                     Remove
