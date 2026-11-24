@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="sloppr-web/public/favicon.svg" alt="sloppr logo" width="96" height="96">
+</p>
+
 # sloppr: it's what's for dinner
 
 ## ...What?
