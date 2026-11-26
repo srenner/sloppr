@@ -49,7 +49,7 @@ namespace sloppr.Controllers
         {
             var cuisine = mapper.ToEntity(request);
             await svc.AddAsync(cuisine);
-            return CreatedAtAction("GetCuisine", new { id = cuisine.Id }, mapper.ToDto(cuisine));
+            return CreatedAtAction(nameof(GetCuisine), new { id = cuisine.Id }, mapper.ToDto(cuisine));
         }
 
         [HttpDelete("{id}")]
