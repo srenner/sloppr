@@ -9,10 +9,8 @@ using sloppr.Models;
 public class RecipeTemplateService : IRecipeTemplateService
 {
     private const string DefaultTemplateName = "default";
-    private const string StarterResourceSuffix = ".Recipes.default.mdt";
     private const int MaxTemplateLength = 100_000;
 
-    private static readonly Lazy<string> StarterContent = new(LoadStarterContent);
     private static readonly FluidParser Parser = new();
 
     // Templates are user-authored, so apply the execution limits recommended for
@@ -131,7 +129,7 @@ public class RecipeTemplateService : IRecipeTemplateService
             _db.RecipeTemplates.Add(new RecipeTemplate
             {
                 Name = DefaultTemplateName,
-                Content = StarterContent.Value,
+                Content = DefaultContent.RecipeTemplate,
             });
         }
 
@@ -144,7 +142,7 @@ public class RecipeTemplateService : IRecipeTemplateService
         await _db.SaveChangesAsync();
     }
 
-    public string GetStarterContent() => StarterContent.Value;
+    public string GetStarterContent() => DefaultContent.RecipeTemplate;
 
     private async Task<RecipeTemplate?> ResolveAsync(RecipeDTO recipe)
     {
@@ -256,24 +254,5 @@ public class RecipeTemplateService : IRecipeTemplateService
         }
 
         ParseOrThrow(content);
-    }
-
-    private static string LoadStarterContent()
-    {
-        var assembly = typeof(RecipeTemplateService).Assembly;
-        var resourceName = assembly.GetManifestResourceNames()
-            .FirstOrDefault(n => n.EndsWith(StarterResourceSuffix, StringComparison.OrdinalIgnoreCase));
-
-        if (resourceName == null)
-        {
-            throw new InvalidOperationException(
-                "The seeded recipe template resource could not be found.");
-        }
-
-        using var stream = assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException(
-                "The seeded recipe template resource could not be opened.");
-        using var reader = new StreamReader(stream);
-        return reader.ReadToEnd();
     }
 }

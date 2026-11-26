@@ -29,9 +29,6 @@ builder.Services.AddHttpClient("health", client =>
 builder.Services.Configure<ProviderTypeSettings>(
     builder.Configuration.GetSection("ProviderTypeSettings"));
 
-builder.Services.Configure<AISettings>(
-    builder.Configuration.GetSection("AI"));
-
 builder.Services.AddControllers()
     .AddJsonOptions(o => AddStringEnums(o.JsonSerializerOptions));
 

@@ -1,17 +1,13 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using sloppr.DataAccess;
 using sloppr.DTOs;
 using sloppr.Enums;
 using sloppr.Models;
-using sloppr.Settings;
 
 namespace sloppr.Services;
 
-public class AiCapabilitySettingService(IServiceScopeFactory scopeFactory,
-                                        IOptions<AISettings> aiSettings)
+public class AiCapabilitySettingService(IServiceScopeFactory scopeFactory)
 {
-    private readonly AISettings _aiSettings = aiSettings.Value;
     private Dictionary<AiCapabilityType, AiCapabilitySetting> _settings = [];
 
     public IReadOnlyList<AiCapabilitySetting> GetAll()
@@ -89,14 +85,14 @@ public class AiCapabilitySettingService(IServiceScopeFactory scopeFactory,
         return GetAll();
     }
 
-    private string GetDefaultPrompt(AiCapabilityType capability)
+    private static string GetDefaultPrompt(AiCapabilityType capability)
     {
         return capability switch
         {
-            AiCapabilityType.IngredientExtraction => _aiSettings.DefaultExtractionPrompt,
-            AiCapabilityType.IdeaGeneration => _aiSettings.IdeaGenerationPrompt,
-            AiCapabilityType.RecipeGeneration => _aiSettings.RecipeGenerationPrompt,
-            AiCapabilityType.OcrScanning => _aiSettings.OcrScanningPrompt,
+            AiCapabilityType.IngredientExtraction => DefaultContent.IngredientExtractionPrompt,
+            AiCapabilityType.IdeaGeneration => DefaultContent.IdeaGenerationPrompt,
+            AiCapabilityType.RecipeGeneration => DefaultContent.RecipeGenerationPrompt,
+            AiCapabilityType.OcrScanning => DefaultContent.OcrScanningPrompt,
             _ => string.Empty
         };
     }
