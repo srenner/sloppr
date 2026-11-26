@@ -7,8 +7,8 @@ namespace sloppr.DTOs
         public DateTime DateUpdated { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
-        public string CreatedBy { get; set; }
-        public string UpdatedBy { get; set; }
+        public string CreatedBy { get; set; } = "system";
+        public string UpdatedBy { get; set; } = "system";
 
         public required string Name { get; set; }
         public bool? IsUserApproved { get; set; }

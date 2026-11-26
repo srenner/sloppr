@@ -12,3 +12,11 @@ Commands are human-run; suggest them: `dotnet build`, `dotnet run --launch-profi
 - Only Ollama/OpenAI are supported (Anthropic throws `NotSupportedException`); provider URLs and default prompts are in `appsettings.json`; capability settings are DB-backed and load once at startup.
 - Enums serialize as strings globally.
 - No backend test project.
+
+## Change discipline
+
+- Fix the reported problem; stop there. Broader cleanup is a separate proposal; wait for approval.
+- Before editing, state the files touched, new types/files, and behavior changes.
+- No new abstraction (base class, filter, interface, service method) unless it removes more code than it adds.
+- Prefer the minimal diff that compiles over consistency improvements elsewhere.
+

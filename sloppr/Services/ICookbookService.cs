@@ -9,7 +9,7 @@ public interface ICookbookService
     Task<IReadOnlyList<CookbookEntrySummaryDTO>?> GetEntriesAsync(int cookbookId);
     Task<CookbookEntryDTO?> GetEntryAsync(int cookbookId, int entryId, int? version);
     Task<CookbookEntryDTO?> CreateEntryAsync(int cookbookId, CookbookEntryRequest request);
-    Task<(CookbookEntryDTO Entry, bool Created)?> CopyFromRecipeAsync(int cookbookId, int recipeId);
+    Task<CookbookCopyResult?> CopyFromRecipeAsync(int cookbookId, int recipeId);
     Task<CookbookEntryDTO?> UpdateEntryAsync(int cookbookId, int entryId, CookbookEntryRequest request);
     Task<bool> DeleteEntryAsync(int cookbookId, int entryId);
 }

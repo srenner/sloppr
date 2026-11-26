@@ -49,7 +49,7 @@ namespace sloppr.Controllers
         {
             var keyIngredient = mapper.ToEntity(request);
             await svc.AddAsync(keyIngredient);
-            return CreatedAtAction("GetKeyIngredient", new { id = keyIngredient.Id },
+            return CreatedAtAction(nameof(GetKeyIngredient), new { id = keyIngredient.Id },
                 mapper.ToDto(keyIngredient));
         }
 

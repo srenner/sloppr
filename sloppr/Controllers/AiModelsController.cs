@@ -57,7 +57,7 @@ namespace sloppr.Controllers
             var aiModel = mapper.ToEntity(request);
             await svc.AddAsync(aiModel);
             var created = await svc.GetByIdWithProviderAsync(aiModel.Id);
-            return CreatedAtAction("GetAiModel", new { id = aiModel.Id }, mapper.ToDto(created!));
+            return CreatedAtAction(nameof(GetAiModel), new { id = aiModel.Id }, mapper.ToDto(created!));
         }
 
         [HttpPost("batch")]
