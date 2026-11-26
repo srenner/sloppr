@@ -110,7 +110,7 @@ public class CookbookService : ICookbookService
         return ToDto(entry, entry.Versions.First());
     }
 
-    public async Task<(CookbookEntryDTO Entry, bool Created)?> CopyFromRecipeAsync(int cookbookId, int recipeId)
+    public async Task<CookbookCopyResult?> CopyFromRecipeAsync(int cookbookId, int recipeId)
     {
         if (!await _db.Cookbooks.AnyAsync(c => c.Id == cookbookId))
         {
@@ -138,7 +138,7 @@ public class CookbookService : ICookbookService
 
             if (existingVersion != null)
             {
-                return (ToDto(existing, existingVersion), false);
+                return new CookbookCopyResult(ToDto(existing, existingVersion), false);
             }
         }
 
@@ -155,7 +155,7 @@ public class CookbookService : ICookbookService
         _db.CookbookEntries.Add(entry);
         await _db.SaveChangesAsync();
 
-        return (ToDto(entry, entry.Versions.First()), true);
+        return new CookbookCopyResult(ToDto(entry, entry.Versions.First()), true);
     }
 
     public async Task<CookbookEntryDTO?> UpdateEntryAsync(int cookbookId, int entryId, CookbookEntryRequest request)

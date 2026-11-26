@@ -66,13 +66,12 @@ public class CookbooksController(ICookbookService svc) : ControllerBase
             return NotFound();
         }
 
-        var (entry, created) = result.Value;
-        if (!created)
+        if (!result.Created)
         {
-            return Ok(entry);
+            return Ok(result.Entry);
         }
 
-        return CreatedAtAction(nameof(GetEntry), new { cookbookId, entryId = entry.Id }, entry);
+        return CreatedAtAction(nameof(GetEntry), new { cookbookId, entryId = result.Entry.Id }, result.Entry);
     }
 
     [HttpPut("{cookbookId:int}/entries/{entryId:int}")]
