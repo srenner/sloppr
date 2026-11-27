@@ -6,5 +6,5 @@
  */
 
 export type PostApiRecipeTemplatesImportParams = {
-  name?: string;
+name?: string;
 };

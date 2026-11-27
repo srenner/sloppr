@@ -6,6 +6,6 @@
  */
 
 export type GetApiAiProvidersHealthParams = {
-  BaseUrl?: string;
-  HealthCheckPath?: string;
+BaseUrl?: string;
+HealthCheckPath?: string;
 };

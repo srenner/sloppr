@@ -6,5 +6,5 @@
  */
 
 export type GetApiRecipesIdMarkdownParams = {
-  template?: string;
+template?: string;
 };

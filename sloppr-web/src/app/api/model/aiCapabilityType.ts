@@ -5,7 +5,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AiCapabilityType = (typeof AiCapabilityType)[keyof typeof AiCapabilityType];
+export type AiCapabilityType = typeof AiCapabilityType[keyof typeof AiCapabilityType];
+
 
 export const AiCapabilityType = {
   IngredientExtraction: 'IngredientExtraction',

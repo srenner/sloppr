@@ -4,33 +4,60 @@
 
     @if (phase() === 'input' || phase() === 'ideas') {
       <form
-        class="rounded-2xl border border-border-strong bg-surface p-3 shadow-sm focus-within:border-border-emphasis"
+        class="relative rounded-2xl border border-border-strong bg-surface p-3 shadow-sm focus-within:border-border-emphasis"
         (submit)="send(); $event.preventDefault()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
       >
+        @if (dragging()) {
+          <div
+            role="status"
+            class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl border-2 border-dashed border-border-emphasis bg-surface text-sm font-medium text-fg"
+          >
+            Drop a recipe photo to import
+          </div>
+        }
+
         <label class="sr-only" for="prompt">Message</label>
+
+        @if (imagePreview(); as preview) {
+          <div class="flex items-center gap-3 rounded-xl bg-surface-muted p-2">
+            <img
+              [src]="preview"
+              alt="Pasted recipe photo"
+              class="h-16 w-16 rounded-lg object-cover"
+            />
+            <span class="text-sm text-fg-subtle" aria-live="polite">Reading photo…</span>
+          </div>
+        }
+
         <textarea
           #promptInput
           id="prompt"
           class="w-full resize-none border-0 bg-transparent px-2 py-1 text-base text-fg outline-none placeholder:text-fg-faint disabled:opacity-60"
           rows="3"
           autofocus
-          placeholder="Ask for a meal idea, paste a recipe, or describe what's in your fridge..."
+          placeholder="Ask for a meal idea, paste or drop a recipe photo, or describe what's in your fridge..."
           [value]="prompt()"
           [disabled]="loading() || saving()"
           (input)="onInput($event)"
+          (paste)="onPaste($event)"
           (keydown)="onKeydown($event)"
         ></textarea>
 
         <div class="flex items-center justify-end gap-3">
           @if (loading()) {
-            <span class="text-sm text-fg-subtle" aria-live="polite">Finding meal ideas…</span>
+            <span class="text-sm text-fg-subtle" aria-live="polite">
+              {{ importing() ? 'Reading photo…' : 'Finding meal ideas…' }}
+            </span>
           }
           <button
             type="submit"
             class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
             [disabled]="!canSend()"
           >
-            {{ loading() ? 'Thinking…' : 'Send' }}
+            {{ importing() ? 'Reading…' : loading() ? 'Thinking…' : 'Send' }}
           </button>
         </div>
       </form>
@@ -107,9 +134,9 @@
           type="button"
           class="mb-4 text-sm font-medium text-fg-subtle hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
           [disabled]="loading() || saving()"
-          (click)="backToIdeas()"
+          (click)="backFromRecipe()"
         >
-          ← Back to ideas
+          {{ importMode() ? '← Start over' : '← Back to ideas' }}
         </button>
 
         @if (recipeMarkdown(); as markdown) {
@@ -117,37 +144,60 @@
             <app-markdown-view [markdown]="markdown" />
 
             <div class="mt-6 flex flex-col gap-2 sm:flex-row">
-              <button
-                type="button"
-                data-testid="save-cook"
-                class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
-                [disabled]="saving()"
-                (click)="saveAndCook()"
-              >
-                Save and cook tonight
-              </button>
-              <button
-                type="button"
-                data-testid="save-later"
-                class="rounded-lg border border-border-strong bg-surface px-4 py-2 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
-                [disabled]="saving()"
-                (click)="saveForLater()"
-              >
-                Save for later
-              </button>
-              <button
-                type="button"
-                data-testid="reject-recipe"
-                class="rounded-lg px-4 py-2 text-sm font-medium text-danger hover:bg-danger-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
-                [disabled]="saving()"
-                (click)="rejectRecipe()"
-              >
-                Reject
-              </button>
+              @if (importMode()) {
+                <button
+                  type="button"
+                  data-testid="save-import"
+                  class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
+                  [disabled]="saving()"
+                  (click)="saveImport()"
+                >
+                  Save to family cookbook
+                </button>
+                <button
+                  type="button"
+                  data-testid="discard-import"
+                  class="rounded-lg px-4 py-2 text-sm font-medium text-danger hover:bg-danger-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
+                  [disabled]="saving()"
+                  (click)="discardImport()"
+                >
+                  Discard
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  data-testid="save-cook"
+                  class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
+                  [disabled]="saving()"
+                  (click)="saveAndCook()"
+                >
+                  Save and cook tonight
+                </button>
+                <button
+                  type="button"
+                  data-testid="save-later"
+                  class="rounded-lg border border-border-strong bg-surface px-4 py-2 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
+                  [disabled]="saving()"
+                  (click)="saveForLater()"
+                >
+                  Save for later
+                </button>
+                <button
+                  type="button"
+                  data-testid="reject-recipe"
+                  class="rounded-lg px-4 py-2 text-sm font-medium text-danger hover:bg-danger-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-40"
+                  [disabled]="saving()"
+                  (click)="rejectRecipe()"
+                >
+                  Reject
+                </button>
+              }
             </div>
 
             @if (saving()) {
-              <p class="mt-3 text-sm text-fg-subtle" aria-live="polite">Saving…</p>
+              <p class="mt-3 text-sm text-fg-subtle" aria-live="polite">
+                {{ importMode() ? 'Saving to your cookbook…' : 'Saving…' }}
+              </p>
             }
           </article>
         } @else {
@@ -155,9 +205,55 @@
             @if (recipeTitle(); as title) {
               <h2 class="text-2xl font-semibold text-fg">{{ title }}</h2>
             }
-            <p class="mt-2 text-sm text-fg-subtle">Writing the recipe…</p>
+            <p class="mt-2 text-sm text-fg-subtle">
+              {{ importMode() ? 'Assembling the recipe…' : 'Writing the recipe…' }}
+            </p>
           </div>
         }
+      </div>
+    }
+
+    @if (phase() === 'imported') {
+      <div
+        class="mt-6 rounded-2xl border border-border-strong bg-surface p-8 text-center shadow-sm"
+      >
+        <p class="text-sm font-medium tracking-wide text-fg-subtle uppercase">Imported recipe</p>
+        <h2 class="mt-2 text-2xl font-semibold text-fg">{{ recipe()?.content?.name }}</h2>
+
+        @if (cookbookAddError()) {
+          <p role="alert" class="mt-2 text-sm text-danger">
+            Saved the recipe, but it couldn't be added to your family cookbook.
+          </p>
+          @if (importedRecipeId(); as id) {
+            <a
+              [routerLink]="['/recipes', id]"
+              class="mt-4 inline-block text-sm font-medium text-accent hover:text-accent-hover"
+            >
+              Open the recipe to add it
+            </a>
+          }
+        } @else {
+          <p class="mt-2 text-sm text-fg-muted">
+            Saved as an imported recipe and added to your family cookbook.
+          </p>
+        }
+
+        <div class="mt-6 flex flex-col justify-center gap-2 sm:flex-row">
+          <a
+            routerLink="/cookbook"
+            class="rounded-lg border border-border-strong bg-surface px-4 py-2 text-sm font-medium text-fg-muted hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+          >
+            View family cookbook
+          </a>
+          <button
+            type="button"
+            data-testid="start-over"
+            class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+            (click)="startOver()"
+          >
+            Start over
+          </button>
+        </div>
       </div>
     }
 

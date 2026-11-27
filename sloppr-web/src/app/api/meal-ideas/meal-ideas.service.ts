@@ -4,20 +4,40 @@
  * sloppr | v1
  * OpenAPI spec version: 1.0.0
  */
-import { HttpClient, HttpHeaders, HttpResponse as AngularHttpResponse } from '@angular/common/http';
-import type { HttpContext, HttpEvent, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpResponse as AngularHttpResponse
+} from '@angular/common/http';
+import type {
+  HttpContext,
+  HttpEvent,
+  HttpParams
+} from '@angular/common/http';
 
-import { Injectable, inject } from '@angular/core';
+import {
+  Injectable,
+  inject
+} from '@angular/core';
 
-import { Observable } from 'rxjs';
+import {
+  Observable
+} from 'rxjs';
 
-import type { MealIdeaApprovalRequest, MealIdeaDTO, MealIdeaUpdateRequest } from '../model';
+import type {
+  MealIdeaApprovalRequest,
+  MealIdeaDTO,
+  MealIdeaUpdateRequest
+} from '../model';
+
+
 
 interface HttpClientOptions {
   readonly headers?: HttpHeaders | Record<string, string | string[]>;
   readonly context?: HttpContext;
   readonly params?:
-    HttpParams | Record<string, string | number | boolean | Array<string | number | boolean>>;
+        | HttpParams
+      | Record<string, string | number | boolean | Array<string | number | boolean>>;
   readonly reportProgress?: boolean;
   readonly withCredentials?: boolean;
   readonly credentials?: RequestCredentials;
@@ -29,7 +49,7 @@ interface HttpClientOptions {
   readonly referrer?: string;
   readonly integrity?: string;
   readonly referrerPolicy?: ReferrerPolicy;
-  readonly transferCache?: { includeHeaders?: string[] } | boolean;
+  readonly transferCache?: {includeHeaders?: string[]} | boolean;
   readonly timeout?: number;
 }
 
@@ -49,8 +69,11 @@ type HttpClientObserveOptions = HttpClientOptions & {
   readonly observe?: 'body' | 'events' | 'response';
 };
 
-export type GetApiMealIdeasAccept =
-  (typeof GetApiMealIdeasAccept)[keyof typeof GetApiMealIdeasAccept];
+
+
+
+
+export type GetApiMealIdeasAccept = typeof GetApiMealIdeasAccept[keyof typeof GetApiMealIdeasAccept];
 
 export const GetApiMealIdeasAccept = {
   text_plain: 'text/plain',
@@ -58,8 +81,7 @@ export const GetApiMealIdeasAccept = {
   text_json: 'text/json',
 } as const;
 
-export type GetApiMealIdeasInactiveAccept =
-  (typeof GetApiMealIdeasInactiveAccept)[keyof typeof GetApiMealIdeasInactiveAccept];
+export type GetApiMealIdeasInactiveAccept = typeof GetApiMealIdeasInactiveAccept[keyof typeof GetApiMealIdeasInactiveAccept];
 
 export const GetApiMealIdeasInactiveAccept = {
   text_plain: 'text/plain',
@@ -67,8 +89,7 @@ export const GetApiMealIdeasInactiveAccept = {
   text_json: 'text/json',
 } as const;
 
-export type GetApiMealIdeasIdAccept =
-  (typeof GetApiMealIdeasIdAccept)[keyof typeof GetApiMealIdeasIdAccept];
+export type GetApiMealIdeasIdAccept = typeof GetApiMealIdeasIdAccept[keyof typeof GetApiMealIdeasIdAccept];
 
 export const GetApiMealIdeasIdAccept = {
   text_plain: 'text/plain',
@@ -79,248 +100,228 @@ export const GetApiMealIdeasIdAccept = {
 @Injectable({ providedIn: 'root' })
 export class MealIdeasService {
   private readonly http = inject(HttpClient);
-  getApiMealIdeas(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiMealIdeas(
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<MealIdeaDTO[]>;
+ getApiMealIdeas(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiMealIdeas(accept: 'application/json', options?: HttpClientOptions): Observable<MealIdeaDTO[]>;
   getApiMealIdeas(accept: 'text/json', options?: HttpClientOptions): Observable<MealIdeaDTO[]>;
-  getApiMealIdeas(
-    accept?: GetApiMealIdeasAccept,
-    options?: HttpClientOptions,
-  ): Observable<MealIdeaDTO[] | string>;
+  getApiMealIdeas(accept?: GetApiMealIdeasAccept, options?: HttpClientOptions): Observable<MealIdeaDTO[] | string>;
   getApiMealIdeas(
     accept: GetApiMealIdeasAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<MealIdeaDTO[] | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<MealIdeaDTO[]>(`/api/MealIdeas`, {
         ...options,
         responseType: 'json',
         headers,
+
+
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/MealIdeas`, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
     return this.http.get<MealIdeaDTO[]>(`/api/MealIdeas`, {
-      ...options,
-      responseType: 'json',
-      headers,
-    });
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
   }
-  getApiMealIdeasInactive(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiMealIdeasInactive(
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<MealIdeaDTO[]>;
-  getApiMealIdeasInactive(
-    accept: 'text/json',
-    options?: HttpClientOptions,
-  ): Observable<MealIdeaDTO[]>;
-  getApiMealIdeasInactive(
-    accept?: GetApiMealIdeasInactiveAccept,
-    options?: HttpClientOptions,
-  ): Observable<MealIdeaDTO[] | string>;
+ getApiMealIdeasInactive(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiMealIdeasInactive(accept: 'application/json', options?: HttpClientOptions): Observable<MealIdeaDTO[]>;
+  getApiMealIdeasInactive(accept: 'text/json', options?: HttpClientOptions): Observable<MealIdeaDTO[]>;
+  getApiMealIdeasInactive(accept?: GetApiMealIdeasInactiveAccept, options?: HttpClientOptions): Observable<MealIdeaDTO[] | string>;
   getApiMealIdeasInactive(
     accept: GetApiMealIdeasInactiveAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<MealIdeaDTO[] | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<MealIdeaDTO[]>(`/api/MealIdeas/inactive`, {
         ...options,
         responseType: 'json',
         headers,
+
+
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/MealIdeas/inactive`, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
     return this.http.get<MealIdeaDTO[]>(`/api/MealIdeas/inactive`, {
-      ...options,
-      responseType: 'json',
-      headers,
-    });
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
   }
-  getApiMealIdeasId(
-    id: number | string,
-    accept: 'text/plain',
-    options?: HttpClientOptions,
-  ): Observable<string>;
-  getApiMealIdeasId(
-    id: number | string,
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<MealIdeaDTO>;
-  getApiMealIdeasId(
-    id: number | string,
-    accept: 'text/json',
-    options?: HttpClientOptions,
-  ): Observable<MealIdeaDTO>;
-  getApiMealIdeasId(
-    id: number | string,
-    accept?: GetApiMealIdeasIdAccept,
-    options?: HttpClientOptions,
-  ): Observable<MealIdeaDTO | string>;
+ getApiMealIdeasId(id: number | string,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiMealIdeasId(id: number | string,
+    accept: 'application/json', options?: HttpClientOptions): Observable<MealIdeaDTO>;
+  getApiMealIdeasId(id: number | string,
+    accept: 'text/json', options?: HttpClientOptions): Observable<MealIdeaDTO>;
+  getApiMealIdeasId(id: number | string,
+    accept?: GetApiMealIdeasIdAccept, options?: HttpClientOptions): Observable<MealIdeaDTO | string>;
   getApiMealIdeasId(
     id: number | string,
     accept: GetApiMealIdeasIdAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<MealIdeaDTO | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<MealIdeaDTO>(`/api/MealIdeas/${id}`, {
         ...options,
         responseType: 'json',
         headers,
+
+
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/MealIdeas/${id}`, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
     return this.http.get<MealIdeaDTO>(`/api/MealIdeas/${id}`, {
-      ...options,
-      responseType: 'json',
-      headers,
-    });
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
   }
+ putApiMealIdeasId<TData = void>(id: number | string,
+    mealIdeaUpdateRequest: MealIdeaUpdateRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ putApiMealIdeasId<TData = void>(id: number | string,
+    mealIdeaUpdateRequest: MealIdeaUpdateRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ putApiMealIdeasId<TData = void>(id: number | string,
+    mealIdeaUpdateRequest: MealIdeaUpdateRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   putApiMealIdeasId<TData = void>(
     id: number | string,
-    mealIdeaUpdateRequest: MealIdeaUpdateRequest,
-    options?: HttpClientBodyOptions,
-  ): Observable<TData>;
-  putApiMealIdeasId<TData = void>(
-    id: number | string,
-    mealIdeaUpdateRequest: MealIdeaUpdateRequest,
-    options?: HttpClientEventOptions,
-  ): Observable<HttpEvent<TData>>;
-  putApiMealIdeasId<TData = void>(
-    id: number | string,
-    mealIdeaUpdateRequest: MealIdeaUpdateRequest,
-    options?: HttpClientResponseOptions,
-  ): Observable<AngularHttpResponse<TData>>;
-  putApiMealIdeasId<TData = void>(
-    id: number | string,
-    mealIdeaUpdateRequest: MealIdeaUpdateRequest,
-    options?: HttpClientObserveOptions,
-  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    mealIdeaUpdateRequest: MealIdeaUpdateRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
-      return this.http.put<TData>(`/api/MealIdeas/${id}`, mealIdeaUpdateRequest, {
+      return this.http.put<TData>(
+      `/api/MealIdeas/${id}`,
+      mealIdeaUpdateRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-      });
+      }
+    );
     }
 
     if (options?.observe === 'response') {
-      return this.http.put<TData>(`/api/MealIdeas/${id}`, mealIdeaUpdateRequest, {
+      return this.http.put<TData>(
+      `/api/MealIdeas/${id}`,
+      mealIdeaUpdateRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-      });
+      }
+    );
     }
 
-    return this.http.put<TData>(`/api/MealIdeas/${id}`, mealIdeaUpdateRequest, {
-      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-      observe: 'body',
-    });
+    return this.http.put<TData>(
+      `/api/MealIdeas/${id}`,
+      mealIdeaUpdateRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
   }
+ deleteApiMealIdeasId<TData = void>(id: number | string, options?: HttpClientBodyOptions): Observable<TData>;
+ deleteApiMealIdeasId<TData = void>(id: number | string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ deleteApiMealIdeasId<TData = void>(id: number | string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   deleteApiMealIdeasId<TData = void>(
-    id: number | string,
-    options?: HttpClientBodyOptions,
-  ): Observable<TData>;
-  deleteApiMealIdeasId<TData = void>(
-    id: number | string,
-    options?: HttpClientEventOptions,
-  ): Observable<HttpEvent<TData>>;
-  deleteApiMealIdeasId<TData = void>(
-    id: number | string,
-    options?: HttpClientResponseOptions,
-  ): Observable<AngularHttpResponse<TData>>;
-  deleteApiMealIdeasId<TData = void>(
-    id: number | string,
-    options?: HttpClientObserveOptions,
-  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    id: number | string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
-      return this.http.delete<TData>(`/api/MealIdeas/${id}`, {
+      return this.http.delete<TData>(
+      `/api/MealIdeas/${id}`,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-      });
+      }
+    );
     }
 
     if (options?.observe === 'response') {
-      return this.http.delete<TData>(`/api/MealIdeas/${id}`, {
+      return this.http.delete<TData>(
+      `/api/MealIdeas/${id}`,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-      });
+      }
+    );
     }
 
-    return this.http.delete<TData>(`/api/MealIdeas/${id}`, {
-      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-      observe: 'body',
-    });
+    return this.http.delete<TData>(
+      `/api/MealIdeas/${id}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
   }
+ putApiMealIdeasIdApproval<TData = void>(id: number | string,
+    mealIdeaApprovalRequest: MealIdeaApprovalRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ putApiMealIdeasIdApproval<TData = void>(id: number | string,
+    mealIdeaApprovalRequest: MealIdeaApprovalRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ putApiMealIdeasIdApproval<TData = void>(id: number | string,
+    mealIdeaApprovalRequest: MealIdeaApprovalRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   putApiMealIdeasIdApproval<TData = void>(
     id: number | string,
-    mealIdeaApprovalRequest: MealIdeaApprovalRequest,
-    options?: HttpClientBodyOptions,
-  ): Observable<TData>;
-  putApiMealIdeasIdApproval<TData = void>(
-    id: number | string,
-    mealIdeaApprovalRequest: MealIdeaApprovalRequest,
-    options?: HttpClientEventOptions,
-  ): Observable<HttpEvent<TData>>;
-  putApiMealIdeasIdApproval<TData = void>(
-    id: number | string,
-    mealIdeaApprovalRequest: MealIdeaApprovalRequest,
-    options?: HttpClientResponseOptions,
-  ): Observable<AngularHttpResponse<TData>>;
-  putApiMealIdeasIdApproval<TData = void>(
-    id: number | string,
-    mealIdeaApprovalRequest: MealIdeaApprovalRequest,
-    options?: HttpClientObserveOptions,
-  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    mealIdeaApprovalRequest: MealIdeaApprovalRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
-      return this.http.put<TData>(`/api/MealIdeas/${id}/approval`, mealIdeaApprovalRequest, {
+      return this.http.put<TData>(
+      `/api/MealIdeas/${id}/approval`,
+      mealIdeaApprovalRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-      });
+      }
+    );
     }
 
     if (options?.observe === 'response') {
-      return this.http.put<TData>(`/api/MealIdeas/${id}/approval`, mealIdeaApprovalRequest, {
+      return this.http.put<TData>(
+      `/api/MealIdeas/${id}/approval`,
+      mealIdeaApprovalRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-      });
+      }
+    );
     }
 
-    return this.http.put<TData>(`/api/MealIdeas/${id}/approval`, mealIdeaApprovalRequest, {
-      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-      observe: 'body',
-    });
+    return this.http.put<TData>(
+      `/api/MealIdeas/${id}/approval`,
+      mealIdeaApprovalRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
   }
-}
+};
+

@@ -12,9 +12,9 @@ export interface CookbookEntryDTO {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   cookbookId?: number | string;
   /**
-   * @nullable
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)$
+     */
   sourceRecipeId?: number | string | null;
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   currentVersionNumber?: number | string;

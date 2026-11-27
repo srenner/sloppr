@@ -4,20 +4,37 @@
  * sloppr | v1
  * OpenAPI spec version: 1.0.0
  */
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import type { HttpContext, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
+import type {
+  HttpContext,
+  HttpParams
+} from '@angular/common/http';
 
-import { Injectable, inject } from '@angular/core';
+import {
+  Injectable,
+  inject
+} from '@angular/core';
 
-import { Observable } from 'rxjs';
+import {
+  Observable
+} from 'rxjs';
 
-import type { AiCapabilitySettingDTO, AiCapabilitySettingRequest } from '../model';
+import type {
+  AiCapabilitySettingDTO,
+  AiCapabilitySettingRequest
+} from '../model';
+
+
 
 interface HttpClientOptions {
   readonly headers?: HttpHeaders | Record<string, string | string[]>;
   readonly context?: HttpContext;
   readonly params?:
-    HttpParams | Record<string, string | number | boolean | Array<string | number | boolean>>;
+        | HttpParams
+      | Record<string, string | number | boolean | Array<string | number | boolean>>;
   readonly reportProgress?: boolean;
   readonly withCredentials?: boolean;
   readonly credentials?: RequestCredentials;
@@ -29,7 +46,7 @@ interface HttpClientOptions {
   readonly referrer?: string;
   readonly integrity?: string;
   readonly referrerPolicy?: ReferrerPolicy;
-  readonly transferCache?: { includeHeaders?: string[] } | boolean;
+  readonly transferCache?: {includeHeaders?: string[]} | boolean;
   readonly timeout?: number;
 }
 
@@ -49,8 +66,11 @@ type HttpClientObserveOptions = HttpClientOptions & {
   readonly observe?: 'body' | 'events' | 'response';
 };
 
-export type GetApiAiCapabilitySettingsAccept =
-  (typeof GetApiAiCapabilitySettingsAccept)[keyof typeof GetApiAiCapabilitySettingsAccept];
+
+
+
+
+export type GetApiAiCapabilitySettingsAccept = typeof GetApiAiCapabilitySettingsAccept[keyof typeof GetApiAiCapabilitySettingsAccept];
 
 export const GetApiAiCapabilitySettingsAccept = {
   text_plain: 'text/plain',
@@ -58,8 +78,7 @@ export const GetApiAiCapabilitySettingsAccept = {
   text_json: 'text/json',
 } as const;
 
-export type PutApiAiCapabilitySettingsAccept =
-  (typeof PutApiAiCapabilitySettingsAccept)[keyof typeof PutApiAiCapabilitySettingsAccept];
+export type PutApiAiCapabilitySettingsAccept = typeof PutApiAiCapabilitySettingsAccept[keyof typeof PutApiAiCapabilitySettingsAccept];
 
 export const PutApiAiCapabilitySettingsAccept = {
   text_plain: 'text/plain',
@@ -70,107 +89,88 @@ export const PutApiAiCapabilitySettingsAccept = {
 @Injectable({ providedIn: 'root' })
 export class AiCapabilitySettingsService {
   private readonly http = inject(HttpClient);
-  getApiAiCapabilitySettings(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiAiCapabilitySettings(
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<AiCapabilitySettingDTO[]>;
-  getApiAiCapabilitySettings(
-    accept: 'text/json',
-    options?: HttpClientOptions,
-  ): Observable<AiCapabilitySettingDTO[]>;
-  getApiAiCapabilitySettings(
-    accept?: GetApiAiCapabilitySettingsAccept,
-    options?: HttpClientOptions,
-  ): Observable<AiCapabilitySettingDTO[] | string>;
+ getApiAiCapabilitySettings(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiAiCapabilitySettings(accept: 'application/json', options?: HttpClientOptions): Observable<AiCapabilitySettingDTO[]>;
+  getApiAiCapabilitySettings(accept: 'text/json', options?: HttpClientOptions): Observable<AiCapabilitySettingDTO[]>;
+  getApiAiCapabilitySettings(accept?: GetApiAiCapabilitySettingsAccept, options?: HttpClientOptions): Observable<AiCapabilitySettingDTO[] | string>;
   getApiAiCapabilitySettings(
     accept: GetApiAiCapabilitySettingsAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<AiCapabilitySettingDTO[] | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<AiCapabilitySettingDTO[]>(`/api/AiCapabilitySettings`, {
         ...options,
         responseType: 'json',
         headers,
+
+
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/AiCapabilitySettings`, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
     return this.http.get<AiCapabilitySettingDTO[]>(`/api/AiCapabilitySettings`, {
-      ...options,
-      responseType: 'json',
-      headers,
-    });
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
   }
-  putApiAiCapabilitySettings(
-    aiCapabilitySettingRequest: AiCapabilitySettingRequest[],
-    accept: 'text/plain',
-    options?: HttpClientOptions,
-  ): Observable<string>;
-  putApiAiCapabilitySettings(
-    aiCapabilitySettingRequest: AiCapabilitySettingRequest[],
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<AiCapabilitySettingDTO[]>;
-  putApiAiCapabilitySettings(
-    aiCapabilitySettingRequest: AiCapabilitySettingRequest[],
-    accept: 'text/json',
-    options?: HttpClientOptions,
-  ): Observable<AiCapabilitySettingDTO[]>;
-  putApiAiCapabilitySettings(
-    aiCapabilitySettingRequest: AiCapabilitySettingRequest[],
-    accept?: PutApiAiCapabilitySettingsAccept,
-    options?: HttpClientOptions,
-  ): Observable<AiCapabilitySettingDTO[] | string>;
+ putApiAiCapabilitySettings(aiCapabilitySettingRequest: AiCapabilitySettingRequest[],
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  putApiAiCapabilitySettings(aiCapabilitySettingRequest: AiCapabilitySettingRequest[],
+    accept: 'application/json', options?: HttpClientOptions): Observable<AiCapabilitySettingDTO[]>;
+  putApiAiCapabilitySettings(aiCapabilitySettingRequest: AiCapabilitySettingRequest[],
+    accept: 'text/json', options?: HttpClientOptions): Observable<AiCapabilitySettingDTO[]>;
+  putApiAiCapabilitySettings(aiCapabilitySettingRequest: AiCapabilitySettingRequest[],
+    accept?: PutApiAiCapabilitySettingsAccept, options?: HttpClientOptions): Observable<AiCapabilitySettingDTO[] | string>;
   putApiAiCapabilitySettings(
     aiCapabilitySettingRequest: AiCapabilitySettingRequest[],
     accept: PutApiAiCapabilitySettingsAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<AiCapabilitySettingDTO[] | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.put<AiCapabilitySettingDTO[]>(
-        `/api/AiCapabilitySettings`,
-        aiCapabilitySettingRequest,
-        {
-          ...options,
-          responseType: 'json',
-          headers,
-        },
-      );
+      return this.http.put<AiCapabilitySettingDTO[]>(`/api/AiCapabilitySettings`, aiCapabilitySettingRequest, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.put(`/api/AiCapabilitySettings`, aiCapabilitySettingRequest, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
-    return this.http.put<AiCapabilitySettingDTO[]>(
-      `/api/AiCapabilitySettings`,
-      aiCapabilitySettingRequest,
-      {
+    return this.http.put<AiCapabilitySettingDTO[]>(`/api/AiCapabilitySettings`, aiCapabilitySettingRequest, {
         ...options,
         responseType: 'json',
         headers,
-      },
-    );
-  }
-}
 
-export type GetApiAiCapabilitySettingsClientResult = NonNullable<string | AiCapabilitySettingDTO[]>;
-export type PutApiAiCapabilitySettingsClientResult = NonNullable<string | AiCapabilitySettingDTO[]>;
+
+      });
+  }
+};
+
+export type GetApiAiCapabilitySettingsClientResult = NonNullable<string | AiCapabilitySettingDTO[]>
+export type PutApiAiCapabilitySettingsClientResult = NonNullable<string | AiCapabilitySettingDTO[]>

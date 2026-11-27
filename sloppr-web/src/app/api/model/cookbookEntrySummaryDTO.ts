@@ -11,9 +11,9 @@ export interface CookbookEntrySummaryDTO {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   cookbookId?: number | string;
   /**
-   * @nullable
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)$
+     */
   sourceRecipeId?: number | string | null;
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   currentVersionNumber?: number | string;
@@ -26,9 +26,9 @@ export interface CookbookEntrySummaryDTO {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   cookTimeMinutes?: number | string;
   /**
-   * @nullable
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)$
+     */
   difficulty?: number | string | null;
   dateCreated?: string;
   dateUpdated?: string;

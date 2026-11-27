@@ -1,6 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import type { MealIdeaDTO, RecipeDTO } from '../../api/model';
 import { Home } from './home';
 
@@ -36,7 +37,7 @@ describe('Home', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Home],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Home);
@@ -100,6 +101,71 @@ describe('Home', () => {
     expect(button).toBeTruthy();
     button.click();
     fixture.detectChanges();
+  }
+
+  async function pasteImage(): Promise<void> {
+    const file = new File(['png'], 'recipe.png', { type: 'image/png' });
+    const event = new Event('paste', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'clipboardData', {
+      value: {
+        items: [
+          {
+            kind: 'file',
+            type: 'image/png',
+            getAsFile: () => file,
+          },
+        ],
+      },
+    });
+
+    const textarea = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+    textarea.dispatchEvent(event);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    fixture.detectChanges();
+  }
+
+  function dropEvent(type: 'dragover' | 'dragleave' | 'drop', file?: File): Event {
+    const event = new Event(type, { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'dataTransfer', {
+      value: {
+        files: file ? [file] : [],
+        types: file ? ['Files'] : [],
+      },
+    });
+    return event;
+  }
+
+  async function dropImage(): Promise<void> {
+    const file = new File(['png'], 'recipe.png', { type: 'image/png' });
+    const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+    form.dispatchEvent(dropEvent('drop', file));
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    fixture.detectChanges();
+  }
+
+  async function importRecipe(): Promise<RecipeDTO> {
+    await pasteImage();
+
+    const request = http.expectOne('/api/AiInference/recipes/from-image');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body.contentType).toBe('image/png');
+    expect(typeof request.request.body.imageBase64).toBe('string');
+    expect(request.request.body.imageBase64.length).toBeGreaterThan(0);
+
+    const imported: RecipeDTO = {
+      ...recipe(0),
+      mealIdeaId: null,
+      sourceType: 'Import',
+    };
+    request.flush(imported);
+    fixture.detectChanges();
+
+    const markdown = http.expectOne('/api/Recipes/markdown');
+    expect(markdown.request.method).toBe('POST');
+    markdown.flush(`# ${imported.content.name}\n\n1. Cook the rice.`);
+    fixture.detectChanges();
+
+    return imported;
   }
 
   it('should create', () => {
@@ -238,5 +304,106 @@ describe('Home', () => {
     expect(textarea).toBeTruthy();
     expect(textarea.value).toBe('chicken and rice');
     expect(fixture.nativeElement.querySelector('[data-testid="idea-card"]')).toBeNull();
+  });
+
+  it('imports a pasted image and saves it to the family cookbook', async () => {
+    const imported = await importRecipe();
+
+    expect(fixture.nativeElement.textContent).toContain('Save to family cookbook');
+
+    click('save-import');
+
+    const save = http.expectOne('/api/Recipes');
+    expect(save.request.method).toBe('POST');
+    expect(save.request.body.sourceType).toBe('Import');
+    expect(save.request.body.mealIdeaId).toBeNull();
+    save.flush({ ...imported, id: 9 });
+    fixture.detectChanges();
+
+    const cookbooks = http.expectOne('/api/Cookbooks');
+    cookbooks.flush([{ id: 1, name: 'Family Cookbook' }]);
+    fixture.detectChanges();
+
+    const add = http.expectOne('/api/Cookbooks/1/entries/from-recipe/9');
+    add.flush({
+      id: 5,
+      cookbookId: 1,
+      sourceRecipeId: 9,
+      currentVersionNumber: 1,
+      content: imported.content,
+    });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('added to your family cookbook');
+  });
+
+  it('explains when photo import is not configured', async () => {
+    await pasteImage();
+
+    http
+      .expectOne('/api/AiInference/recipes/from-image')
+      .flush('No model', { status: 400, statusText: 'Bad Request' });
+    fixture.detectChanges();
+
+    const alert = fixture.nativeElement.querySelector('[role="alert"]') as HTMLElement;
+    expect(alert.textContent).toContain('not set up');
+    expect(fixture.nativeElement.querySelector('textarea')).toBeTruthy();
+  });
+
+  it('leaves non-image pastes alone', () => {
+    const event = new Event('paste', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'clipboardData', {
+      value: {
+        items: [{ kind: 'string', type: 'text/plain', getAsFile: () => null }],
+      },
+    });
+
+    const textarea = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+    textarea.dispatchEvent(event);
+    fixture.detectChanges();
+
+    http.expectNone('/api/AiInference/recipes/from-image');
+  });
+
+  it('imports an image dropped on the idea box', async () => {
+    await dropImage();
+
+    const request = http.expectOne('/api/AiInference/recipes/from-image');
+    const imported: RecipeDTO = {
+      ...recipe(0),
+      mealIdeaId: null,
+      sourceType: 'Import',
+    };
+    request.flush(imported);
+    fixture.detectChanges();
+
+    http.expectOne('/api/Recipes/markdown').flush('# Imported Recipe');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Save to family cookbook');
+  });
+
+  it('shows a drop target while dragging a file over the idea box', () => {
+    const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+    const file = new File(['png'], 'recipe.png', { type: 'image/png' });
+
+    form.dispatchEvent(dropEvent('dragover', file));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Drop a recipe photo to import');
+
+    form.dispatchEvent(dropEvent('dragleave'));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).not.toContain('Drop a recipe photo to import');
+  });
+
+  it('rejects non-image drops', () => {
+    const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+    const file = new File(['notes'], 'notes.txt', { type: 'text/plain' });
+
+    form.dispatchEvent(dropEvent('drop', file));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Drop an image file');
+    http.expectNone('/api/AiInference/recipes/from-image');
   });
 });

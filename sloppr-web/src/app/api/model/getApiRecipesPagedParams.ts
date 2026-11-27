@@ -6,12 +6,12 @@
  */
 
 export type GetApiRecipesPagedParams = {
-  /**
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
-  page?: number | string;
-  /**
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
-  pageSize?: number | string;
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+page?: number | string;
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+pageSize?: number | string;
 };

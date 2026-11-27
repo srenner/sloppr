@@ -4,12 +4,25 @@
  * sloppr | v1
  * OpenAPI spec version: 1.0.0
  */
-import { HttpClient, HttpHeaders, HttpResponse as AngularHttpResponse } from '@angular/common/http';
-import type { HttpContext, HttpEvent, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpResponse as AngularHttpResponse
+} from '@angular/common/http';
+import type {
+  HttpContext,
+  HttpEvent,
+  HttpParams
+} from '@angular/common/http';
 
-import { Injectable, inject } from '@angular/core';
+import {
+  Injectable,
+  inject
+} from '@angular/core';
 
-import { Observable } from 'rxjs';
+import {
+  Observable
+} from 'rxjs';
 
 import type {
   FileContentResult,
@@ -17,14 +30,17 @@ import type {
   PostApiRecipeTemplatesImportParams,
   RecipeTemplateDTO,
   RecipeTemplateRequest,
-  RecipeTemplateUpdateRequest,
+  RecipeTemplateUpdateRequest
 } from '../model';
+
+
 
 interface HttpClientOptions {
   readonly headers?: HttpHeaders | Record<string, string | string[]>;
   readonly context?: HttpContext;
   readonly params?:
-    HttpParams | Record<string, string | number | boolean | Array<string | number | boolean>>;
+        | HttpParams
+      | Record<string, string | number | boolean | Array<string | number | boolean>>;
   readonly reportProgress?: boolean;
   readonly withCredentials?: boolean;
   readonly credentials?: RequestCredentials;
@@ -36,7 +52,7 @@ interface HttpClientOptions {
   readonly referrer?: string;
   readonly integrity?: string;
   readonly referrerPolicy?: ReferrerPolicy;
-  readonly transferCache?: { includeHeaders?: string[] } | boolean;
+  readonly transferCache?: {includeHeaders?: string[]} | boolean;
   readonly timeout?: number;
 }
 
@@ -95,7 +111,9 @@ function filterParams(
       const filtered = value.filter(
         (item) =>
           item != null &&
-          (typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean'),
+          (typeof item === 'string' ||
+            typeof item === 'number' ||
+            typeof item === 'boolean'),
       ) as Array<string | number | boolean>;
       if (filtered.length) {
         filteredParams[key] = filtered;
@@ -108,7 +126,9 @@ function filterParams(
       filteredParams[key] = preserveRequiredNullables ? null : '';
     } else if (
       value != null &&
-      (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
+      (typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean')
     ) {
       filteredParams[key] = value;
     }
@@ -116,8 +136,9 @@ function filterParams(
   return filteredParams;
 }
 
-export type GetApiRecipeTemplatesAccept =
-  (typeof GetApiRecipeTemplatesAccept)[keyof typeof GetApiRecipeTemplatesAccept];
+
+
+export type GetApiRecipeTemplatesAccept = typeof GetApiRecipeTemplatesAccept[keyof typeof GetApiRecipeTemplatesAccept];
 
 export const GetApiRecipeTemplatesAccept = {
   text_plain: 'text/plain',
@@ -125,8 +146,7 @@ export const GetApiRecipeTemplatesAccept = {
   text_json: 'text/json',
 } as const;
 
-export type PostApiRecipeTemplatesAccept =
-  (typeof PostApiRecipeTemplatesAccept)[keyof typeof PostApiRecipeTemplatesAccept];
+export type PostApiRecipeTemplatesAccept = typeof PostApiRecipeTemplatesAccept[keyof typeof PostApiRecipeTemplatesAccept];
 
 export const PostApiRecipeTemplatesAccept = {
   text_plain: 'text/plain',
@@ -134,8 +154,7 @@ export const PostApiRecipeTemplatesAccept = {
   text_json: 'text/json',
 } as const;
 
-export type GetApiRecipeTemplatesNameAccept =
-  (typeof GetApiRecipeTemplatesNameAccept)[keyof typeof GetApiRecipeTemplatesNameAccept];
+export type GetApiRecipeTemplatesNameAccept = typeof GetApiRecipeTemplatesNameAccept[keyof typeof GetApiRecipeTemplatesNameAccept];
 
 export const GetApiRecipeTemplatesNameAccept = {
   text_plain: 'text/plain',
@@ -143,8 +162,7 @@ export const GetApiRecipeTemplatesNameAccept = {
   text_json: 'text/json',
 } as const;
 
-export type PutApiRecipeTemplatesNameAccept =
-  (typeof PutApiRecipeTemplatesNameAccept)[keyof typeof PutApiRecipeTemplatesNameAccept];
+export type PutApiRecipeTemplatesNameAccept = typeof PutApiRecipeTemplatesNameAccept[keyof typeof PutApiRecipeTemplatesNameAccept];
 
 export const PutApiRecipeTemplatesNameAccept = {
   text_plain: 'text/plain',
@@ -152,8 +170,7 @@ export const PutApiRecipeTemplatesNameAccept = {
   text_json: 'text/json',
 } as const;
 
-export type PostApiRecipeTemplatesImportAccept =
-  (typeof PostApiRecipeTemplatesImportAccept)[keyof typeof PostApiRecipeTemplatesImportAccept];
+export type PostApiRecipeTemplatesImportAccept = typeof PostApiRecipeTemplatesImportAccept[keyof typeof PostApiRecipeTemplatesImportAccept];
 
 export const PostApiRecipeTemplatesImportAccept = {
   text_plain: 'text/plain',
@@ -164,370 +181,310 @@ export const PostApiRecipeTemplatesImportAccept = {
 @Injectable({ providedIn: 'root' })
 export class RecipeTemplatesService {
   private readonly http = inject(HttpClient);
-  getApiRecipeTemplates(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiRecipeTemplates(
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO[]>;
-  getApiRecipeTemplates(
-    accept: 'text/json',
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO[]>;
-  getApiRecipeTemplates(
-    accept?: GetApiRecipeTemplatesAccept,
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO[] | string>;
+ getApiRecipeTemplates(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiRecipeTemplates(accept: 'application/json', options?: HttpClientOptions): Observable<RecipeTemplateDTO[]>;
+  getApiRecipeTemplates(accept: 'text/json', options?: HttpClientOptions): Observable<RecipeTemplateDTO[]>;
+  getApiRecipeTemplates(accept?: GetApiRecipeTemplatesAccept, options?: HttpClientOptions): Observable<RecipeTemplateDTO[] | string>;
   getApiRecipeTemplates(
     accept: GetApiRecipeTemplatesAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<RecipeTemplateDTO[] | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<RecipeTemplateDTO[]>(`/api/RecipeTemplates`, {
         ...options,
         responseType: 'json',
         headers,
+
+
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/RecipeTemplates`, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
     return this.http.get<RecipeTemplateDTO[]>(`/api/RecipeTemplates`, {
-      ...options,
-      responseType: 'json',
-      headers,
-    });
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
   }
-  postApiRecipeTemplates(
-    recipeTemplateRequest: RecipeTemplateRequest,
-    accept: 'text/plain',
-    options?: HttpClientOptions,
-  ): Observable<string>;
-  postApiRecipeTemplates(
-    recipeTemplateRequest: RecipeTemplateRequest,
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO>;
-  postApiRecipeTemplates(
-    recipeTemplateRequest: RecipeTemplateRequest,
-    accept: 'text/json',
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO>;
-  postApiRecipeTemplates(
-    recipeTemplateRequest: RecipeTemplateRequest,
-    accept?: PostApiRecipeTemplatesAccept,
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO | string>;
+ postApiRecipeTemplates(recipeTemplateRequest: RecipeTemplateRequest,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  postApiRecipeTemplates(recipeTemplateRequest: RecipeTemplateRequest,
+    accept: 'application/json', options?: HttpClientOptions): Observable<RecipeTemplateDTO>;
+  postApiRecipeTemplates(recipeTemplateRequest: RecipeTemplateRequest,
+    accept: 'text/json', options?: HttpClientOptions): Observable<RecipeTemplateDTO>;
+  postApiRecipeTemplates(recipeTemplateRequest: RecipeTemplateRequest,
+    accept?: PostApiRecipeTemplatesAccept, options?: HttpClientOptions): Observable<RecipeTemplateDTO | string>;
   postApiRecipeTemplates(
     recipeTemplateRequest: RecipeTemplateRequest,
     accept: PostApiRecipeTemplatesAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<RecipeTemplateDTO | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.post<RecipeTemplateDTO>(`/api/RecipeTemplates`, recipeTemplateRequest, {
         ...options,
         responseType: 'json',
         headers,
+
+
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.post(`/api/RecipeTemplates`, recipeTemplateRequest, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
     return this.http.post<RecipeTemplateDTO>(`/api/RecipeTemplates`, recipeTemplateRequest, {
-      ...options,
-      responseType: 'json',
-      headers,
-    });
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
   }
-  getApiRecipeTemplatesStarter(options?: HttpClientBodyOptions): Observable<string>;
-  getApiRecipeTemplatesStarter(options?: HttpClientEventOptions): Observable<HttpEvent<string>>;
+ getApiRecipeTemplatesStarter( options?: HttpClientBodyOptions): Observable<string>;
+ getApiRecipeTemplatesStarter( options?: HttpClientEventOptions): Observable<HttpEvent<string>>;
+ getApiRecipeTemplatesStarter( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<string>>;
   getApiRecipeTemplatesStarter(
-    options?: HttpClientResponseOptions,
-  ): Observable<AngularHttpResponse<string>>;
-  getApiRecipeTemplatesStarter(
-    options?: HttpClientObserveOptions,
-  ): Observable<string | HttpEvent<string> | AngularHttpResponse<string>> {
+     options?: HttpClientObserveOptions): Observable<string | HttpEvent<string> | AngularHttpResponse<string>> {
     if (options?.observe === 'events') {
-      return this.http.get(`/api/RecipeTemplates/starter`, {
+      return this.http.get(
+      `/api/RecipeTemplates/starter`,{
         responseType: 'text',
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'events',
-      }) as Observable<HttpEvent<string>>;
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',}
+    ) as Observable<HttpEvent<string>>;
     }
 
     if (options?.observe === 'response') {
-      return this.http.get(`/api/RecipeTemplates/starter`, {
+      return this.http.get(
+      `/api/RecipeTemplates/starter`,{
         responseType: 'text',
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'response',
-      }) as Observable<AngularHttpResponse<string>>;
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',}
+    ) as Observable<AngularHttpResponse<string>>;
     }
 
-    return this.http.get(`/api/RecipeTemplates/starter`, {
-      responseType: 'text',
-      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-      observe: 'body',
-    }) as Observable<string>;
+    return this.http.get(
+      `/api/RecipeTemplates/starter`,{
+        responseType: 'text',
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',}
+    ) as Observable<string>;
   }
-  getApiRecipeTemplatesName(
-    name: string,
-    accept: 'text/plain',
-    options?: HttpClientOptions,
-  ): Observable<string>;
-  getApiRecipeTemplatesName(
-    name: string,
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO>;
-  getApiRecipeTemplatesName(
-    name: string,
-    accept: 'text/json',
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO>;
-  getApiRecipeTemplatesName(
-    name: string,
-    accept?: GetApiRecipeTemplatesNameAccept,
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO | string>;
+ getApiRecipeTemplatesName(name: string,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiRecipeTemplatesName(name: string,
+    accept: 'application/json', options?: HttpClientOptions): Observable<RecipeTemplateDTO>;
+  getApiRecipeTemplatesName(name: string,
+    accept: 'text/json', options?: HttpClientOptions): Observable<RecipeTemplateDTO>;
+  getApiRecipeTemplatesName(name: string,
+    accept?: GetApiRecipeTemplatesNameAccept, options?: HttpClientOptions): Observable<RecipeTemplateDTO | string>;
   getApiRecipeTemplatesName(
     name: string,
     accept: GetApiRecipeTemplatesNameAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<RecipeTemplateDTO | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<RecipeTemplateDTO>(`/api/RecipeTemplates/${name}`, {
         ...options,
         responseType: 'json',
         headers,
+
+
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/RecipeTemplates/${name}`, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
     return this.http.get<RecipeTemplateDTO>(`/api/RecipeTemplates/${name}`, {
-      ...options,
-      responseType: 'json',
-      headers,
-    });
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
   }
-  putApiRecipeTemplatesName(
-    name: string,
+ putApiRecipeTemplatesName(name: string,
     recipeTemplateUpdateRequest: RecipeTemplateUpdateRequest,
-    accept: 'text/plain',
-    options?: HttpClientOptions,
-  ): Observable<string>;
-  putApiRecipeTemplatesName(
-    name: string,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  putApiRecipeTemplatesName(name: string,
     recipeTemplateUpdateRequest: RecipeTemplateUpdateRequest,
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO>;
-  putApiRecipeTemplatesName(
-    name: string,
+    accept: 'application/json', options?: HttpClientOptions): Observable<RecipeTemplateDTO>;
+  putApiRecipeTemplatesName(name: string,
     recipeTemplateUpdateRequest: RecipeTemplateUpdateRequest,
-    accept: 'text/json',
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO>;
-  putApiRecipeTemplatesName(
-    name: string,
+    accept: 'text/json', options?: HttpClientOptions): Observable<RecipeTemplateDTO>;
+  putApiRecipeTemplatesName(name: string,
     recipeTemplateUpdateRequest: RecipeTemplateUpdateRequest,
-    accept?: PutApiRecipeTemplatesNameAccept,
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO | string>;
+    accept?: PutApiRecipeTemplatesNameAccept, options?: HttpClientOptions): Observable<RecipeTemplateDTO | string>;
   putApiRecipeTemplatesName(
     name: string,
     recipeTemplateUpdateRequest: RecipeTemplateUpdateRequest,
     accept: PutApiRecipeTemplatesNameAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<RecipeTemplateDTO | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.put<RecipeTemplateDTO>(
-        `/api/RecipeTemplates/${name}`,
-        recipeTemplateUpdateRequest,
-        {
-          ...options,
-          responseType: 'json',
-          headers,
-        },
-      );
+      return this.http.put<RecipeTemplateDTO>(`/api/RecipeTemplates/${name}`, recipeTemplateUpdateRequest, {
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.put(`/api/RecipeTemplates/${name}`, recipeTemplateUpdateRequest, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
-    return this.http.put<RecipeTemplateDTO>(
-      `/api/RecipeTemplates/${name}`,
-      recipeTemplateUpdateRequest,
-      {
+    return this.http.put<RecipeTemplateDTO>(`/api/RecipeTemplates/${name}`, recipeTemplateUpdateRequest, {
         ...options,
         responseType: 'json',
         headers,
-      },
+
+
+      });
+  }
+ deleteApiRecipeTemplatesName<TData = void>(name: string, options?: HttpClientBodyOptions): Observable<TData>;
+ deleteApiRecipeTemplatesName<TData = void>(name: string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ deleteApiRecipeTemplatesName<TData = void>(name: string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  deleteApiRecipeTemplatesName<TData = void>(
+    name: string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.delete<TData>(
+      `/api/RecipeTemplates/${name}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.delete<TData>(
+      `/api/RecipeTemplates/${name}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.delete<TData>(
+      `/api/RecipeTemplates/${name}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
     );
   }
-  deleteApiRecipeTemplatesName<TData = void>(
-    name: string,
-    options?: HttpClientBodyOptions,
-  ): Observable<TData>;
-  deleteApiRecipeTemplatesName<TData = void>(
-    name: string,
-    options?: HttpClientEventOptions,
-  ): Observable<HttpEvent<TData>>;
-  deleteApiRecipeTemplatesName<TData = void>(
-    name: string,
-    options?: HttpClientResponseOptions,
-  ): Observable<AngularHttpResponse<TData>>;
-  deleteApiRecipeTemplatesName<TData = void>(
-    name: string,
-    options?: HttpClientObserveOptions,
-  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+ getApiRecipeTemplatesNameDownload<TData = FileContentResult>(name: string, options?: HttpClientBodyOptions): Observable<TData>;
+ getApiRecipeTemplatesNameDownload<TData = FileContentResult>(name: string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ getApiRecipeTemplatesNameDownload<TData = FileContentResult>(name: string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  getApiRecipeTemplatesNameDownload<TData = FileContentResult>(
+    name: string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
-      return this.http.delete<TData>(`/api/RecipeTemplates/${name}`, {
+      return this.http.get<TData>(
+      `/api/RecipeTemplates/${name}/download`,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-      });
+      }
+    );
     }
 
     if (options?.observe === 'response') {
-      return this.http.delete<TData>(`/api/RecipeTemplates/${name}`, {
+      return this.http.get<TData>(
+      `/api/RecipeTemplates/${name}/download`,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-      });
+      }
+    );
     }
 
-    return this.http.delete<TData>(`/api/RecipeTemplates/${name}`, {
-      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-      observe: 'body',
-    });
-  }
-  getApiRecipeTemplatesNameDownload<TData = FileContentResult>(
-    name: string,
-    options?: HttpClientBodyOptions,
-  ): Observable<TData>;
-  getApiRecipeTemplatesNameDownload<TData = FileContentResult>(
-    name: string,
-    options?: HttpClientEventOptions,
-  ): Observable<HttpEvent<TData>>;
-  getApiRecipeTemplatesNameDownload<TData = FileContentResult>(
-    name: string,
-    options?: HttpClientResponseOptions,
-  ): Observable<AngularHttpResponse<TData>>;
-  getApiRecipeTemplatesNameDownload<TData = FileContentResult>(
-    name: string,
-    options?: HttpClientObserveOptions,
-  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
-    if (options?.observe === 'events') {
-      return this.http.get<TData>(`/api/RecipeTemplates/${name}/download`, {
+    return this.http.get<TData>(
+      `/api/RecipeTemplates/${name}/download`,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'events',
-      });
-    }
-
-    if (options?.observe === 'response') {
-      return this.http.get<TData>(`/api/RecipeTemplates/${name}/download`, {
-        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-        observe: 'response',
-      });
-    }
-
-    return this.http.get<TData>(`/api/RecipeTemplates/${name}/download`, {
-      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-      observe: 'body',
-    });
+        observe: 'body',
+      }
+    );
   }
-  postApiRecipeTemplatesImport(
-    postApiRecipeTemplatesImportBody: PostApiRecipeTemplatesImportBody,
+ postApiRecipeTemplatesImport(postApiRecipeTemplatesImportBody: PostApiRecipeTemplatesImportBody,
     accept: 'text/plain',
-    params?: PostApiRecipeTemplatesImportParams,
-    options?: HttpClientOptions,
-  ): Observable<string>;
-  postApiRecipeTemplatesImport(
-    postApiRecipeTemplatesImportBody: PostApiRecipeTemplatesImportBody,
+    params?: PostApiRecipeTemplatesImportParams, options?: HttpClientOptions): Observable<string>;
+  postApiRecipeTemplatesImport(postApiRecipeTemplatesImportBody: PostApiRecipeTemplatesImportBody,
     accept: 'application/json',
-    params?: PostApiRecipeTemplatesImportParams,
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO>;
-  postApiRecipeTemplatesImport(
-    postApiRecipeTemplatesImportBody: PostApiRecipeTemplatesImportBody,
+    params?: PostApiRecipeTemplatesImportParams, options?: HttpClientOptions): Observable<RecipeTemplateDTO>;
+  postApiRecipeTemplatesImport(postApiRecipeTemplatesImportBody: PostApiRecipeTemplatesImportBody,
     accept: 'text/json',
-    params?: PostApiRecipeTemplatesImportParams,
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO>;
-  postApiRecipeTemplatesImport(
-    postApiRecipeTemplatesImportBody: PostApiRecipeTemplatesImportBody,
+    params?: PostApiRecipeTemplatesImportParams, options?: HttpClientOptions): Observable<RecipeTemplateDTO>;
+  postApiRecipeTemplatesImport(postApiRecipeTemplatesImportBody: PostApiRecipeTemplatesImportBody,
     accept?: PostApiRecipeTemplatesImportAccept,
-    params?: PostApiRecipeTemplatesImportParams,
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO | string>;
+    params?: PostApiRecipeTemplatesImportParams, options?: HttpClientOptions): Observable<RecipeTemplateDTO | string>;
   postApiRecipeTemplatesImport(
     postApiRecipeTemplatesImportBody: PostApiRecipeTemplatesImportBody,
     accept: PostApiRecipeTemplatesImportAccept = 'application/json',
     params?: PostApiRecipeTemplatesImportParams,
-    options?: HttpClientOptions,
-  ): Observable<RecipeTemplateDTO | string> {
-    const formUrlEncoded = new URLSearchParams();
-    if (postApiRecipeTemplatesImportBody.ContentType !== undefined) {
-      formUrlEncoded.append(`ContentType`, postApiRecipeTemplatesImportBody.ContentType);
-    }
-    if (postApiRecipeTemplatesImportBody.ContentDisposition !== undefined) {
-      formUrlEncoded.append(
-        `ContentDisposition`,
-        postApiRecipeTemplatesImportBody.ContentDisposition,
-      );
-    }
-    if (postApiRecipeTemplatesImportBody.Headers !== undefined) {
-      formUrlEncoded.append(`Headers`, JSON.stringify(postApiRecipeTemplatesImportBody.Headers));
-    }
-    if (postApiRecipeTemplatesImportBody.Length !== undefined) {
-      formUrlEncoded.append(`Length`, postApiRecipeTemplatesImportBody.Length.toString());
-    }
-    if (postApiRecipeTemplatesImportBody.Name !== undefined) {
-      formUrlEncoded.append(`Name`, postApiRecipeTemplatesImportBody.Name);
-    }
-    if (postApiRecipeTemplatesImportBody.FileName !== undefined) {
-      formUrlEncoded.append(`FileName`, postApiRecipeTemplatesImportBody.FileName);
-    }
+    options?: HttpClientOptions
+  ): Observable<RecipeTemplateDTO | string> {const formUrlEncoded = new URLSearchParams();
+if(postApiRecipeTemplatesImportBody.ContentType !== undefined) {
+ formUrlEncoded.append(`ContentType`, postApiRecipeTemplatesImportBody.ContentType);
+ }
+if(postApiRecipeTemplatesImportBody.ContentDisposition !== undefined) {
+ formUrlEncoded.append(`ContentDisposition`, postApiRecipeTemplatesImportBody.ContentDisposition);
+ }
+if(postApiRecipeTemplatesImportBody.Headers !== undefined) {
+ formUrlEncoded.append(`Headers`, JSON.stringify(postApiRecipeTemplatesImportBody.Headers));
+ }
+if(postApiRecipeTemplatesImportBody.Length !== undefined) {
+ formUrlEncoded.append(`Length`, postApiRecipeTemplatesImportBody.Length.toString())
+ }
+if(postApiRecipeTemplatesImportBody.Name !== undefined) {
+ formUrlEncoded.append(`Name`, postApiRecipeTemplatesImportBody.Name);
+ }
+if(postApiRecipeTemplatesImportBody.FileName !== undefined) {
+ formUrlEncoded.append(`FileName`, postApiRecipeTemplatesImportBody.FileName);
+ }
 
-    const filteredParams = filterParams({ ...params, ...options?.params }, new Set<string>([]));
+    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
 
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.post<RecipeTemplateDTO>(`/api/RecipeTemplates/import`, formUrlEncoded, {
@@ -535,6 +492,7 @@ export class RecipeTemplatesService {
         responseType: 'json',
         headers,
         params: filteredParams,
+
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.post(`/api/RecipeTemplates/import`, formUrlEncoded, {
@@ -542,14 +500,17 @@ export class RecipeTemplatesService {
         responseType: 'text',
         headers,
         params: filteredParams,
+
       }) as Observable<string>;
     }
 
     return this.http.post<RecipeTemplateDTO>(`/api/RecipeTemplates/import`, formUrlEncoded, {
-      ...options,
-      responseType: 'json',
-      headers,
-      params: filteredParams,
-    });
+        ...options,
+        responseType: 'json',
+        headers,
+        params: filteredParams,
+
+      });
   }
-}
+};
+

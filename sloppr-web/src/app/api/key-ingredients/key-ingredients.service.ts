@@ -4,20 +4,39 @@
  * sloppr | v1
  * OpenAPI spec version: 1.0.0
  */
-import { HttpClient, HttpHeaders, HttpResponse as AngularHttpResponse } from '@angular/common/http';
-import type { HttpContext, HttpEvent, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpResponse as AngularHttpResponse
+} from '@angular/common/http';
+import type {
+  HttpContext,
+  HttpEvent,
+  HttpParams
+} from '@angular/common/http';
 
-import { Injectable, inject } from '@angular/core';
+import {
+  Injectable,
+  inject
+} from '@angular/core';
 
-import { Observable } from 'rxjs';
+import {
+  Observable
+} from 'rxjs';
 
-import type { KeyIngredientDTO, KeyIngredientRequest } from '../model';
+import type {
+  KeyIngredientDTO,
+  KeyIngredientRequest
+} from '../model';
+
+
 
 interface HttpClientOptions {
   readonly headers?: HttpHeaders | Record<string, string | string[]>;
   readonly context?: HttpContext;
   readonly params?:
-    HttpParams | Record<string, string | number | boolean | Array<string | number | boolean>>;
+        | HttpParams
+      | Record<string, string | number | boolean | Array<string | number | boolean>>;
   readonly reportProgress?: boolean;
   readonly withCredentials?: boolean;
   readonly credentials?: RequestCredentials;
@@ -29,7 +48,7 @@ interface HttpClientOptions {
   readonly referrer?: string;
   readonly integrity?: string;
   readonly referrerPolicy?: ReferrerPolicy;
-  readonly transferCache?: { includeHeaders?: string[] } | boolean;
+  readonly transferCache?: {includeHeaders?: string[]} | boolean;
   readonly timeout?: number;
 }
 
@@ -49,8 +68,11 @@ type HttpClientObserveOptions = HttpClientOptions & {
   readonly observe?: 'body' | 'events' | 'response';
 };
 
-export type GetApiKeyIngredientsAccept =
-  (typeof GetApiKeyIngredientsAccept)[keyof typeof GetApiKeyIngredientsAccept];
+
+
+
+
+export type GetApiKeyIngredientsAccept = typeof GetApiKeyIngredientsAccept[keyof typeof GetApiKeyIngredientsAccept];
 
 export const GetApiKeyIngredientsAccept = {
   text_plain: 'text/plain',
@@ -58,8 +80,7 @@ export const GetApiKeyIngredientsAccept = {
   text_json: 'text/json',
 } as const;
 
-export type PostApiKeyIngredientsAccept =
-  (typeof PostApiKeyIngredientsAccept)[keyof typeof PostApiKeyIngredientsAccept];
+export type PostApiKeyIngredientsAccept = typeof PostApiKeyIngredientsAccept[keyof typeof PostApiKeyIngredientsAccept];
 
 export const PostApiKeyIngredientsAccept = {
   text_plain: 'text/plain',
@@ -67,8 +88,7 @@ export const PostApiKeyIngredientsAccept = {
   text_json: 'text/json',
 } as const;
 
-export type GetApiKeyIngredientsIdAccept =
-  (typeof GetApiKeyIngredientsIdAccept)[keyof typeof GetApiKeyIngredientsIdAccept];
+export type GetApiKeyIngredientsIdAccept = typeof GetApiKeyIngredientsIdAccept[keyof typeof GetApiKeyIngredientsIdAccept];
 
 export const GetApiKeyIngredientsIdAccept = {
   text_plain: 'text/plain',
@@ -79,220 +99,196 @@ export const GetApiKeyIngredientsIdAccept = {
 @Injectable({ providedIn: 'root' })
 export class KeyIngredientsService {
   private readonly http = inject(HttpClient);
-  getApiKeyIngredients(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  getApiKeyIngredients(
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<KeyIngredientDTO[]>;
-  getApiKeyIngredients(
-    accept: 'text/json',
-    options?: HttpClientOptions,
-  ): Observable<KeyIngredientDTO[]>;
-  getApiKeyIngredients(
-    accept?: GetApiKeyIngredientsAccept,
-    options?: HttpClientOptions,
-  ): Observable<KeyIngredientDTO[] | string>;
+ getApiKeyIngredients(accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiKeyIngredients(accept: 'application/json', options?: HttpClientOptions): Observable<KeyIngredientDTO[]>;
+  getApiKeyIngredients(accept: 'text/json', options?: HttpClientOptions): Observable<KeyIngredientDTO[]>;
+  getApiKeyIngredients(accept?: GetApiKeyIngredientsAccept, options?: HttpClientOptions): Observable<KeyIngredientDTO[] | string>;
   getApiKeyIngredients(
     accept: GetApiKeyIngredientsAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<KeyIngredientDTO[] | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<KeyIngredientDTO[]>(`/api/KeyIngredients`, {
         ...options,
         responseType: 'json',
         headers,
+
+
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/KeyIngredients`, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
     return this.http.get<KeyIngredientDTO[]>(`/api/KeyIngredients`, {
-      ...options,
-      responseType: 'json',
-      headers,
-    });
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
   }
-  postApiKeyIngredients(
-    keyIngredientRequest: KeyIngredientRequest,
-    accept: 'text/plain',
-    options?: HttpClientOptions,
-  ): Observable<string>;
-  postApiKeyIngredients(
-    keyIngredientRequest: KeyIngredientRequest,
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<KeyIngredientDTO>;
-  postApiKeyIngredients(
-    keyIngredientRequest: KeyIngredientRequest,
-    accept: 'text/json',
-    options?: HttpClientOptions,
-  ): Observable<KeyIngredientDTO>;
-  postApiKeyIngredients(
-    keyIngredientRequest: KeyIngredientRequest,
-    accept?: PostApiKeyIngredientsAccept,
-    options?: HttpClientOptions,
-  ): Observable<KeyIngredientDTO | string>;
+ postApiKeyIngredients(keyIngredientRequest: KeyIngredientRequest,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  postApiKeyIngredients(keyIngredientRequest: KeyIngredientRequest,
+    accept: 'application/json', options?: HttpClientOptions): Observable<KeyIngredientDTO>;
+  postApiKeyIngredients(keyIngredientRequest: KeyIngredientRequest,
+    accept: 'text/json', options?: HttpClientOptions): Observable<KeyIngredientDTO>;
+  postApiKeyIngredients(keyIngredientRequest: KeyIngredientRequest,
+    accept?: PostApiKeyIngredientsAccept, options?: HttpClientOptions): Observable<KeyIngredientDTO | string>;
   postApiKeyIngredients(
     keyIngredientRequest: KeyIngredientRequest,
     accept: PostApiKeyIngredientsAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<KeyIngredientDTO | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.post<KeyIngredientDTO>(`/api/KeyIngredients`, keyIngredientRequest, {
         ...options,
         responseType: 'json',
         headers,
+
+
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.post(`/api/KeyIngredients`, keyIngredientRequest, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
     return this.http.post<KeyIngredientDTO>(`/api/KeyIngredients`, keyIngredientRequest, {
-      ...options,
-      responseType: 'json',
-      headers,
-    });
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
   }
-  getApiKeyIngredientsId(
-    id: number | string,
-    accept: 'text/plain',
-    options?: HttpClientOptions,
-  ): Observable<string>;
-  getApiKeyIngredientsId(
-    id: number | string,
-    accept: 'application/json',
-    options?: HttpClientOptions,
-  ): Observable<KeyIngredientDTO>;
-  getApiKeyIngredientsId(
-    id: number | string,
-    accept: 'text/json',
-    options?: HttpClientOptions,
-  ): Observable<KeyIngredientDTO>;
-  getApiKeyIngredientsId(
-    id: number | string,
-    accept?: GetApiKeyIngredientsIdAccept,
-    options?: HttpClientOptions,
-  ): Observable<KeyIngredientDTO | string>;
+ getApiKeyIngredientsId(id: number | string,
+    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
+  getApiKeyIngredientsId(id: number | string,
+    accept: 'application/json', options?: HttpClientOptions): Observable<KeyIngredientDTO>;
+  getApiKeyIngredientsId(id: number | string,
+    accept: 'text/json', options?: HttpClientOptions): Observable<KeyIngredientDTO>;
+  getApiKeyIngredientsId(id: number | string,
+    accept?: GetApiKeyIngredientsIdAccept, options?: HttpClientOptions): Observable<KeyIngredientDTO | string>;
   getApiKeyIngredientsId(
     id: number | string,
     accept: GetApiKeyIngredientsIdAccept = 'application/json',
-    options?: HttpClientOptions,
+    options?: HttpClientOptions
   ): Observable<KeyIngredientDTO | string> {
-    const headers =
-      options?.headers instanceof HttpHeaders
-        ? options.headers.set('Accept', accept)
-        : { ...(options?.headers ?? {}), Accept: accept };
+    const headers = options?.headers instanceof HttpHeaders
+      ? options.headers.set('Accept', accept)
+      : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<KeyIngredientDTO>(`/api/KeyIngredients/${id}`, {
         ...options,
         responseType: 'json',
         headers,
+
+
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/KeyIngredients/${id}`, {
         ...options,
         responseType: 'text',
         headers,
+
+
       }) as Observable<string>;
     }
 
     return this.http.get<KeyIngredientDTO>(`/api/KeyIngredients/${id}`, {
-      ...options,
-      responseType: 'json',
-      headers,
-    });
+        ...options,
+        responseType: 'json',
+        headers,
+
+
+      });
   }
+ putApiKeyIngredientsId<TData = void>(id: number | string,
+    keyIngredientRequest: KeyIngredientRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ putApiKeyIngredientsId<TData = void>(id: number | string,
+    keyIngredientRequest: KeyIngredientRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ putApiKeyIngredientsId<TData = void>(id: number | string,
+    keyIngredientRequest: KeyIngredientRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   putApiKeyIngredientsId<TData = void>(
     id: number | string,
-    keyIngredientRequest: KeyIngredientRequest,
-    options?: HttpClientBodyOptions,
-  ): Observable<TData>;
-  putApiKeyIngredientsId<TData = void>(
-    id: number | string,
-    keyIngredientRequest: KeyIngredientRequest,
-    options?: HttpClientEventOptions,
-  ): Observable<HttpEvent<TData>>;
-  putApiKeyIngredientsId<TData = void>(
-    id: number | string,
-    keyIngredientRequest: KeyIngredientRequest,
-    options?: HttpClientResponseOptions,
-  ): Observable<AngularHttpResponse<TData>>;
-  putApiKeyIngredientsId<TData = void>(
-    id: number | string,
-    keyIngredientRequest: KeyIngredientRequest,
-    options?: HttpClientObserveOptions,
-  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    keyIngredientRequest: KeyIngredientRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
-      return this.http.put<TData>(`/api/KeyIngredients/${id}`, keyIngredientRequest, {
+      return this.http.put<TData>(
+      `/api/KeyIngredients/${id}`,
+      keyIngredientRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-      });
+      }
+    );
     }
 
     if (options?.observe === 'response') {
-      return this.http.put<TData>(`/api/KeyIngredients/${id}`, keyIngredientRequest, {
+      return this.http.put<TData>(
+      `/api/KeyIngredients/${id}`,
+      keyIngredientRequest,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-      });
+      }
+    );
     }
 
-    return this.http.put<TData>(`/api/KeyIngredients/${id}`, keyIngredientRequest, {
-      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-      observe: 'body',
-    });
+    return this.http.put<TData>(
+      `/api/KeyIngredients/${id}`,
+      keyIngredientRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
   }
+ deleteApiKeyIngredientsId<TData = void>(id: number | string, options?: HttpClientBodyOptions): Observable<TData>;
+ deleteApiKeyIngredientsId<TData = void>(id: number | string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ deleteApiKeyIngredientsId<TData = void>(id: number | string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
   deleteApiKeyIngredientsId<TData = void>(
-    id: number | string,
-    options?: HttpClientBodyOptions,
-  ): Observable<TData>;
-  deleteApiKeyIngredientsId<TData = void>(
-    id: number | string,
-    options?: HttpClientEventOptions,
-  ): Observable<HttpEvent<TData>>;
-  deleteApiKeyIngredientsId<TData = void>(
-    id: number | string,
-    options?: HttpClientResponseOptions,
-  ): Observable<AngularHttpResponse<TData>>;
-  deleteApiKeyIngredientsId<TData = void>(
-    id: number | string,
-    options?: HttpClientObserveOptions,
-  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    id: number | string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
-      return this.http.delete<TData>(`/api/KeyIngredients/${id}`, {
+      return this.http.delete<TData>(
+      `/api/KeyIngredients/${id}`,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
-      });
+      }
+    );
     }
 
     if (options?.observe === 'response') {
-      return this.http.delete<TData>(`/api/KeyIngredients/${id}`, {
+      return this.http.delete<TData>(
+      `/api/KeyIngredients/${id}`,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
-      });
+      }
+    );
     }
 
-    return this.http.delete<TData>(`/api/KeyIngredients/${id}`, {
-      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
-      observe: 'body',
-    });
+    return this.http.delete<TData>(
+      `/api/KeyIngredients/${id}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
   }
-}
+};
+

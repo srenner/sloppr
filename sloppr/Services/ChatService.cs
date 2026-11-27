@@ -210,6 +210,123 @@ public class ChatService
         }
     }
 
+    public async Task<Recipe?> GenerateRecipeFromImageAsync(byte[] imageBytes, string contentType)
+    {
+        var ocrCapability = _capabilitySettings.Get(AiCapabilityType.OcrScanning);
+        if (ocrCapability.ModelId is not int ocrModelId)
+        {
+            return null;
+        }
+
+        var ocrModel = await _modelService.GetByIdWithProviderAsync(ocrModelId);
+        if (ocrModel is null)
+        {
+            return null;
+        }
+
+        var ocrConfig = new ChatClientConfig
+        {
+            ProviderType = ocrModel.AiProvider.ProviderType,
+            ModelName = ocrModel.Identifier,
+            Endpoint = ocrModel.AiProvider.BaseUrl,
+            ApiKey = null // todo
+        };
+
+        var ocrMessage = new ChatMessage(
+            ChatRole.User,
+            "Transcribe every visible character in this image exactly.");
+        ocrMessage.Contents.Add(new DataContent(imageBytes, contentType));
+
+        List<ChatMessage> ocrMessages = new()
+        {
+            new ChatMessage(ChatRole.System, ocrCapability.SystemPrompt),
+            ocrMessage,
+        };
+
+        string? extractedText;
+        try
+        {
+            IChatClient ocrClient = _factory.Create(ocrConfig);
+            ChatResponse ocrResponse = await ocrClient.GetResponseAsync(
+                ocrMessages,
+                new ChatOptions { Temperature = 0f });
+            extractedText = ocrResponse.Text?.Trim();
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+
+        if (string.IsNullOrWhiteSpace(extractedText))
+        {
+            return null;
+        }
+
+        var recipeCapability = _capabilitySettings.Get(AiCapabilityType.RecipeGeneration);
+        if (recipeCapability.ModelId is not int recipeModelId)
+        {
+            return null;
+        }
+
+        var recipeModel = await _modelService.GetByIdWithProviderAsync(recipeModelId);
+        if (recipeModel is null)
+        {
+            return null;
+        }
+
+        var recipeConfig = new ChatClientConfig
+        {
+            ProviderType = recipeModel.AiProvider.ProviderType,
+            ModelName = recipeModel.Identifier,
+            Endpoint = recipeModel.AiProvider.BaseUrl,
+            ApiKey = null // todo
+        };
+
+        List<ChatMessage> recipeMessages = new()
+        {
+            new ChatMessage(ChatRole.System, recipeCapability.SystemPrompt),
+            new ChatMessage(
+                ChatRole.User,
+                "Build one complete recipe from this transcribed recipe text. " +
+                "Parse every ingredient line into separate name, quantity, unit, group, and note " +
+                "fields; every ingredient must have a non-empty name. Do not put the whole " +
+                $"ingredient line in note. Return the JSON recipe.\n\n{extractedText}"),
+        };
+
+        try
+        {
+            IChatClient recipeClient = _factory.Create(recipeConfig);
+            ChatResponse response = await recipeClient.GetResponseAsync(
+                recipeMessages, new ChatOptions
+                {
+                    ResponseFormat = ChatResponseFormat.ForJsonSchema<RecipeContent>(
+                        JsonOptions, "recipe", "A complete recipe")
+                });
+
+            var generated = JsonSerializer.Deserialize<RecipeContent>(
+                response.Text, JsonOptions);
+            if (generated == null)
+            {
+                return null;
+            }
+
+            generated.Steps = NormalizeSteps(generated.Steps);
+
+            if (RecipeContentJson.Validate(generated).Count > 0)
+            {
+                return null;
+            }
+
+            var recipe = _recipeMapper.ToEntity(generated);
+            recipe.SourceType = RecipeSourceType.Import;
+            return recipe;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
     /// <summary>
     /// Some models emit a step whose only content is a section label. Treat that as
     /// the group for the steps that follow and drop the empty step so the rendered

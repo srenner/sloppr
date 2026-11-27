@@ -40,6 +40,7 @@ export * from './postApiRecipeTemplatesImportParams';
 export * from './problemDetails';
 export * from './recipeContent';
 export * from './recipeDTO';
+export * from './recipeImageImportRequest';
 export * from './recipeIngredientContent';
 export * from './recipePageDTO';
 export * from './recipeRequest';

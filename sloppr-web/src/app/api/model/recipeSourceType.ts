@@ -5,7 +5,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RecipeSourceType = (typeof RecipeSourceType)[keyof typeof RecipeSourceType];
+export type RecipeSourceType = typeof RecipeSourceType[keyof typeof RecipeSourceType];
+
 
 export const RecipeSourceType = {
   Llm: 'Llm',
