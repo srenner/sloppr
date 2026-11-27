@@ -48,7 +48,8 @@ public class RecipeMapper
         return new Recipe
         {
             ContentJson = RecipeContentJson.Serialize(request.Content),
-            SourceType = request.MealIdeaId.HasValue ? RecipeSourceType.Llm : RecipeSourceType.Manual,
+            SourceType = request.SourceType
+                ?? (request.MealIdeaId.HasValue ? RecipeSourceType.Llm : RecipeSourceType.Manual),
             MealIdeaId = request.MealIdeaId,
             TemplateName = request.TemplateName
         };

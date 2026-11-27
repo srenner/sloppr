@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { RecipeContent } from './recipeContent';
+import type { RecipeSourceType } from './recipeSourceType';
 
 export interface RecipeRequest {
   content?: RecipeContent;
@@ -15,4 +16,5 @@ export interface RecipeRequest {
   mealIdeaId?: number | string | null;
   /** @nullable */
   templateName?: string | null;
+  sourceType?: null | RecipeSourceType;
 }

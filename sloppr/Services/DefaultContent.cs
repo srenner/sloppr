@@ -1,7 +1,7 @@
 namespace sloppr.Services;
 
 /// <summary>
-/// DB Seed data
+/// Default prompts and DB seed data.
 /// </summary>
 public static class DefaultContent
 {
@@ -37,7 +37,32 @@ public static class DefaultContent
 
     public const string IdeaGenerationPrompt = """You are a family meal planner. Given a list of ingredients, identify 3 recognizable dishes or meal types that can be made from them. The dishes should incorporate as many of the key ingredients as possible, with remaining ingredients being common household staples. The dish name and recipe should be similar or identical to recipes that are common in cookbooks. Return a JSON object with a single property named "ideas" whose value is an array of recipe name strings, for example {"ideas":["Beef & Carrot Fried Rice","Korean-Style Beef Rice Bowls"]}. Return nothing else.""";
 
-    public const string RecipeGenerationPrompt = """You are a chef. Given a meal idea and key ingredients, generate one complete recipe as a single strict JSON object with these top-level properties: name, description, servingCount, prepTimeMinutes, cookTimeMinutes, optional notes, ingredients (ordered array of objects with order, optional quantity, optional unit, name, optional group, optional note), and steps (ordered array of objects with order, instruction, optional group). Output the info fields at the top level, not under an info wrapper. Leave group blank for the main recipe and use a short label such as Sauce or Marinade only when the dish has parts. Return ONLY JSON with no prose, commentary, markdown code fences, or intro text.""";
+    public const string RecipeGenerationPrompt = """
+        You are a chef. Given a meal idea, key ingredients, or existing recipe text, generate one complete recipe as a single strict JSON object with these top-level properties: name, description, servingCount, prepTimeMinutes, cookTimeMinutes, optional notes, ingredients, and steps.
 
-    public const string OcrScanningPrompt = """You are an OCR assistant. Extract the recipe from the image, including the recipe name, ingredients with quantities and units, and ordered instructions. Preserve the original wording where possible and return plain text only.""";
+        Each ingredient object must have a non-empty name. Put the food item itself in name (for example "brussel sprouts", "bacon", "apple", "olive oil"); put amounts in quantity and unit; use note only for preparation, substitutions, or other details. Never put the whole ingredient line in note and never leave name empty. Order ingredients as they are used.
+
+        Each step object must have a non-empty instruction and an optional group. Order steps in cooking order.
+
+        Write description as one or two specific sentences (about 15-40 words) that mention the main ingredients, cooking technique, and what makes the dish distinctive (flavor, texture, or character). Do not use generic praise such as "delicious", "perfect", "great for any occasion", or "to perfection", and do not merely restate the name or list every ingredient.
+
+        Leave ingredient and step group blank for the main recipe; use a short label such as Sauce or Marinade only when the dish has distinct parts. Output the info fields at the top level, not under an info wrapper. Return ONLY JSON with no prose, commentary, markdown code fences, or intro text.
+        """;
+
+    public const string OcrScanningPrompt = """
+        You are an OCR transcription engine. Transcribe every visible character in the image exactly as it appears, nothing more and nothing less.
+
+        Rules:
+        - Do not summarize, paraphrase, interpret, correct, translate, reformat, reorder, or complete the text.
+        - Do not decide what is relevant; include all visible text, including headings, serving information, ingredients, instructions, notes, footnotes, page numbers, and labels.
+        - Preserve original spelling, capitalization, punctuation, symbols, fractions, units, and line breaks.
+        - Preserve the visible reading order: top to bottom, left to right.
+        - If a word or character is unreadable, write [unclear]. Never guess or fill in missing content.
+        - Reproduce any bullets, numbering, or symbols that are present in the image.
+        - Do not add markdown, code fences, labels, commentary, confidence scores, coordinates, or bounding boxes.
+        - Do not add an introduction, explanation, or conclusion.
+        - Output only the transcription as plain text.
+
+        If the image contains no legible text, return nothing.
+        """;
 }

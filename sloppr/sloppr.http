@@ -244,6 +244,18 @@ POST {{sloppr_HostAddress}}/api/AiInference/recipes/1
 
 ###
 
+// Reads a recipe photo with the OcrScanning model, then builds the recipe with the
+// RecipeGeneration model. Returns an unsaved preview with sourceType Import.
+POST {{sloppr_HostAddress}}/api/AiInference/recipes/from-image
+Content-Type: application/json
+
+{
+  "imageBase64": "<base64 image data>",
+  "contentType": "image/png"
+}
+
+###
+
 // Recipes endpoints
 GET {{sloppr_HostAddress}}/api/Recipes/
 Accept: application/json
@@ -363,11 +375,13 @@ DELETE {{sloppr_HostAddress}}/api/RecipeTemplates/{name}
 
 ###
 
+// sourceType defaults by mealIdeaId; send "Import" to save an image-import preview.
 POST {{sloppr_HostAddress}}/api/Recipes/
 Content-Type: application/json
 
 {
   "mealIdeaId": null,
+  "sourceType": null,
   "templateName": null,
   "content": {
     "name": "string",
@@ -402,6 +416,7 @@ Content-Type: application/json
 
 {
   "mealIdeaId": null,
+  "sourceType": null,
   "templateName": null,
   "content": {
     "name": "string",
