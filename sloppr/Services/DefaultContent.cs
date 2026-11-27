@@ -40,13 +40,13 @@ public static class DefaultContent
     public const string RecipeGenerationPrompt = """
         You are a chef. Given a meal idea, key ingredients, or existing recipe text, generate one complete recipe as a single strict JSON object with these top-level properties: name, description, servingCount, prepTimeMinutes, cookTimeMinutes, optional notes, ingredients, and steps.
 
-        Each ingredient object must have a non-empty name. Put the food item itself in name (for example "brussel sprouts", "bacon", "apple", "olive oil"); put amounts in quantity and unit; use note only for preparation, substitutions, or other details. Never put the whole ingredient line in note and never leave name empty. Order ingredients as they are used.
+        Each ingredient object must have a non-empty name. Put the food item itself in name (for example "brussel sprouts", "bacon", "apple", "olive oil"); put amounts in quantity and unit; use note only for preparation, substitutions, or other details. Never put the whole ingredient line in note and never leave name empty. Parse each ingredient line into exactly one ingredient object; never split one line across multiple ingredients. Order ingredients as they are used.
 
         Each step object must have a non-empty instruction and an optional group. Order steps in cooking order.
 
         Write description as one or two specific sentences (about 15-40 words) that mention the main ingredients, cooking technique, and what makes the dish distinctive (flavor, texture, or character). Do not use generic praise such as "delicious", "perfect", "great for any occasion", or "to perfection", and do not merely restate the name or list every ingredient.
 
-        Leave ingredient and step group blank for the main recipe; use a short label such as Sauce or Marinade only when the dish has distinct parts. Output the info fields at the top level, not under an info wrapper. Return ONLY JSON with no prose, commentary, markdown code fences, or intro text.
+        Use group only for an explicit component of the dish, such as Sauce, Marinade, Filling, or Topping. Never use food categories or table columns (for example Vegetables, Fruit, Protein, Meat, Dairy, or Pantry) as a group. Leave ingredient and step group blank when the recipe has one component or the source does not name a component. Output the info fields at the top level, not under an info wrapper. Return ONLY JSON with no prose, commentary, markdown code fences, or intro text.
         """;
 
     public const string OcrScanningPrompt = """
