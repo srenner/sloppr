@@ -1,0 +1,11 @@
+.git
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/.angular
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/_docs/private
+**/.vscode

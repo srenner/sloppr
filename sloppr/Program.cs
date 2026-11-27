@@ -84,6 +84,9 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await db.Database.MigrateAsync();
+
     var capabilitySettingsService = scope.ServiceProvider
         .GetRequiredService<AiCapabilitySettingService>();
     await capabilitySettingsService.Load();
@@ -104,14 +107,17 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseCors("AllowDevFrontend");
 }
-else
-{
-    app.UseHttpsRedirection();
-}
 
+app.UseStaticFiles();
 app.UseAuthorization();
 
 app.MapControllers();
+
+if (app.Environment.WebRootPath is { } webRoot
+    && File.Exists(Path.Combine(webRoot, "index.html")))
+{
+    app.MapFallbackToFile("index.html");
+}
 
 app.Run();
 
