@@ -19,9 +19,9 @@ export interface RecipeSummaryDTO {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   cookTimeMinutes?: number | string;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
   difficulty?: number | string | null;
   dateUpdated?: string;
 }

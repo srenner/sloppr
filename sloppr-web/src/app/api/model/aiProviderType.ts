@@ -5,8 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AiProviderType = typeof AiProviderType[keyof typeof AiProviderType];
-
+export type AiProviderType = (typeof AiProviderType)[keyof typeof AiProviderType];
 
 export const AiProviderType = {
   Ollama: 'Ollama',

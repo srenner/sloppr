@@ -557,8 +557,7 @@ export class Home {
   private addImportToCookbook(recipeId: number): void {
     this.cookbooks.getApiCookbooks('application/json').subscribe({
       next: (cookbooks) => {
-        const family =
-          cookbooks.find((item) => item.name === 'Family Cookbook') ?? cookbooks[0];
+        const family = cookbooks.find((item) => item.name === 'Family Cookbook') ?? cookbooks[0];
         const cookbookId = this.numericId(family?.id);
         if (cookbookId === null) {
           this.finishImport(false);

@@ -4,39 +4,20 @@
  * sloppr | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  HttpClient,
-  HttpHeaders
-} from '@angular/common/http';
-import type {
-  HttpContext,
-  HttpParams
-} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import type { HttpContext, HttpParams } from '@angular/common/http';
 
-import {
-  Injectable,
-  inject
-} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
-import {
-  Observable
-} from 'rxjs';
+import { Observable } from 'rxjs';
 
-import type {
-  MealIdeaDTO,
-  MealIdeasRequest,
-  RecipeDTO,
-  RecipeImageImportRequest
-} from '../model';
-
-
+import type { MealIdeaDTO, MealIdeasRequest, RecipeDTO, RecipeImageImportRequest } from '../model';
 
 interface HttpClientOptions {
   readonly headers?: HttpHeaders | Record<string, string | string[]>;
   readonly context?: HttpContext;
   readonly params?:
-        | HttpParams
-      | Record<string, string | number | boolean | Array<string | number | boolean>>;
+    HttpParams | Record<string, string | number | boolean | Array<string | number | boolean>>;
   readonly reportProgress?: boolean;
   readonly withCredentials?: boolean;
   readonly credentials?: RequestCredentials;
@@ -48,7 +29,7 @@ interface HttpClientOptions {
   readonly referrer?: string;
   readonly integrity?: string;
   readonly referrerPolicy?: ReferrerPolicy;
-  readonly transferCache?: {includeHeaders?: string[]} | boolean;
+  readonly transferCache?: { includeHeaders?: string[] } | boolean;
   readonly timeout?: number;
 }
 
@@ -68,11 +49,8 @@ type HttpClientObserveOptions = HttpClientOptions & {
   readonly observe?: 'body' | 'events' | 'response';
 };
 
-
-
-
-
-export type PostApiAiInferenceMealIdeasAccept = typeof PostApiAiInferenceMealIdeasAccept[keyof typeof PostApiAiInferenceMealIdeasAccept];
+export type PostApiAiInferenceMealIdeasAccept =
+  (typeof PostApiAiInferenceMealIdeasAccept)[keyof typeof PostApiAiInferenceMealIdeasAccept];
 
 export const PostApiAiInferenceMealIdeasAccept = {
   text_plain: 'text/plain',
@@ -80,7 +58,8 @@ export const PostApiAiInferenceMealIdeasAccept = {
   text_json: 'text/json',
 } as const;
 
-export type PostApiAiInferenceRecipesMealIdeaIdAccept = typeof PostApiAiInferenceRecipesMealIdeaIdAccept[keyof typeof PostApiAiInferenceRecipesMealIdeaIdAccept];
+export type PostApiAiInferenceRecipesMealIdeaIdAccept =
+  (typeof PostApiAiInferenceRecipesMealIdeaIdAccept)[keyof typeof PostApiAiInferenceRecipesMealIdeaIdAccept];
 
 export const PostApiAiInferenceRecipesMealIdeaIdAccept = {
   text_plain: 'text/plain',
@@ -88,7 +67,8 @@ export const PostApiAiInferenceRecipesMealIdeaIdAccept = {
   text_json: 'text/json',
 } as const;
 
-export type PostApiAiInferenceRecipesFromImageAccept = typeof PostApiAiInferenceRecipesFromImageAccept[keyof typeof PostApiAiInferenceRecipesFromImageAccept];
+export type PostApiAiInferenceRecipesFromImageAccept =
+  (typeof PostApiAiInferenceRecipesFromImageAccept)[keyof typeof PostApiAiInferenceRecipesFromImageAccept];
 
 export const PostApiAiInferenceRecipesFromImageAccept = {
   text_plain: 'text/plain',
@@ -99,134 +79,162 @@ export const PostApiAiInferenceRecipesFromImageAccept = {
 @Injectable({ providedIn: 'root' })
 export class AiInferenceService {
   private readonly http = inject(HttpClient);
- postApiAiInferenceMealIdeas(mealIdeasRequest: MealIdeasRequest,
-    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  postApiAiInferenceMealIdeas(mealIdeasRequest: MealIdeasRequest,
-    accept: 'application/json', options?: HttpClientOptions): Observable<MealIdeaDTO[]>;
-  postApiAiInferenceMealIdeas(mealIdeasRequest: MealIdeasRequest,
-    accept: 'text/json', options?: HttpClientOptions): Observable<MealIdeaDTO[]>;
-  postApiAiInferenceMealIdeas(mealIdeasRequest: MealIdeasRequest,
-    accept?: PostApiAiInferenceMealIdeasAccept, options?: HttpClientOptions): Observable<MealIdeaDTO[] | string>;
+  postApiAiInferenceMealIdeas(
+    mealIdeasRequest: MealIdeasRequest,
+    accept: 'text/plain',
+    options?: HttpClientOptions,
+  ): Observable<string>;
+  postApiAiInferenceMealIdeas(
+    mealIdeasRequest: MealIdeasRequest,
+    accept: 'application/json',
+    options?: HttpClientOptions,
+  ): Observable<MealIdeaDTO[]>;
+  postApiAiInferenceMealIdeas(
+    mealIdeasRequest: MealIdeasRequest,
+    accept: 'text/json',
+    options?: HttpClientOptions,
+  ): Observable<MealIdeaDTO[]>;
+  postApiAiInferenceMealIdeas(
+    mealIdeasRequest: MealIdeasRequest,
+    accept?: PostApiAiInferenceMealIdeasAccept,
+    options?: HttpClientOptions,
+  ): Observable<MealIdeaDTO[] | string>;
   postApiAiInferenceMealIdeas(
     mealIdeasRequest: MealIdeasRequest,
     accept: PostApiAiInferenceMealIdeasAccept = 'application/json',
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<MealIdeaDTO[] | string> {
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.post<MealIdeaDTO[]>(`/api/AiInference/meal-ideas`, mealIdeasRequest, {
         ...options,
         responseType: 'json',
         headers,
-
-
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.post(`/api/AiInference/meal-ideas`, mealIdeasRequest, {
         ...options,
         responseType: 'text',
         headers,
-
-
       }) as Observable<string>;
     }
 
     return this.http.post<MealIdeaDTO[]>(`/api/AiInference/meal-ideas`, mealIdeasRequest, {
-        ...options,
-        responseType: 'json',
-        headers,
-
-
-      });
+      ...options,
+      responseType: 'json',
+      headers,
+    });
   }
- postApiAiInferenceRecipesMealIdeaId(mealIdeaId: number,
-    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  postApiAiInferenceRecipesMealIdeaId(mealIdeaId: number,
-    accept: 'application/json', options?: HttpClientOptions): Observable<RecipeDTO>;
-  postApiAiInferenceRecipesMealIdeaId(mealIdeaId: number,
-    accept: 'text/json', options?: HttpClientOptions): Observable<RecipeDTO>;
-  postApiAiInferenceRecipesMealIdeaId(mealIdeaId: number,
-    accept?: PostApiAiInferenceRecipesMealIdeaIdAccept, options?: HttpClientOptions): Observable<RecipeDTO | string>;
+  postApiAiInferenceRecipesMealIdeaId(
+    mealIdeaId: number,
+    accept: 'text/plain',
+    options?: HttpClientOptions,
+  ): Observable<string>;
+  postApiAiInferenceRecipesMealIdeaId(
+    mealIdeaId: number,
+    accept: 'application/json',
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO>;
+  postApiAiInferenceRecipesMealIdeaId(
+    mealIdeaId: number,
+    accept: 'text/json',
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO>;
+  postApiAiInferenceRecipesMealIdeaId(
+    mealIdeaId: number,
+    accept?: PostApiAiInferenceRecipesMealIdeaIdAccept,
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO | string>;
   postApiAiInferenceRecipesMealIdeaId(
     mealIdeaId: number,
     accept: PostApiAiInferenceRecipesMealIdeaIdAccept = 'application/json',
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<RecipeDTO | string> {
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.post<RecipeDTO>(`/api/AiInference/recipes/${mealIdeaId}`, undefined, {
         ...options,
         responseType: 'json',
         headers,
-
-
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.post(`/api/AiInference/recipes/${mealIdeaId}`, undefined, {
         ...options,
         responseType: 'text',
         headers,
-
-
       }) as Observable<string>;
     }
 
     return this.http.post<RecipeDTO>(`/api/AiInference/recipes/${mealIdeaId}`, undefined, {
-        ...options,
-        responseType: 'json',
-        headers,
-
-
-      });
+      ...options,
+      responseType: 'json',
+      headers,
+    });
   }
- postApiAiInferenceRecipesFromImage(nullRecipeImageImportRequest: null | RecipeImageImportRequest | undefined,
-    accept: 'text/plain', options?: HttpClientOptions): Observable<string>;
-  postApiAiInferenceRecipesFromImage(nullRecipeImageImportRequest: null | RecipeImageImportRequest | undefined,
-    accept: 'application/json', options?: HttpClientOptions): Observable<RecipeDTO>;
-  postApiAiInferenceRecipesFromImage(nullRecipeImageImportRequest: null | RecipeImageImportRequest | undefined,
-    accept: 'text/json', options?: HttpClientOptions): Observable<RecipeDTO>;
-  postApiAiInferenceRecipesFromImage(nullRecipeImageImportRequest?: null | RecipeImageImportRequest,
-    accept?: PostApiAiInferenceRecipesFromImageAccept, options?: HttpClientOptions): Observable<RecipeDTO | string>;
+  postApiAiInferenceRecipesFromImage(
+    nullRecipeImageImportRequest: null | RecipeImageImportRequest | undefined,
+    accept: 'text/plain',
+    options?: HttpClientOptions,
+  ): Observable<string>;
+  postApiAiInferenceRecipesFromImage(
+    nullRecipeImageImportRequest: null | RecipeImageImportRequest | undefined,
+    accept: 'application/json',
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO>;
+  postApiAiInferenceRecipesFromImage(
+    nullRecipeImageImportRequest: null | RecipeImageImportRequest | undefined,
+    accept: 'text/json',
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO>;
+  postApiAiInferenceRecipesFromImage(
+    nullRecipeImageImportRequest?: null | RecipeImageImportRequest,
+    accept?: PostApiAiInferenceRecipesFromImageAccept,
+    options?: HttpClientOptions,
+  ): Observable<RecipeDTO | string>;
   postApiAiInferenceRecipesFromImage(
     nullRecipeImageImportRequest?: null | RecipeImageImportRequest,
     accept: PostApiAiInferenceRecipesFromImageAccept = 'application/json',
-    options?: HttpClientOptions
+    options?: HttpClientOptions,
   ): Observable<RecipeDTO | string> {
-    const headers = options?.headers instanceof HttpHeaders
-      ? options.headers.set('Accept', accept)
-      : { ...(options?.headers ?? {}), Accept: accept };
+    const headers =
+      options?.headers instanceof HttpHeaders
+        ? options.headers.set('Accept', accept)
+        : { ...(options?.headers ?? {}), Accept: accept };
 
     if (accept.includes('json') || accept.includes('+json')) {
-      return this.http.post<RecipeDTO>(`/api/AiInference/recipes/from-image`, nullRecipeImageImportRequest, {
-        ...options,
-        responseType: 'json',
-        headers,
-
-
-      });
+      return this.http.post<RecipeDTO>(
+        `/api/AiInference/recipes/from-image`,
+        nullRecipeImageImportRequest,
+        {
+          ...options,
+          responseType: 'json',
+          headers,
+        },
+      );
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.post(`/api/AiInference/recipes/from-image`, nullRecipeImageImportRequest, {
         ...options,
         responseType: 'text',
         headers,
-
-
       }) as Observable<string>;
     }
 
-    return this.http.post<RecipeDTO>(`/api/AiInference/recipes/from-image`, nullRecipeImageImportRequest, {
+    return this.http.post<RecipeDTO>(
+      `/api/AiInference/recipes/from-image`,
+      nullRecipeImageImportRequest,
+      {
         ...options,
         responseType: 'json',
         headers,
-
-
-      });
+      },
+    );
   }
-};
-
+}
