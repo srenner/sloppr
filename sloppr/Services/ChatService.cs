@@ -288,9 +288,15 @@ public class ChatService
             new ChatMessage(
                 ChatRole.User,
                 "Build one complete recipe from this transcribed recipe text. " +
-                "Parse every ingredient line into separate name, quantity, unit, group, and note " +
-                "fields; every ingredient must have a non-empty name. Do not put the whole " +
-                $"ingredient line in note. Return the JSON recipe.\n\n{extractedText}"),
+                "Parse each ingredient line into exactly one ingredient object with name, " +
+                "quantity, unit, group, and note. Every ingredient must have a non-empty name. " +
+                "Never split one ingredient line across multiple ingredients and never put the " +
+                "whole ingredient line in note. " +
+                "Use group only for an explicit component heading in the source, such as Sauce, " +
+                "Marinade, Filling, or Topping. Never use food categories or table columns " +
+                "(for example Vegetables, Fruit, Protein, Meat, Dairy, or Pantry) as a group. " +
+                "Leave group empty when the source does not name a component. " +
+                $"Return the JSON recipe.\n\n{extractedText}"),
         };
 
         try
